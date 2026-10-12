@@ -116,7 +116,7 @@ python tools/perf.py                  # 성능·크기 측정(Task 6부터, 기�
 **Interfaces:**
 - Produces:
   - `datajs.load(path='data.js') -> dict`, `datajs.dump(obj) -> str`, `datajs.PREFIX = 'window.LIBRARY_GUIDE = '`
-  - `harness.test(stage=1, viewport='desktop', motion='reduce')` 데코레이터, `harness.check(cond, msg)`, `harness.REGISTRY`
+  - `harness.test(stage=1, viewport='desktop', motion='reduce', clock=True)` 데코레이터, `harness.check(cond, msg)`, `harness.REGISTRY`
   - 실행기 기본 환경(S13): 시계 2026-10-15 10:00 Asia/Seoul 고정(PRD 부록 A 기준일. 날짜 테스트는 `page.clock`으로 다시 정함), 동작 줄이기(`reduced_motion='reduce'`. 기본 동작 검사는 `motion='no-preference'`로 따로)
   - `helpers.Site(page, base, errors)`: `open(hash_='')`, `search(q)`, `count()`, `result_ids()`, `scope(s)`, `category_tab(cid)`, `category_card(cid)`, `select(sel_id, value)`, `load_more()`, `card_count()`, `open_detail(rid)`, `open_any(rid)`, `detail_text()`, `official_href()`, `close_detail()`, `dialog_open()`, `book_case(key)`, `console_errors()`, `data()`, `query_value()`, `close_with_button()`, `open_from_hero(rid)`, `material_links()`, `category_card_count()`, `resource_filters_visible()`
   - `helpers.VIEWPORTS = {'desktop': {'width':1440,'height':900}, 'mobile': {'width':390,'height':844}}`
@@ -194,9 +194,10 @@ class Fail(AssertionError):
     pass
 
 
-def test(stage=1, viewport='desktop', motion='reduce'):
+def test(stage=1, viewport='desktop', motion='reduce', clock=True):
+    # clock=False: 시계를 고정하지 않는다. Playwright의 가짜 시계는 performance.mark도 아무 일 안 하게 바꾼다
     def deco(fn):
-        REGISTRY.append({'fn': fn, 'stage': stage, 'viewport': viewport, 'motion': motion,
+        REGISTRY.append({'fn': fn, 'stage': stage, 'viewport': viewport, 'motion': motion, 'clock': clock,
                          'name': f'{fn.__module__}::{fn.__name__}'})
         return fn
     return deco
@@ -382,7 +383,8 @@ def main():
                                               timezone_id='Asia/Seoul', reduced_motion=t['motion'])
                     page = ctx.new_page()
                     # PRD 부록 A 기준일로 시계를 고정한다. 날짜를 다루는 테스트는 page.clock으로 다시 정한다(S13)
-                    page.clock.set_fixed_time('2026-10-15T10:00:00+09:00')
+                    if t['clock']:
+                        page.clock.set_fixed_time('2026-10-15T10:00:00+09:00')
                     errors = []
                     page.on('pageerror', lambda e, errs=errors: errs.append(str(e)))
                     page.on('console', lambda m, errs=errors: errs.append(f'{m.text} @ {m.location.get("url", "")}')
@@ -396,7 +398,7 @@ def main():
                         print('PASS', label)
                     except Exception as e:  # noqa: BLE001
                         failures += 1
-                        print('FAIL', label, '-', str(e).splitlines()[0][:300])
+                        print('FAIL', label, '-', (str(e).splitlines() or [repr(e)])[0][:300])  # 메시지 없는 예외도 출력
                     finally:
                         ctx.close()
             browser.close()
@@ -1416,7 +1418,7 @@ Expected: `FAIL … 안전하지 않은 링크: ['javascript:window.__xss=3', 'h
 })();
 ```
 
-`index.html`에서 `<script src="js/app.js" defer></script>` 바로 앞에 `<script src="js/lib.js" defer></script>`를 넣는다.
+`index.html`에서 `<script src="js/app.js" defer></script>` 바로 앞에 `<script src="js/lib.js" defer></script>`를 넣는다. `js/app.js` 맨 위 주석의 로딩 순서도 `data.js → js/lib.js → js/app.js`로 고친다.
 
 - [ ] **Step 4: app.js를 lib.js로 통일**
 
@@ -2022,7 +2024,7 @@ def t_no_cross_field_match(site):
     check('mobile' not in site.result_ids(), '필드 경계를 넘어 일치함')
 
 
-@test()
+@test(clock=False)  # 가짜 시계는 performance.mark를 기록하지 않는다
 def t_perf_marks(site):
     site.open()
     check(site.page.evaluate("performance.getEntriesByName('first-render').length") == 1, 'first-render 표시 없음')
@@ -3210,6 +3212,23 @@ Expected: `FAIL`
     white-space: nowrap;
   }
 }
+/* 데스크톱: 검색 버튼을 메뉴 바로 왼쪽에 붙인다 */
+.header-search {
+  margin-left: auto;
+}
+@media (max-width: 560px) {
+  /* 모바일: 첫 줄 = 이름 + 검색 버튼, 둘째 줄 = 메뉴(가로 스크롤) */
+  .site-header {
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 4px;
+    padding: 10px 16px 6px;
+  }
+  .site-header nav {
+    order: 3;
+    width: 100%;
+  }
+}
 ```
 
 - [ ] **Step 5: 테스트**
@@ -3289,9 +3308,13 @@ def t_contrast(site):
     for fg, bg in pairs:
         ratio = site.page.evaluate(CONTRAST, [fg, bg])
         check(ratio >= 4.5, f'{fg} on {bg} 대비 {ratio:.2f}')
-    rules = site.page.evaluate("""() => Array.from(document.styleSheets).flatMap(s => Array.from(s.cssRules))
-      .filter(r => r.selectorText && r.selectorText.includes(':focus-visible')).map(r => r.style.outline)""")
-    check(rules and all('var(--green)' in r for r in rules), f'포커스 링 규칙 {rules}(var(--green) 기대)')
+    # 포커스 링: file://에서는 스타일시트 규칙(cssRules)을 읽을 수 없으므로, 실제로 포커스를 준 요소의 계산된 색을 본다
+    site.close_detail()
+    site.page.focus('#search-input')  # 입력창은 어떻게 포커스해도 :focus-visible이 적용된다
+    ring, green = site.page.evaluate("""() => { const t = document.createElement('div'); t.style.color = 'var(--green)';
+      document.body.append(t); const g = getComputedStyle(t).color; t.remove();
+      return [getComputedStyle(document.activeElement).outlineColor, g]; }""")
+    check(ring == green, f'포커스 링 색 {ring}(var(--green) = {green} 기대)')
 
 
 SMALL = """sels => Array.from(document.querySelectorAll(sels)).filter(e => e.offsetParent !== null || e.closest('dialog[open]'))
@@ -3621,7 +3644,7 @@ window.LG_CONFIG = {
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 ```
 
-스크립트 순서를 `data.js` → `js/config.js` → `js/lib.js` → `js/app.js`로 한다(`config.js` 태그 추가).
+스크립트 순서를 `data.js` → `js/config.js` → `js/lib.js` → `js/app.js`로 한다(`config.js` 태그 추가, `js/app.js` 맨 위 주석도 같이).
 헤더 `<span>제주대 학생을 위한 활용 가이드</span>` → `<span>제주대 학생을 위한 비공식 활용 가이드</span>`.
 `#empty` 안 `<button class="primary" id="empty-reset">` 앞에 추가:
 
@@ -3853,7 +3876,8 @@ def main():
              f'정상 {count["정상"]} · 경고 {count["경고"]} · 실패 {count["실패"]} (주소 {len(rows)}개)', '',
              '| 상태 | 주소 | 이유 | 최종 주소 | 제목 | 쓰는 곳 |', '|---|---|---|---|---|---|']
     for state, url, why, final, title, where in sorted(rows, key=lambda r: ('실패', '경고', '정상').index(r[0])):
-        lines.append(f'| {state} | {url} | {why} | {final if final != url else ""} | {title} | {", ".join(where[:4])}'
+        cell = title.replace('|', '\\|')  # 제목의 |가 표 칸을 깨지 않게
+        lines.append(f'| {state} | {url} | {why} | {final if final != url else ""} | {cell} | {", ".join(where[:4])}'
                      + (f' 외 {len(where) - 4}' if len(where) > 4 else '') + ' |')
     out.write_text('\n'.join(lines) + '\n', encoding='utf-8', newline='\n')
     print(f'\n정상 {count["정상"]} · 경고 {count["경고"]} · 실패 {count["실패"]} → {out}')
