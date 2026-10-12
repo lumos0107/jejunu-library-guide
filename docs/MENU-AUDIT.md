@@ -1,0 +1,206 @@
+# 공식 전체 메뉴·전자정보원 대조
+
+확인일: 2026-10-12
+
+## 범위
+
+- 상위 6개 메뉴의 하위 링크 89개를 확인해 모두 검색 가능한 공식 메뉴 위치 안내로 등록. 메뉴의 모든 세부본문·첨부물·로그인 후 기능을 확인했다는 뜻은 아님.
+- 상세 공개 안내 기반 활용 가이드 47개. 첫 버전 33개에서 14개 추가.
+- 전자정보원 원목록 97행, CAS BioFinder 중복 1행 병합 후 96개.
+- 전자책 목록에만 있는 국내 전자책·예스24 크레마클럽 2개 추가. 총 전자정보원 안내 98개.
+- 통합 검색 234개 안내 레코드는 서로 다른 기능 234개가 아님. 동일 서비스의 활용 가이드·원목록 정보·공식 메뉴 위치가 구분되어 함께 표시될 수 있음.
+
+## 89개 메뉴
+
+- 자료검색 → 통합검색
+  - https://lib.jejunu.ac.kr/#/total-search
+- 자료검색 → 소장자료 → 단행본
+  - https://lib.jejunu.ac.kr/#/search/mon/ex?all=0
+- 자료검색 → 소장자료 → 연속간행물
+  - https://lib.jejunu.ac.kr/#/search/cr/ex?all=0
+- 자료검색 → 소장자료 → 제주자료
+  - https://lib.jejunu.ac.kr/#/search/local/ex?all=0
+- 자료검색 → 소장자료 → 학위논문
+  - https://lib.jejunu.ac.kr/#/search/thesis/ex?all=0
+- 자료검색 → 소장자료 → 비도서
+  - https://lib.jejunu.ac.kr/#/search/nonbook/ex?all=0
+- 자료검색 → 전자자료 → 학술논문(Article)
+  - https://lib.jejunu.ac.kr/#/eds/si
+- 자료검색 → 전자자료 → 전자정보원
+  - https://lib.jejunu.ac.kr/#/search/er
+- 자료검색 → 전자자료 → 전자저널
+  - https://lib.jejunu.ac.kr/#/eds/pf/si
+- 자료검색 → 전자자료 → 전자책
+  - https://lib.jejunu.ac.kr/#/search/er-ebook
+- 자료검색 → 전자자료 → 동영상 강의
+  - https://lib.jejunu.ac.kr/#/search/elearning
+- 연구학습지원 → 연구지원 → 등재 학술지 리스트
+  - https://lib.jejunu.ac.kr/#/bbs/sci
+- 연구학습지원 → 연구지원 → 최신연구동향서비스
+  - https://lib.jejunu.ac.kr/#/research/trend
+- 연구학습지원 → 연구지원 → 원문복사/상호대차
+  - https://lib.jejunu.ac.kr/#/research/other
+- 연구학습지원 → 연구지원 → SDI서비스
+  - https://lib.jejunu.ac.kr/#/research/sdi
+- 연구학습지원 → 연구지원 → 교외접속
+  - https://lib.jejunu.ac.kr/#/research/offacess
+- 연구학습지원 → 논문작성지원 → 참고문헌관리
+  - https://lib.jejunu.ac.kr/#/research/reference
+- 연구학습지원 → 논문작성지원 → 표절예방(Turnitin, iThenticate)
+  - https://lib.jejunu.ac.kr/#/research/prevent/turnitin
+- 연구학습지원 → 논문작성지원 → 표절예방(카피킬러)
+  - https://lib.jejunu.ac.kr/#/research/prevent-copykiller
+- 연구학습지원 → 논문작성지원 → 학위논문제출
+  - https://lib.jejunu.ac.kr/#/research/thesis-submission
+- 연구학습지원 → 논문작성지원 → 외국어 교정 공동웹페이지 서비스(에디티지)
+  - https://lib.jejunu.ac.kr/#/research/correction
+- 연구학습지원 → 논문작성지원 → 외국어 교정 공동웹페이지 서비스(이나고)
+  - https://lib.jejunu.ac.kr/#/research/correction-enago
+- 연구학습지원 → 이용자교육 → 학술정보활용교육
+  - https://lib.jejunu.ac.kr/#/education/guide
+- Collections → 신착/인기도서 → 신착도서
+  - https://lib.jejunu.ac.kr/#/new/ex
+- Collections → 신착/인기도서 → 인기도서
+  - https://lib.jejunu.ac.kr/#/popular-charged-book/result
+- Collections → 추천도서 → 이달의 추천도서
+  - https://lib.jejunu.ac.kr/#/sc/recommend
+- Collections → 추천도서 → 이달의 추천DVD
+  - https://lib.jejunu.ac.kr/#/sc/movie?scId1=288
+- Collections → 추천도서 → 우수학술도서
+  - https://lib.jejunu.ac.kr/#/sc/academy
+- Collections → 추천도서 → 세종도서
+  - https://lib.jejunu.ac.kr/#/sc/sejong
+- Collections → 추천도서 → 책읽는 제주대학교
+  - https://lib.jejunu.ac.kr/#/bbs/readingbook
+- Collections → 디지털 컬렉션 → dCollection
+  - https://dcoll.jejunu.ac.kr/
+- Collections → 디지털 컬렉션 → 제주지역신문 「제주메모리」
+  - https://lib.jejunu.ac.kr/#/sc/archive
+- Collections → 디지털 컬렉션 → JNU 독서주간: 북로그
+  - https://lib.jejunu.ac.kr/#/bbs/booklog
+- 도서관서비스 → 자료이용 → 대출/반납
+  - https://lib.jejunu.ac.kr/#/service/circulation
+- 도서관서비스 → 자료이용 → 희망도서신청
+  - https://lib.jejunu.ac.kr/#/service/request-book
+- 도서관서비스 → 자료이용 → 캠퍼스대출
+  - https://lib.jejunu.ac.kr/#/service/campus-loan
+- 도서관서비스 → 자료이용 → 부재도서 신고
+  - https://lib.jejunu.ac.kr/#/service/absent-book-report
+- 도서관서비스 → 자료이용 → 보존서고 자료이용
+  - https://lib.jejunu.ac.kr/#/service/ccl
+- 도서관서비스 → 자료이용 → 우선정리도서
+  - https://lib.jejunu.ac.kr/#/service/fcl
+- 도서관서비스 → 자료이용 → 야간 예약도서
+  - https://lib.jejunu.ac.kr/#/service/reservations
+- 도서관서비스 → 자료이용 → 타도서관열람의뢰
+  - https://lib.jejunu.ac.kr/#/service/olv
+- 도서관서비스 → 자료이용 → 책나래서비스
+  - https://lib.jejunu.ac.kr/#/service/booknarae
+- 도서관서비스 → 시설이용 → 출입 및 이용시간
+  - https://lib.jejunu.ac.kr/#/service/enter/mobileid
+- 도서관서비스 → 시설이용 → 좌석 및 시설 예약
+  - https://lib.jejunu.ac.kr/#/service/facility
+- 도서관서비스 → 시설이용 → 모바일서비스
+  - https://lib.jejunu.ac.kr/#/service/mobile/introduction
+- 도서관서비스 → 시설이용 → 무선인터넷
+  - https://lib.jejunu.ac.kr/#/service/lan
+- 도서관서비스 → 시설이용 → 스캔/인쇄/복사
+  - https://lib.jejunu.ac.kr/#/service/print
+- 도서관서비스 → 시설이용 → 사물함
+  - https://lib.jejunu.ac.kr/#/service/locker
+- 도서관서비스 → 시설이용 → 야간버스 사용
+  - https://lib.jejunu.ac.kr/#/service/night-bus
+- 도서관서비스 → 프로그램 참여 → 프로그램신청
+  - https://lib.jejunu.ac.kr/#/libprg/culture-lecture
+- 도서관서비스 → 프로그램 참여 → 프로그램일정
+  - https://lib.jejunu.ac.kr/#/libprg/calendar
+- 도서관서비스 → 이용자별 안내 → 학부생
+  - https://lib.jejunu.ac.kr/#/service/user/user01
+- 도서관서비스 → 이용자별 안내 → 대학원생
+  - https://lib.jejunu.ac.kr/#/service/user/user02
+- 도서관서비스 → 이용자별 안내 → 교직원
+  - https://lib.jejunu.ac.kr/#/service/user/user03
+- 도서관서비스 → 이용자별 안내 → 장애학생
+  - https://lib.jejunu.ac.kr/#/service/user/user04
+- 도서관서비스 → 이용자별 안내 → 졸업생/수료생
+  - https://lib.jejunu.ac.kr/#/service/user/user05
+- 도서관서비스 → 이용자별 안내 → 지역주민/도서관회원제
+  - https://lib.jejunu.ac.kr/#/service/user/user06
+- 도서관안내 → 도서관 소개 → 연혁/역대관장
+  - https://lib.jejunu.ac.kr/#/guide/history/history
+- 도서관안내 → 도서관 소개 → 규정/지침
+  - https://lib.jejunu.ac.kr/#/guide/rule/rule
+- 도서관안내 → 도서관 소개 → 일반현황
+  - https://lib.jejunu.ac.kr/#/guide/state
+- 도서관안내 → 도서관 소개 → 조직/연락처
+  - https://lib.jejunu.ac.kr/#/guide/group
+- 도서관안내 → 도서관 소개 → 자료기증
+  - https://lib.jejunu.ac.kr/#/guide/donation
+- 도서관안내 → 도서관 소개 → 이용시간/층별안내
+  - https://lib.jejunu.ac.kr/#/guide/hoo/hoo
+- 도서관안내 → 도서관 소개 → 자료분류체계
+  - https://lib.jejunu.ac.kr/#/guide/system
+- 도서관안내 → 도서관 소개 → 찾아오시는 길
+  - https://lib.jejunu.ac.kr/#/guide/location
+- 도서관안내 → 열린광장 → 공지사항
+  - https://lib.jejunu.ac.kr/#/bbs/notice
+- 도서관안내 → 열린광장 → 일정
+  - https://lib.jejunu.ac.kr/#/schedule/calendar
+- 도서관안내 → 열린광장 → FAQ
+  - https://lib.jejunu.ac.kr/#/bbs/faq
+- 도서관안내 → 열린광장 → 1:1문의
+  - https://lib.jejunu.ac.kr/#/bbs/qna
+- 도서관안내 → 열린광장 → 유실물게시판
+  - https://lib.jejunu.ac.kr/#/bbs/lost
+- 도서관안내 → 열린광장 → 서비스별 연락처
+  - https://lib.jejunu.ac.kr/#/bbs/contact
+- 도서관안내 → 열린광장 → 서식자료실
+  - https://lib.jejunu.ac.kr/#/bbs/form
+- My Library → My Dashboard
+  - https://lib.jejunu.ac.kr/#/mylibrary/dashboard
+- My Library → 자료 이용현황 → 도서대출/연장/예약 조회
+  - https://lib.jejunu.ac.kr/#/mylibrary/charges
+- My Library → 자료 이용현황 → 희망도서신청 조회
+  - https://lib.jejunu.ac.kr/#/mylibrary/request-book/result/
+- My Library → 자료 이용현황 → 캠퍼스대출 조회
+  - https://lib.jejunu.ac.kr/#/mylibrary/ibl
+- My Library → 자료 이용현황 → 부재도서신청 조회
+  - https://lib.jejunu.ac.kr/#/mylibrary/abr
+- My Library → 자료 이용현황 → 보존서고자료신청 조회
+  - https://lib.jejunu.ac.kr/#/mylibrary/ccl
+- My Library → 자료 이용현황 → 우선정리도서 조회
+  - https://lib.jejunu.ac.kr/#/mylibrary/fcl
+- My Library → 자료 이용현황 → 야간 예약도서신청 조회
+  - https://lib.jejunu.ac.kr/#/mylibrary/reservations
+- My Library → 자료 이용현황 → 원문복사 조회
+  - https://lib.jejunu.ac.kr/#/mylibrary/dds/result/
+- My Library → 자료 이용현황 → SDI서비스신청 조회
+  - https://lib.jejunu.ac.kr/#/mylibrary/sdi/keywords/result
+- My Library → 서비스/시설 이용현황 → 이용자교육신청 조회
+  - https://lib.jejunu.ac.kr/#/education/request-result/
+- My Library → 서비스/시설 이용현황 → 프로그램신청 조회
+  - https://lib.jejunu.ac.kr/#/mylibrary/libprg/result/
+- My Library → 서비스/시설 이용현황 → 타도서관열람의뢰신청 조회
+  - https://lib.jejunu.ac.kr/#/mylibrary/olv/result
+- My Library → 서비스/시설 이용현황 → 사물함신청 조회
+  - https://lib.jejunu.ac.kr/#/bbs/locker
+- My Library → 나의 정보 → 개인정보/비밀번호 관리
+  - https://lib.jejunu.ac.kr/#/mylibrary/myinfo
+- My Library → 나의 정보 → 내 서재
+  - https://lib.jejunu.ac.kr/#/mylibrary/collections
+- My Library → 나의 정보 → 제재현황 조회
+  - https://lib.jejunu.ac.kr/#/mylibrary/blocks
+
+## 원본 자료
+
+- official-menu-inventory.json: 메뉴명·실제 href
+- electronic-resources-raw.json: 전자정보원 97행의 공개 설명·매뉴얼 링크
+- ebooks-raw.json: 전자책 8행 (계정 초기 인증정보는 제외)
+
+## 불확실성
+
+- CAS Trial 기간은 월·일만 표기되어 현재 제공을 단정하지 않는다.
+- 원목록의 공개자료 표기 6개, Trial 중복 병합 후 4개. 나머지는 이용 범위 확인 필요로 표시한다. 정식 구독/완전 무료라고 일괄 표시하지 않는다.
+- 상호대차 기간, 제주자료실 운영시간, Wi-Fi 문의번호·eduroam 방식, 교정요금 표기 등 차이는 관련 가이드 주의사항에 남겼다.
+- 도서관안내의 일정 메뉴는 URL은 확인했지만 탐색 시 홈페이지로 이동해 독립 내용 미확인.
+- 매뉴얼 링크를 수집했으나 각 파일을 읽거나 전부 다운로드·접속 검사하지 않았다.

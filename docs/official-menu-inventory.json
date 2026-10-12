@@ -1,0 +1,629 @@
+{
+  "checkedAt": "2026-10-12",
+  "source": "https://lib.jejunu.ac.kr/#/",
+  "menus": [
+    {
+      "group": "자료검색",
+      "subgroup": "",
+      "name": "통합검색",
+      "href": "#/total-search",
+      "navigation": ""
+    },
+    {
+      "group": "자료검색",
+      "subgroup": "소장자료",
+      "name": "단행본",
+      "href": "#/search/mon/ex?all=0",
+      "navigation": ""
+    },
+    {
+      "group": "자료검색",
+      "subgroup": "소장자료",
+      "name": "연속간행물",
+      "href": "#/search/cr/ex?all=0",
+      "navigation": ""
+    },
+    {
+      "group": "자료검색",
+      "subgroup": "소장자료",
+      "name": "제주자료",
+      "href": "#/search/local/ex?all=0",
+      "navigation": ""
+    },
+    {
+      "group": "자료검색",
+      "subgroup": "소장자료",
+      "name": "학위논문",
+      "href": "#/search/thesis/ex?all=0",
+      "navigation": ""
+    },
+    {
+      "group": "자료검색",
+      "subgroup": "소장자료",
+      "name": "비도서",
+      "href": "#/search/nonbook/ex?all=0",
+      "navigation": ""
+    },
+    {
+      "group": "자료검색",
+      "subgroup": "전자자료",
+      "name": "학술논문(Article)",
+      "href": "#/eds/si",
+      "navigation": ""
+    },
+    {
+      "group": "자료검색",
+      "subgroup": "전자자료",
+      "name": "전자정보원",
+      "href": "#/search/er",
+      "navigation": ""
+    },
+    {
+      "group": "자료검색",
+      "subgroup": "전자자료",
+      "name": "전자저널",
+      "href": "#/eds/pf/si",
+      "navigation": ""
+    },
+    {
+      "group": "자료검색",
+      "subgroup": "전자자료",
+      "name": "전자책",
+      "href": "#/search/er-ebook",
+      "navigation": ""
+    },
+    {
+      "group": "자료검색",
+      "subgroup": "전자자료",
+      "name": "동영상 강의",
+      "href": "#/search/elearning",
+      "navigation": ""
+    },
+    {
+      "group": "연구학습지원",
+      "subgroup": "연구지원",
+      "name": "등재 학술지 리스트",
+      "href": "#/bbs/sci",
+      "navigation": ""
+    },
+    {
+      "group": "연구학습지원",
+      "subgroup": "연구지원",
+      "name": "최신연구동향서비스",
+      "href": "#/research/trend",
+      "navigation": ""
+    },
+    {
+      "group": "연구학습지원",
+      "subgroup": "연구지원",
+      "name": "원문복사/상호대차",
+      "href": "#/research/other",
+      "navigation": ""
+    },
+    {
+      "group": "연구학습지원",
+      "subgroup": "연구지원",
+      "name": "SDI서비스",
+      "href": "#/research/sdi",
+      "navigation": ""
+    },
+    {
+      "group": "연구학습지원",
+      "subgroup": "연구지원",
+      "name": "교외접속",
+      "href": "#/research/offacess",
+      "navigation": ""
+    },
+    {
+      "group": "연구학습지원",
+      "subgroup": "논문작성지원",
+      "name": "참고문헌관리",
+      "href": "#/research/reference",
+      "navigation": ""
+    },
+    {
+      "group": "연구학습지원",
+      "subgroup": "논문작성지원",
+      "name": "표절예방(Turnitin, iThenticate)",
+      "href": "#/research/prevent/turnitin",
+      "navigation": ""
+    },
+    {
+      "group": "연구학습지원",
+      "subgroup": "논문작성지원",
+      "name": "표절예방(카피킬러)",
+      "href": "#/research/prevent-copykiller",
+      "navigation": ""
+    },
+    {
+      "group": "연구학습지원",
+      "subgroup": "논문작성지원",
+      "name": "학위논문제출",
+      "href": "#/research/thesis-submission",
+      "navigation": ""
+    },
+    {
+      "group": "연구학습지원",
+      "subgroup": "논문작성지원",
+      "name": "외국어 교정 공동웹페이지 서비스(에디티지)",
+      "href": "#/research/correction",
+      "navigation": ""
+    },
+    {
+      "group": "연구학습지원",
+      "subgroup": "논문작성지원",
+      "name": "외국어 교정 공동웹페이지 서비스(이나고)",
+      "href": "#/research/correction-enago",
+      "navigation": ""
+    },
+    {
+      "group": "연구학습지원",
+      "subgroup": "이용자교육",
+      "name": "학술정보활용교육",
+      "href": "#/education/guide",
+      "navigation": ""
+    },
+    {
+      "group": "Collections",
+      "subgroup": "신착/인기도서",
+      "name": "신착도서",
+      "href": "#/new/ex",
+      "navigation": ""
+    },
+    {
+      "group": "Collections",
+      "subgroup": "신착/인기도서",
+      "name": "인기도서",
+      "href": "#/popular-charged-book/result",
+      "navigation": ""
+    },
+    {
+      "group": "Collections",
+      "subgroup": "추천도서",
+      "name": "이달의 추천도서",
+      "href": "#/sc/recommend",
+      "navigation": ""
+    },
+    {
+      "group": "Collections",
+      "subgroup": "추천도서",
+      "name": "이달의 추천DVD",
+      "href": "#/sc/movie?scId1=288",
+      "navigation": ""
+    },
+    {
+      "group": "Collections",
+      "subgroup": "추천도서",
+      "name": "우수학술도서",
+      "href": "#/sc/academy",
+      "navigation": ""
+    },
+    {
+      "group": "Collections",
+      "subgroup": "추천도서",
+      "name": "세종도서",
+      "href": "#/sc/sejong",
+      "navigation": ""
+    },
+    {
+      "group": "Collections",
+      "subgroup": "추천도서",
+      "name": "책읽는 제주대학교",
+      "href": "#/bbs/readingbook",
+      "navigation": ""
+    },
+    {
+      "group": "Collections",
+      "subgroup": "디지털 컬렉션",
+      "name": "dCollection",
+      "href": "https://dcoll.jejunu.ac.kr/",
+      "navigation": ""
+    },
+    {
+      "group": "Collections",
+      "subgroup": "디지털 컬렉션",
+      "name": "제주지역신문 「제주메모리」",
+      "href": "#/sc/archive",
+      "navigation": ""
+    },
+    {
+      "group": "Collections",
+      "subgroup": "디지털 컬렉션",
+      "name": "JNU 독서주간: 북로그",
+      "href": "#/bbs/booklog",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "자료이용",
+      "name": "대출/반납",
+      "href": "#/service/circulation",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "자료이용",
+      "name": "희망도서신청",
+      "href": "#/service/request-book",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "자료이용",
+      "name": "캠퍼스대출",
+      "href": "#/service/campus-loan",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "자료이용",
+      "name": "부재도서 신고",
+      "href": "#/service/absent-book-report",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "자료이용",
+      "name": "보존서고 자료이용",
+      "href": "#/service/ccl",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "자료이용",
+      "name": "우선정리도서",
+      "href": "#/service/fcl",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "자료이용",
+      "name": "야간 예약도서",
+      "href": "#/service/reservations",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "자료이용",
+      "name": "타도서관열람의뢰",
+      "href": "#/service/olv",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "자료이용",
+      "name": "책나래서비스",
+      "href": "#/service/booknarae",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "시설이용",
+      "name": "출입 및 이용시간",
+      "href": "#/service/enter/mobileid",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "시설이용",
+      "name": "좌석 및 시설 예약",
+      "href": "#/service/facility",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "시설이용",
+      "name": "모바일서비스",
+      "href": "#/service/mobile/introduction",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "시설이용",
+      "name": "무선인터넷",
+      "href": "#/service/lan",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "시설이용",
+      "name": "스캔/인쇄/복사",
+      "href": "#/service/print",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "시설이용",
+      "name": "사물함",
+      "href": "#/service/locker",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "시설이용",
+      "name": "야간버스 사용",
+      "href": "#/service/night-bus",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "프로그램 참여",
+      "name": "프로그램신청",
+      "href": "#/libprg/culture-lecture",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "프로그램 참여",
+      "name": "프로그램일정",
+      "href": "#/libprg/calendar",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "이용자별 안내",
+      "name": "학부생",
+      "href": "#/service/user/user01",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "이용자별 안내",
+      "name": "대학원생",
+      "href": "#/service/user/user02",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "이용자별 안내",
+      "name": "교직원",
+      "href": "#/service/user/user03",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "이용자별 안내",
+      "name": "장애학생",
+      "href": "#/service/user/user04",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "이용자별 안내",
+      "name": "졸업생/수료생",
+      "href": "#/service/user/user05",
+      "navigation": ""
+    },
+    {
+      "group": "도서관서비스",
+      "subgroup": "이용자별 안내",
+      "name": "지역주민/도서관회원제",
+      "href": "#/service/user/user06",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "도서관 소개",
+      "name": "연혁/역대관장",
+      "href": "#/guide/history/history",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "도서관 소개",
+      "name": "규정/지침",
+      "href": "#/guide/rule/rule",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "도서관 소개",
+      "name": "일반현황",
+      "href": "#/guide/state",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "도서관 소개",
+      "name": "조직/연락처",
+      "href": "#/guide/group",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "도서관 소개",
+      "name": "자료기증",
+      "href": "#/guide/donation",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "도서관 소개",
+      "name": "이용시간/층별안내",
+      "href": "#/guide/hoo/hoo",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "도서관 소개",
+      "name": "자료분류체계",
+      "href": "#/guide/system",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "도서관 소개",
+      "name": "찾아오시는 길",
+      "href": "#/guide/location",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "열린광장",
+      "name": "공지사항",
+      "href": "#/bbs/notice",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "열린광장",
+      "name": "일정",
+      "href": "#/schedule/calendar",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "열린광장",
+      "name": "FAQ",
+      "href": "#/bbs/faq",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "열린광장",
+      "name": "1:1문의",
+      "href": "#/bbs/qna",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "열린광장",
+      "name": "유실물게시판",
+      "href": "#/bbs/lost",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "열린광장",
+      "name": "서비스별 연락처",
+      "href": "#/bbs/contact",
+      "navigation": ""
+    },
+    {
+      "group": "도서관안내",
+      "subgroup": "열린광장",
+      "name": "서식자료실",
+      "href": "#/bbs/form",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "",
+      "name": "My Dashboard",
+      "href": "#/mylibrary/dashboard",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "자료 이용현황",
+      "name": "도서대출/연장/예약 조회",
+      "href": "#/mylibrary/charges",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "자료 이용현황",
+      "name": "희망도서신청 조회",
+      "href": "#/mylibrary/request-book/result/",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "자료 이용현황",
+      "name": "캠퍼스대출 조회",
+      "href": "#/mylibrary/ibl",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "자료 이용현황",
+      "name": "부재도서신청 조회",
+      "href": "#/mylibrary/abr",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "자료 이용현황",
+      "name": "보존서고자료신청 조회",
+      "href": "#/mylibrary/ccl",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "자료 이용현황",
+      "name": "우선정리도서 조회",
+      "href": "#/mylibrary/fcl",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "자료 이용현황",
+      "name": "야간 예약도서신청 조회",
+      "href": "#/mylibrary/reservations",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "자료 이용현황",
+      "name": "원문복사 조회",
+      "href": "#/mylibrary/dds/result/",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "자료 이용현황",
+      "name": "SDI서비스신청 조회",
+      "href": "#/mylibrary/sdi/keywords/result",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "서비스/시설 이용현황",
+      "name": "이용자교육신청 조회",
+      "href": "#/education/request-result/",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "서비스/시설 이용현황",
+      "name": "프로그램신청 조회",
+      "href": "#/mylibrary/libprg/result/",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "서비스/시설 이용현황",
+      "name": "타도서관열람의뢰신청 조회",
+      "href": "#/mylibrary/olv/result",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "서비스/시설 이용현황",
+      "name": "사물함신청 조회",
+      "href": "#/bbs/locker",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "나의 정보",
+      "name": "개인정보/비밀번호 관리",
+      "href": "#/mylibrary/myinfo",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "나의 정보",
+      "name": "내 서재",
+      "href": "#/mylibrary/collections",
+      "navigation": ""
+    },
+    {
+      "group": "My Library",
+      "subgroup": "나의 정보",
+      "name": "제재현황 조회",
+      "href": "#/mylibrary/blocks",
+      "navigation": ""
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "checkedAt": "2026-10-12",
+  "source": "https://lib.jejunu.ac.kr/#/search/er-ebook",
+  "resources": [
+    {
+      "name": "제주대학교 전자책(알라딘, 교보문고, 북레일, 북큐브)",
+      "sourceType": "E-BOOK",
+      "description": "- 대출정책 : 5책 5일(1회 연장 가능)\n- PC와 스마트기기(\"알라딘 전자도서관\", \"교보문고 전자도서관\" APP 사용) 이용 가능\n* 스마트기기 이용방법\n 1. 반드시 사전에 도서관 홈페이지에서 전자책 사이트(왼쪽 아이콘) 접근 후 이용해주십시오.\n 2. 앱스토어 또는 플레이스토어에서 \"알라딘 전자도서관\", \"교보문고 전자도서관\" 어플리케이션을 검색하여 설치\n 3. 설치한 어플리케이션 실행 후, \"도서관 검색\" 메뉴에서 '제주대학교' 검색\n 4. 로그인 ID와 PW는 도서관 홈페이지 계정으로 로그인 해주십시오.\n\n계정 관련 최신 안내는 공식 페이지에서 확인하세요.",
+      "materials": [
+        {
+          "label": "교보 모바일 이용 안내",
+          "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/96213d52-1d9f-4244-8c84-602ba8c9b5d2"
+        },
+        {
+          "label": "이용안내",
+          "url": "https://elib.jejunu.ac.kr:8888/sub/sub.htm?nav_code=ebo1655356102"
+        },
+        {
+          "label": "전자책 이용 동영상",
+          "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/cf4faaa6-b2b8-417f-bc4c-e7495ac65726"
+        }
+      ]
+    },
+    {
+      "name": "예스24 크레마클럽",
+      "sourceType": "",
+      "description": "- 베스트셀러와 신간도서를 언제 어디서나 무제한 읽을 수 있는 eBook\n- 이용권 발급방법\n 1. PC 또는 모바일에서 제주대학교 도서관 홈페이지 로그인\n 2. 자료검색>전자책>예스24 크레마클럽(왼쪽 아이콘) 클릭\n 3. 예스24 로그인 (최초 로그인 시 이용권 자동 발급)\n* 계정 없는 이용자는 회원 가입 필수 / 기존 이용자는 ID 사용\n- 이용방법\n- 크레마클럽 홈페이지>읽고 싶은 책 선택>바로가기 클릭\n- 바로 읽기 클릭하면 전용뷰어 자동 다운로드\n* 자동설치 안 되면 (모바일) 앱 다운로드 / (PC) 전용뷰어 다운로드\n- 이용문의 : 1544-3800(예스24 고객센터)",
+      "materials": []
+    },
+    {
+      "name": "EBSCO e-book",
+      "sourceType": "E-BOOK",
+      "description": "- 400여 개의 세계 주요 출판사의 eBook 중 주제별 참고도서 제공\n- 한번에 최대 100페이지까지 PDF 저장 가능 (타이틀에 따라서 저장 가능 페이지수 다름)",
+      "materials": [
+        {
+          "label": "LIST",
+          "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/93a279f9-c2d6-486a-9376-0745c51e43a0"
+        },
+        {
+          "label": "매뉴얼",
+          "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/4356b11e-849b-4f44-89cd-33d270182d1d"
+        }
+      ]
+    },
+    {
+      "name": "EEBO (Early English Books Online)",
+      "sourceType": "E-BOOK",
+      "description": "- Spenser & Shakespeare 시대 영국에서 출판 또는 영어로 출판된 출판물\n- 주제분야: 문학, 과학사, 역사, 철학, 언어학, 예술 등 전 주제분야\n- 제공연도: 1473~1700년",
+      "materials": [
+        {
+          "label": "매뉴얼",
+          "url": "https://proquest.libguides.com/eebopqp"
+        }
+      ]
+    },
+    {
+      "name": "GVRL",
+      "sourceType": "E-BOOK",
+      "description": "- 전 주제분야 Reference e-Book 수록\n- 전 분야 GVRL 4,900여종, TwaynesAuthros Online 860종\n- Scribner Writers Online 85종, China Series 650종\n- 전문을 오디오 형태의 파일로 듣기, MP3 다운 가능",
+      "materials": [
+        {
+          "label": "매뉴얼",
+          "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/dd6fd3df-18f8-4d6b-94ea-59d176b339ad"
+        },
+        {
+          "label": "LIST",
+          "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/583e26de-8336-4f63-855d-da1c4db9ca75"
+        }
+      ]
+    },
+    {
+      "name": "O'Reilly for Higher Education",
+      "sourceType": "E-BOOK",
+      "description": "- 원문 포함 Diagrams, Coding, Image 등의 자료 인용 가능\n- 제공분야 : IT 분야 e-Book 6,300여종\n- 접속시 인증을 위해 이용자의 이메일 주소 입력(주소@jejunu.ac.kr)해야 인증이 완료\n* 해당 이메일로 전달된 내용을 통해 최종 계정설정 후 이용 가능",
+      "materials": [
+        {
+          "label": "LIST",
+          "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/0e9b8569-4311-455b-90b1-2b525e4e4e28"
+        },
+        {
+          "label": "매뉴얼",
+          "url": "https://proquest.libguides.com/ohekr"
+        }
+      ]
+    },
+    {
+      "name": "Project Gutenberg",
+      "sourceType": "E-BOOK",
+      "description": "- 저작권이 소멸되거나 저작권자의 동의를 얻은 50,000여종의 ebook\n- 영미권의 고전문학작품, 요리책·사전·정기간행물과 함께 일부 오디오북 파일 및 음악 악보\n- PDF, HTML, Kindle 등 다양한 확장자로 제공",
+      "materials": []
+    },
+    {
+      "name": "ProQuest eBook",
+      "sourceType": "E-BOOK",
+      "description": "- 주제: 전 주제 분야(예술, 비즈니스, 교육, 건강의학, 역사, 정치, 법률 등)\n- 하이라이트, 주석, 노트 기능 가능",
+      "materials": [
+        {
+          "label": "LIST",
+          "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/f8191cde-03fd-4077-8ef4-a9a8553e7a34"
+        },
+        {
+          "label": "매뉴얼",
+          "url": "https://proquest.libguides.com/ebckorea"
+        }
+      ]
+    }
+  ]
+}
