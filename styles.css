@@ -1,6 +1,6 @@
 :root {
   --ink:#1c3029;
-  --muted:#66716a;
+  --muted:#535e57;
   --green:#245b43;
   --paper:#fbfaf6;
   --line:#dddeda;
@@ -34,7 +34,7 @@ button,a,input,select {
   touch-action:manipulation;
 }
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible {
-  outline:3px solid #73a98e;
+  outline:3px solid var(--green);
   outline-offset:4px;
 }
 button {
@@ -236,7 +236,8 @@ h2 {
   justify-content:space-between;
   margin-bottom:14px;
 }
-.category-card h3 {
+.category-card .category-question {
+  display:block;
   font-size:18px;
   letter-spacing:-.5px;
   line-height:1.5;
@@ -690,7 +691,7 @@ dialog li {
   .category-card {
     padding:16px 12px;
   }
-  .category-card h3 {
+  .category-card .category-question {
     font-size:15px;
   }
   .category-card p {
@@ -1099,4 +1100,21 @@ dialog li {
     order: 3;
     width: 100%;
   }
+}
+.tabs button,
+.scope-tabs button,
+#reset,
+#search-form button,
+.book-options button,
+.service-card button,
+#load-more,
+.related button,
+.material-list a,
+.active-filters button,
+#empty-clear-filters,
+.dialog-top button,
+#detail-content a.primary,
+.header-search,
+nav a {
+  min-height: 44px;
 }

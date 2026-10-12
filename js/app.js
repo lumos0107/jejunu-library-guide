@@ -114,7 +114,7 @@
     $('#resource-filters').hidden = state.scope !== 'resource';
     $('#menu-filter').hidden = state.scope !== 'menu';
     $('#category-tabs').hidden = state.scope === 'resource' || state.scope === 'menu';
-    document.querySelectorAll('button[data-category]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.category === state.category)));
+    document.querySelectorAll('#category-tabs button[data-category]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.category === state.category)));
     document.querySelectorAll('button[data-scope]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.scope === state.scope)));
     const filters = activeFilters();
     $('#active-filters').innerHTML = filters.map(f => '<button type="button" data-clear="' + escape(f.key) + '">'
@@ -158,7 +158,7 @@
   // 첫 그리기
   $('#category-grid').innerHTML = categories.map((c, i) => '<button type="button" class="category-card" data-category="' + escape(c.id)
     + '"><span class="category-index"><span>0' + (i + 1) + ' / ' + escape(c.name)
-    + '</span><span aria-hidden="true">↗</span></span><h3>' + escape(c.question) + '</h3><p>' + escape(c.desc) + '</p></button>').join('');
+    + '</span><span aria-hidden="true">↗</span></span><span class="category-question">' + escape(c.question) + '</span><p>' + escape(c.desc) + '</p></button>').join('');
   $('#category-tabs').innerHTML = [{ id: 'all', name: '모든 상황' }, ...categories].map(c => '<button type="button" data-category="'
     + escape(c.id) + '" aria-pressed="' + (c.id === 'all') + '">' + escape(c.name) + '</button>').join('');
   $('#scope-tabs').innerHTML = [['all', '전체 검색', records.length], ['guide', '이용 가이드', services.length],
@@ -296,6 +296,7 @@
         $('#services').scrollIntoView({ behavior: scrollBehavior() });
       }
       render();
+      if (cat.classList.contains('category-card')) $('#services-title').focus({ preventScroll: true });
       return;
     }
     const book = e.target.closest('[data-book]');
@@ -325,7 +326,13 @@
   for (const [id, key] of [['resource-subject', 'subject'], ['resource-type', 'sourceType'], ['resource-access', 'access'], ['menu-group', 'menuGroup']]) {
     $('#' + id).addEventListener('change', e => { state[key] = e.target.value; state.limit = 12; render(); });
   }
-  $('#load-more').addEventListener('click', () => { state.limit += 12; render(); });
+  $('#load-more').addEventListener('click', () => {
+    const before = state.limit;
+    state.limit += 12;
+    render();
+    const next = document.querySelectorAll('#service-grid .service-card button')[before];
+    if (next) next.focus();
+  });
   $('#reset').addEventListener('click', reset);
   $('#empty-reset').addEventListener('click', () => { reset(); $('#search-input').focus(); });
   $('#empty-clear-filters').addEventListener('click', () => {
