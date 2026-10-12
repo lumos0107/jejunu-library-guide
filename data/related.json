@@ -1,0 +1,128 @@
+{
+  "loan": [
+    "night",
+    "wish"
+  ],
+  "wish": [
+    "dds",
+    "campus"
+  ],
+  "campus": [
+    "dds",
+    "wish"
+  ],
+  "missing": [
+    "loan",
+    "storage"
+  ],
+  "storage": [
+    "priority"
+  ],
+  "priority": [
+    "night"
+  ],
+  "night": [
+    "loan",
+    "mobile"
+  ],
+  "seat": [
+    "group",
+    "locker",
+    "hours"
+  ],
+  "group": [
+    "maker",
+    "seat"
+  ],
+  "maker": [
+    "print",
+    "group"
+  ],
+  "stats": [
+    "business",
+    "domestic"
+  ],
+  "remote": [
+    "domestic",
+    "overseas",
+    "ebook"
+  ],
+  "domestic": [
+    "remote",
+    "citation",
+    "similarity"
+  ],
+  "overseas": [
+    "remote",
+    "citation",
+    "dds"
+  ],
+  "citation": [
+    "similarity",
+    "training"
+  ],
+  "similarity": [
+    "citation",
+    "training"
+  ],
+  "ebook": [
+    "oreilly",
+    "lectures"
+  ],
+  "oreilly": [
+    "ebook",
+    "discipline"
+  ],
+  "dds": [
+    "wish",
+    "other"
+  ],
+  "mobile": [
+    "entry",
+    "seat",
+    "loan"
+  ],
+  "culture": [
+    "ebook",
+    "programs"
+  ],
+  "training": [
+    "domestic",
+    "citation"
+  ],
+  "sdi": [
+    "trend"
+  ],
+  "trend": [
+    "journal-index"
+  ],
+  "hours": [
+    "floor",
+    "seat",
+    "bus"
+  ],
+  "floor": [
+    "classification",
+    "hours"
+  ],
+  "entry": [
+    "mobile",
+    "training"
+  ],
+  "lost": [
+    "help"
+  ],
+  "wifi": [
+    "help"
+  ],
+  "classification": [
+    "missing",
+    "storage"
+  ],
+  "editage": [
+    "enago"
+  ],
+  "enago": [
+    "editage"
+  ]
+}

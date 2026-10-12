@@ -118,18 +118,7 @@
     + directory.length + '개도 검색할 수 있어요';
   $('#checked-at').textContent = checkedAt.replaceAll('-', '.');
 
-  const relatedMap = {
-    loan: ['night', 'wish'], wish: ['dds', 'campus'], campus: ['dds', 'wish'], missing: ['loan', 'storage'],
-    storage: ['priority'], priority: ['night'], night: ['loan', 'mobile'], seat: ['group', 'locker', 'hours'],
-    group: ['maker', 'seat'], maker: ['print', 'group'], stats: ['business', 'domestic'],
-    remote: ['domestic', 'overseas', 'ebook'], domestic: ['remote', 'citation', 'similarity'],
-    overseas: ['remote', 'citation', 'dds'], citation: ['similarity', 'training'], similarity: ['citation', 'training'],
-    ebook: ['oreilly', 'lectures'], oreilly: ['ebook', 'discipline'], dds: ['wish', 'other'],
-    mobile: ['entry', 'seat', 'loan'], culture: ['ebook', 'programs'], training: ['domestic', 'citation'],
-    sdi: ['trend'], trend: ['journal-index'], hours: ['floor', 'seat', 'bus'], floor: ['classification', 'hours'],
-    entry: ['mobile', 'training'], lost: ['help'], wifi: ['help'], classification: ['missing', 'storage'],
-    editage: ['enago'], enago: ['editage']
-  };
+  const relatedMap = window.LIBRARY_GUIDE.related || {};
 
   const dialog = $('#detail-dialog');
 
@@ -177,14 +166,7 @@
     if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dialog.close();
   });
 
-  const bookCases = {
-    loan: { text: '대출 중인 책은 예약을 검토해보세요. 반납되면 우선 대출할 수 있습니다.', ids: ['loan'] },
-    missing: { text: '검색에는 대출가능인데 서가에 없다면, 부재도서 신고로 찾아달라고 요청할 수 있어요.', ids: ['missing'] },
-    campus: { text: '다른 분관에 있는 대출가능 도서는 캠퍼스대출 조건을 확인해보세요.', ids: ['campus'] },
-    priority: { text: '정리중인 단행본은 우선정리 요청을 검토할 수 있어요.', ids: ['priority'] },
-    storage: { text: '보존서고 자료는 홈페이지에서 먼저 신청하고 제공 알림 후 이용해요.', ids: ['storage'] },
-    'not-owned': { text: '구입을 요청하려면 희망도서, 다른 기관 자료를 이용하려면 상호대차를 검토하세요.', ids: ['wish', 'dds'] }
-  };
+  const bookCases = window.LIBRARY_GUIDE.bookCases || {};
 
   document.addEventListener('click', e => {
     const open = e.target.closest('[data-open]');

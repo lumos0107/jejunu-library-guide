@@ -9,3 +9,8 @@ index.html이 아래 순서로 읽는다(모두 `defer`라 문서 순서대로 �
 
 ## 명령
 - 테스트: `python tests/smoke.py --stage 1 --browsers chromium,webkit --modes file,http`
+
+## 데이터
+- 편집 원본은 `data/*.json`이다. 고친 뒤 `python tools/build_data.py`로 data.js를 다시 만든다.
+- `python tools/build_data.py --check`: data.js가 원본과 같은지 확인(쓰지 않음).
+- `data/common-text.json`: 검색 색인에서 뺄 공통 문장(10회 이상 반복되는 caution·steps·메뉴 question). 화면 표시는 그대로다.

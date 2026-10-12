@@ -6334,5 +6334,194 @@ window.LIBRARY_GUIDE = {
       "CAS BioFinder"
     ],
     "verification": "공개 안내·메뉴·링크 확인. 로그인 후 기능·외부 이용·실시간 상태 미확인."
+  },
+  "related": {
+    "loan": [
+      "night",
+      "wish"
+    ],
+    "wish": [
+      "dds",
+      "campus"
+    ],
+    "campus": [
+      "dds",
+      "wish"
+    ],
+    "missing": [
+      "loan",
+      "storage"
+    ],
+    "storage": [
+      "priority"
+    ],
+    "priority": [
+      "night"
+    ],
+    "night": [
+      "loan",
+      "mobile"
+    ],
+    "seat": [
+      "group",
+      "locker",
+      "hours"
+    ],
+    "group": [
+      "maker",
+      "seat"
+    ],
+    "maker": [
+      "print",
+      "group"
+    ],
+    "stats": [
+      "business",
+      "domestic"
+    ],
+    "remote": [
+      "domestic",
+      "overseas",
+      "ebook"
+    ],
+    "domestic": [
+      "remote",
+      "citation",
+      "similarity"
+    ],
+    "overseas": [
+      "remote",
+      "citation",
+      "dds"
+    ],
+    "citation": [
+      "similarity",
+      "training"
+    ],
+    "similarity": [
+      "citation",
+      "training"
+    ],
+    "ebook": [
+      "oreilly",
+      "lectures"
+    ],
+    "oreilly": [
+      "ebook",
+      "discipline"
+    ],
+    "dds": [
+      "wish",
+      "other"
+    ],
+    "mobile": [
+      "entry",
+      "seat",
+      "loan"
+    ],
+    "culture": [
+      "ebook",
+      "programs"
+    ],
+    "training": [
+      "domestic",
+      "citation"
+    ],
+    "sdi": [
+      "trend"
+    ],
+    "trend": [
+      "journal-index"
+    ],
+    "hours": [
+      "floor",
+      "seat",
+      "bus"
+    ],
+    "floor": [
+      "classification",
+      "hours"
+    ],
+    "entry": [
+      "mobile",
+      "training"
+    ],
+    "lost": [
+      "help"
+    ],
+    "wifi": [
+      "help"
+    ],
+    "classification": [
+      "missing",
+      "storage"
+    ],
+    "editage": [
+      "enago"
+    ],
+    "enago": [
+      "editage"
+    ]
+  },
+  "bookCases": {
+    "loan": {
+      "text": "대출 중인 책은 예약을 검토해보세요. 반납되면 우선 대출할 수 있습니다.",
+      "ids": [
+        "loan"
+      ]
+    },
+    "missing": {
+      "text": "검색에는 대출가능인데 서가에 없다면, 부재도서 신고로 찾아달라고 요청할 수 있어요.",
+      "ids": [
+        "missing"
+      ]
+    },
+    "campus": {
+      "text": "다른 분관에 있는 대출가능 도서는 캠퍼스대출 조건을 확인해보세요.",
+      "ids": [
+        "campus"
+      ]
+    },
+    "priority": {
+      "text": "정리중인 단행본은 우선정리 요청을 검토할 수 있어요.",
+      "ids": [
+        "priority"
+      ]
+    },
+    "storage": {
+      "text": "보존서고 자료는 홈페이지에서 먼저 신청하고 제공 알림 후 이용해요.",
+      "ids": [
+        "storage"
+      ]
+    },
+    "not-owned": {
+      "text": "구입을 요청하려면 희망도서, 다른 기관 자료를 이용하려면 상호대차를 검토하세요.",
+      "ids": [
+        "wish",
+        "dds"
+      ]
+    }
+  },
+  "notices": [],
+  "commonText": {
+    "caution": [
+      "공식 메뉴명과 링크를 확인한 항목입니다. 메뉴의 모든 하위 내용·첨부자료·실제 로그인 후 기능까지 검증한 것은 아닙니다. 자세한 사용조건은 공식 안내를 확인하세요.",
+      "목록에 등재되어 있다는 사실만으로 모든 자료의 무료·원문 이용을 보장하지 않습니다. 학교 인증, 별도 등록, 구독 연도, 동시접속 조건을 확인하세요."
+    ],
+    "steps": [
+      "공식 전자정보원 목록에서 서비스 이름 검색",
+      "공식 홈페이지의 Collections 메뉴 확인",
+      "공식 홈페이지의 My Library 메뉴 확인",
+      "공식 홈페이지의 도서관서비스 메뉴 확인",
+      "공식 홈페이지의 도서관안내 메뉴 확인",
+      "공식 홈페이지의 연구학습지원 메뉴 확인",
+      "공식 홈페이지의 자료검색 메뉴 확인",
+      "설명·매뉴얼에서 학교 인증 및 개별 등록 조건 확인",
+      "학교 인증이 필요한 자료는 교외접속 안내에 따라 이용"
+    ],
+    "question": [
+      "공식 홈페이지에서는 어디에 있나요?"
+    ],
+    "keywordSuffix": "공식 메뉴"
   }
 };
