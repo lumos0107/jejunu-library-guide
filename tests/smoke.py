@@ -64,7 +64,8 @@ def main():
                                               timezone_id='Asia/Seoul', reduced_motion=t['motion'])
                     page = ctx.new_page()
                     # PRD 부록 A 기준일로 시계를 고정한다. 날짜를 다루는 테스트는 page.clock으로 다시 정한다(S13)
-                    page.clock.set_fixed_time('2026-10-15T10:00:00+09:00')
+                    if t['clock']:
+                        page.clock.set_fixed_time('2026-10-15T10:00:00+09:00')
                     errors = []
                     page.on('pageerror', lambda e, errs=errors: errs.append(str(e)))
                     page.on('console', lambda m, errs=errors: errs.append(f'{m.text} @ {m.location.get("url", "")}')

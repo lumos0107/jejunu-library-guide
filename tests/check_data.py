@@ -10,6 +10,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 import datajs  # noqa: E402
+import normalize as norm  # noqa: E402
 
 KINDS = ('services', 'resources', 'directory')
 ID_RE = re.compile(r'^[a-z0-9-]+$')
@@ -62,6 +63,14 @@ def run_checks(d, stage, today):
         for t in case.get('ids', []):
             if t not in have:
                 errs.append(f'bookCases.{key}: 없는 id {t}')
+    cases = json.loads((ROOT / 'data' / 'normalize-cases.json').read_text(encoding='utf-8'))
+    for given, expected in cases:
+        if norm.normalize(given) != expected:
+            errs.append(f'정규화 벡터 불일치(Python): {given!r} → {norm.normalize(given)!r}, 기대 {expected!r}')
+    for field in ('caution', 'steps', 'question'):
+        for s in (d.get('commonText') or {}).get(field, []):
+            if not any(s == r.get(field) or s in (r.get(field) or []) for r in recs):
+                errs.append(f'commonText.{field}: 데이터에 없는 문장')
     return errs
 
 

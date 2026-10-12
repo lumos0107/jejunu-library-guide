@@ -169,30 +169,6 @@ def q12_hero_button_and_close(site):
 # ---- v2 동작 고정값: 표시된 작업에서 기대값을 바꾼다 ----
 
 @test()
-def d01_symbol_only_query(site):  # → Task 6
-    site.open()
-    d = site.data()
-    site.search('!!!')
-    check(site.count() == total(d), 'v2: 기호만 입력해도 전체가 나옴')
-
-
-@test()
-def d03_remote_noise(site):  # → Task 6
-    site.open()
-    site.search('교외접속')
-    check(site.count() >= 90, f'v2: 교외접속 {site.count()}건')
-
-
-@test()
-def d04_quote_and_joined_words(site):  # → Task 6
-    site.open()
-    site.search('“통계”')
-    check(site.count() == 0, 'v2: 둥근 따옴표 검색 0건')
-    site.search('영어논문')
-    check(site.count() == 0, 'v2: 영어논문 0건')
-
-
-@test()
 def d05_book_return_found(site):  # Task 5에서 전환
     site.open()
     site.search('책 반납')

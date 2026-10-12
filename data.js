@@ -632,7 +632,7 @@ window.LIBRARY_GUIDE = {
         "검색 결과의 구독 연도·원문 가능 여부 확인"
       ],
       "source": "https://lib.jejunu.ac.kr/#/search/er",
-      "keywords": "영어 해외 저널 ScienceDirect Wiley JSTOR ProQuest Scopus Web of Science",
+      "keywords": "영어 논문 영어 해외 저널 ScienceDirect Wiley JSTOR ProQuest Scopus Web of Science",
       "checkedAt": "2026-10-12",
       "recordKind": "guide"
     },

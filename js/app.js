@@ -1,5 +1,5 @@
 // 도서관의 쓸모 — 화면 코드
-// 로딩 순서(index.html, 모두 defer): data.js → js/app.js
+// 로딩 순서(index.html, 모두 defer): data.js → js/lib.js → js/app.js
 (() => {
   'use strict';
 
@@ -11,8 +11,9 @@
   const byId = id => records.find(s => s.id === id);
   const categoryName = id => categories.find(c => c.id === id)?.name || id;
   const kindName = kind => ({ guide: '이용 가이드', resource: '전자정보원', menu: '공식 메뉴 위치' }[kind] || '이용 가이드');
-  const normalized = value => String(value ?? '').toLocaleLowerCase().normalize('NFKC')
-    .replace(/[\s’'·.,!?()\[\]{}_:;/-]/g, '');
+  const searchIndex = window.LG.buildIndex(records, window.LIBRARY_GUIDE.commonText);
+  const emptyHeading = $('#empty h3').textContent;
+  const emptyText = $('#empty p').innerHTML;
 
   const DEFAULT_STATE = { scope: 'all', category: 'all', query: '', audience: 'all', subject: 'all',
     sourceType: 'all', access: 'all', menuGroup: 'all', limit: 12 };
@@ -58,21 +59,21 @@
   }
 
   function render() {
-    const terms = state.query.trim().split(/\s+/).filter(Boolean).map(normalized);
-    currentMatches = records.filter(s => matchesFilters(s) && terms.every(term => normalized([
-      s.name, s.question, s.description, s.officialDescription, s.keywords, s.caution, s.subject, s.sourceType,
-      s.menuGroup, s.menuSubgroup, ...(s.steps || [])
-    ].join(' ')).includes(term)));
+    const tokens = window.LG.tokenize(state.query);
+    const invalidQuery = state.query !== '' && tokens.length === 0;  // 공백·기호만 입력(S3)
+    currentMatches = invalidQuery ? [] : window.LG.search(records.filter(matchesFilters), searchIndex, tokens);
 
     $('#service-grid').innerHTML = currentMatches.slice(0, state.limit).map(card).join('');
     $('#empty').hidden = currentMatches.length !== 0;
+    $('#empty h3').textContent = invalidQuery ? '검색어를 입력하세요' : emptyHeading;
+    $('#empty p').innerHTML = invalidQuery ? '글자나 숫자로 된 검색어를 넣어 주세요. 기호만으로는 찾을 수 없어요.' : emptyText;
     $('#load-more').hidden = currentMatches.length <= state.limit;
     $('#load-more').textContent = '더 보기 · ' + Math.min(state.limit, currentMatches.length) + ' / ' + currentMatches.length;
 
     const kinds = { guide: 0, resource: 0, menu: 0 };
     currentMatches.forEach(s => kinds[s.recordKind]++);
     $('#result-count').textContent = (state.scope === 'all' ? '전체 검색' : kindName(state.scope)) + ' · '
-      + currentMatches.length + '개 결과' + (state.query ? ' · “' + state.query + '”' : '')
+      + currentMatches.length + '개 결과' + (state.query.trim() ? ' · “' + state.query.trim() + '”' : '')
       + (state.scope === 'all' ? ' (가이드 ' + kinds.guide + ' · 자료 ' + kinds.resource + ' · 메뉴 ' + kinds.menu + ')' : '');
 
     $('#scope-note').textContent = notes[state.scope];
@@ -199,10 +200,15 @@
     }
   });
 
-  $('#search-input').addEventListener('input', e => { state.query = e.target.value.trim(); state.limit = 12; render(); });
+  $('#search-input').addEventListener('input', e => {
+    state.query = e.target.value;  // 원문 그대로(공백만 입력도 구분, S3)
+    state.limit = 12;
+    render();
+    performance.mark('search-rendered');
+  });
   $('#search-form').addEventListener('submit', e => {
     e.preventDefault();
-    state.query = $('#search-input').value.trim();
+    state.query = $('#search-input').value;
     state.limit = 12;
     render();
   });
@@ -215,4 +221,5 @@
   $('#empty-reset').addEventListener('click', () => { reset(); $('#search-input').focus(); });
 
   render();
+  performance.mark('first-render');
 })();
