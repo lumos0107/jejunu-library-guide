@@ -8,7 +8,7 @@
 
 **Tech Stack:** HTML·CSS·바닐라 JS(일반 `<script defer>`), Python 3.14(도구·테스트), Playwright 1.62(Chromium·WebKit), Node 24(P1-03 일회성 추출만).
 
-**Spec:** [PRD.md](PRD.md) v1.1, [RESEARCH.md](RESEARCH.md), [research/code_map.md](research/code_map.md), [research/official_facts.md](research/official_facts.md), [DECISIONS.md](DECISIONS.md), [REVIEW-2026-10-13-3.md](REVIEW-2026-10-13-3.md)(3차 평가의 R 번호)
+**Spec:** [PRD.md](PRD.md) v1.1, [RESEARCH.md](RESEARCH.md), [research/code_map.md](research/code_map.md), [research/official_facts.md](research/official_facts.md), [DECISIONS.md](DECISIONS.md), [REVIEW-2026-10-13-3.md](REVIEW-2026-10-13-3.md)(3차 평가의 R 번호), [REVIEW-2026-10-13-4.md](REVIEW-2026-10-13-4.md)(4차 평가의 S 번호)
 
 ## Global Constraints
 
@@ -36,7 +36,7 @@
 2. **필터가 걸린 채 다른 범위로 이동했다가 돌아옴**: 숨은 필터가 남아 결과가 줄면 안 된다 → Task 9 `t_scope_change_resets_hidden_filters`.
 3. **데이터에 악성 문자열**(id에 따옴표, 이름에 `<img onerror>`, `javascript:` 링크): 실행되거나 링크로 열리면 안 된다 → Task 4 `t_malicious_data_is_inert`.
 4. **공지 기간 경계**(첫날·마지막 날·다음 날): 첫날과 마지막 날은 보이고 다음 날은 숨겨진다 → Task 7 `t_notice_boundaries`.
-5. **모바일에서 긴 상세**(그룹스터디룸 390×844): 스크롤하기 전에 공식 버튼과 대상·비용·인증 요약이 보여야 한다 → Task 8 `t_detail_above_fold_mobile`.
+5. **모바일에서 긴 상세**(그룹스터디룸·NICE·JSTOR, 390×844): 스크롤하기 전에 대화상자의 보이는 영역 안에 공식 버튼과 대상·비용·인증 요약(목록형이면 찾는 방법)이 보여야 하고, 예외는 그 바로 아래에 있어야 한다 → Task 8 `t_detail_above_fold_mobile`, `t_detail_order_exceptions_below_summary`.
 
 ---
 
@@ -99,7 +99,7 @@ python tools/perf.py                  # 성능·크기 측정(Task 6부터, 기�
 - [ ] Task 7: 최소 공지 기능 (P1-06)
 - [ ] Task 8: 상세의 마지막 한 걸음과 조건 표시 (P1-07 화면, P1-11)
 - [ ] Task 9: 필터·검색어 유지 (P1-09)
-- [ ] Task 10: 모바일 상단 검색 (P1-10)
+- [ ] Task 10: 상단 검색 (P1-10)
 - [ ] Task 11: 접근성 결함 수정 (P1-12)
 - [ ] Task 12: 화면 용어 정리 (P1-15)
 - [ ] Task 13: 배포 준비와 push 게이트 (P1-14)
@@ -116,7 +116,8 @@ python tools/perf.py                  # 성능·크기 측정(Task 6부터, 기�
 **Interfaces:**
 - Produces:
   - `datajs.load(path='data.js') -> dict`, `datajs.dump(obj) -> str`, `datajs.PREFIX = 'window.LIBRARY_GUIDE = '`
-  - `harness.test(stage=1, viewport='desktop')` 데코레이터, `harness.check(cond, msg)`, `harness.REGISTRY`
+  - `harness.test(stage=1, viewport='desktop', motion='reduce')` 데코레이터, `harness.check(cond, msg)`, `harness.REGISTRY`
+  - 실행기 기본 환경(S13): 시계 2026-10-15 10:00 Asia/Seoul 고정(PRD 부록 A 기준일. 날짜 테스트는 `page.clock`으로 다시 정함), 동작 줄이기(`reduced_motion='reduce'`. 기본 동작 검사는 `motion='no-preference'`로 따로)
   - `helpers.Site(page, base, errors)`: `open(hash_='')`, `search(q)`, `count()`, `result_ids()`, `scope(s)`, `category_tab(cid)`, `category_card(cid)`, `select(sel_id, value)`, `load_more()`, `card_count()`, `open_detail(rid)`, `open_any(rid)`, `detail_text()`, `official_href()`, `close_detail()`, `dialog_open()`, `book_case(key)`, `console_errors()`, `data()`, `query_value()`, `close_with_button()`, `open_from_hero(rid)`, `material_links()`, `category_card_count()`, `resource_filters_visible()`
   - `helpers.VIEWPORTS = {'desktop': {'width':1440,'height':900}, 'mobile': {'width':390,'height':844}}`
   - `smoke.py` CLI: `--stage N --browsers a,b --modes file,http --base URL -k 이름`
@@ -125,7 +126,7 @@ python tools/perf.py                  # 성능·크기 측정(Task 6부터, 기�
 
 ```bash
 python -m playwright install webkit
-printf '\n# 테스트 임시 산출물\n.tmp/\n' >> .gitignore
+printf '\n# 테스트 임시 산출물·파이썬 캐시(없으면 게이트의 작업 트리 검사가 늘 실패한다)\n.tmp/\n__pycache__/\n*.pyc\n' >> .gitignore
 ```
 
 - [ ] **Step 2: data.js 읽기·쓰기 도구 작성** — `tools/datajs.py`
@@ -193,9 +194,9 @@ class Fail(AssertionError):
     pass
 
 
-def test(stage=1, viewport='desktop'):
+def test(stage=1, viewport='desktop', motion='reduce'):
     def deco(fn):
-        REGISTRY.append({'fn': fn, 'stage': stage, 'viewport': viewport,
+        REGISTRY.append({'fn': fn, 'stage': stage, 'viewport': viewport, 'motion': motion,
                          'name': f'{fn.__module__}::{fn.__name__}'})
         return fn
     return deco
@@ -378,8 +379,10 @@ def main():
                 for t in tests:
                     total += 1
                     ctx = browser.new_context(viewport=VIEWPORTS[t['viewport']], locale='ko-KR',
-                                              timezone_id='Asia/Seoul')
+                                              timezone_id='Asia/Seoul', reduced_motion=t['motion'])
                     page = ctx.new_page()
+                    # PRD 부록 A 기준일로 시계를 고정한다. 날짜를 다루는 테스트는 page.clock으로 다시 정한다(S13)
+                    page.clock.set_fixed_time('2026-10-15T10:00:00+09:00')
                     errors = []
                     page.on('pageerror', lambda e, errs=errors: errs.append(str(e)))
                     page.on('console', lambda m, errs=errors: errs.append(f'{m.text} @ {m.location.get("url", "")}')
@@ -513,12 +516,13 @@ def q07_undergrad_filter(site):
     site.open()
     d = site.data()
     grad = sum(1 for s in d['services'] if s.get('audience') == 'grad')
+    grad_all = sum(1 for k in KINDS for r in d[k] if r.get('audience') == 'grad')  # 메뉴에도 대학원 대상이 있다(S20)
     site.scope('guide')
     check(site.count() == len(d['services']), f'가이드 {site.count()}')
     site.select('audience', 'undergrad')
     check(site.count() == len(d['services']) - grad, f'가이드+학부생 {site.count()}')
     site.scope('all')
-    check(site.count() == total(d) - grad, f'전체+학부생 {site.count()}')
+    check(site.count() == total(d) - grad_all, f'전체+학부생 {site.count()}')
 
 
 @test()
@@ -588,7 +592,7 @@ def d01_symbol_only_query(site):  # → Task 6
 
 
 @test()
-def d02_free_word(site):  # → Task 6
+def d02_free_word(site):  # → Task 5에서 삭제
     site.open()
     site.search('무료')
     check(site.count() == 89, f'v2: 무료 {site.count()}건')
@@ -626,11 +630,12 @@ def d06_category_tab_clears_query(site):  # → Task 9
 
 
 @test()
-def d07_official_button_below_fold(site):  # → Task 8
+def d07_official_button_at_end(site):  # → Task 8
+    # 1440×900에서는 버튼이 이미 화면 안(y≈861)이라 좌표로는 결함이 재현되지 않는다. 결함은 '맨 끝 배치'다(S20)
     site.open()
     site.open_any('stats')
-    top = site.page.locator('#detail-content a.primary').bounding_box()['y']
-    check(top > 900, f'v2: 공식 버튼이 화면 밖({top})')
+    at_end = site.page.evaluate("document.querySelector('#detail-content').lastElementChild.querySelector('a.primary') !== null")
+    check(at_end, 'v2: 공식 버튼이 상세의 맨 끝 블록에 있음')
 
 
 @test()
@@ -1149,7 +1154,7 @@ def main():
         print('data.js 일치' if same else 'data.js가 data/*.json과 다릅니다. python tools/build_data.py 로 다시 만드세요')
         sys.exit(0 if same else 1)
     target.write_text(text, encoding='utf-8', newline='\n')
-    print('data.js 생성', len(text), 'bytes')
+    print('data.js 생성', len(text.encode('utf-8')), 'bytes')
 
 
 if __name__ == '__main__':
@@ -1359,12 +1364,19 @@ git commit -m "v3①: 데이터를 data/*.json 원본으로 추출 (P1-03)" -m "
 """화면 안전: 데이터의 악성 문자열이 실행되거나 링크로 열리지 않는다."""
 from harness import check, test
 
+# facts·찾는 방법·대상·공지 경로도 미리 넣어 둔다. 뒤 Task가 이 필드를 화면에 그리기 시작하면 이 테스트가 자동으로 그 경로까지 검사한다(S11)
 EVIL = r"""(() => { let v; Object.defineProperty(window, 'LIBRARY_GUIDE', { configurable: true,
   get() { return v; },
   set(x) { x.services.unshift({ id: 'x"onmouseover="window.__xss=2', name: '<img src=x onerror="window.__xss=1">',
     question: 'q', category: 'start', description: '<b>d</b>', audience: 'all', channel: 'c', login: 'l', cost: 'c',
-    caution: 'c', steps: ['s'], source: 'javascript:window.__xss=3', keywords: 'evil', checkedAt: '2026-10-13',
-    recordKind: 'guide', materials: [{ label: 'm', url: 'http://insecure.example' }] }); v = x; } }); })();"""
+    caution: '<img src=x onerror="window.__xss=4">', steps: ['s'], source: 'javascript:window.__xss=3', keywords: 'evil',
+    checkedAt: '2026-10-13', recordKind: 'guide', materials: [{ label: 'm', url: 'http://insecure.example' }],
+    findHint: '<img src=x onerror="window.__xss=5">', eligibilityNote: '<img src=x onerror="window.__xss=6">',
+    facts: [{ text: '<img src=x onerror="window.__xss=7">', source: 'javascript:window.__xss=8', checkedAt: '2026-10-13' }] });
+    x.notices = [{ id: 'evil-notice', text: '<img src=x onerror="window.__xss=9">', link: 'javascript:window.__xss=10',
+      source: 'javascript:window.__xss=11', checkedAt: '2026-10-13', startsOn: '2026-10-01', endsOn: '2026-12-31',
+      taskIds: ['x"onmouseover="window.__xss=2'] }];
+    v = x; } }); })();"""
 
 
 @test()
@@ -1374,6 +1386,7 @@ def t_malicious_data_is_inert(site):
     site.search('evil')
     site.page.locator('#service-grid .service-card').first.hover()
     site.page.locator('#service-grid button').first.click()
+    site.page.wait_for_selector('#detail-dialog[open]')  # 상세가 실제로 열린 상태에서 검사한다(S11)
     site.page.wait_for_timeout(200)
     check(site.page.evaluate('window.__xss') is None, f'스크립트가 실행됨: {site.page.evaluate("window.__xss")}')
     hrefs = site.page.eval_on_selector_all('a[href]', 'els => els.map(e => e.getAttribute("href"))')
@@ -1586,8 +1599,11 @@ def t_content_spaces(site):
     group_loc = texts(d, 'group', 'location')
     check('201~210호' in group_loc and '층' not in group_loc, f'group 위치는 호실만(층은 미확인): {group_loc}')
     check(any(f['source'].endswith('#/guide/hoo/floor') for f in facts(d, 'maker', 'location')), 'maker 층의 출처는 층별안내')
-    check('미소장' in texts(d, 'delivery'), '책나래: 대상 자료 범위 차이 없음')
+    check('미소장' in texts(d, 'delivery') and '확인하지 못했' in rec(d, 'delivery')['caution'], '책나래: 범위 차이·미확인 표시 없음')
     check('3월' in texts(d, 'locker') and len(facts(d, 'locker')) >= 3, '사물함: 신청 시기·경로 없음')
+    check('미확인' in (rec(d, 'seat').get('eligibilityNote') or ''), '일반열람실: 대상 미확인 표시 없음(PRD 2장 3번)')
+    check('09:00~20:00' in texts(d, 'group', 'hours') and '30분' in texts(d, 'group'), '그룹스터디룸: 운영시간·예약 방법 없음')
+    check('자동 취소' in texts(d, 'maker'), '메이커: 예약 방법 없음')
     for rid, page in (('group', 'studyroom'), ('maker', 'makerstudio'), ('carrel', 'carrel'), ('seat', 'readingroom')):
         check(rec(d, rid)['source'] == SRC + '#/service/facility/' + page, f'{rid}: 공식 링크가 개별 시설 페이지가 아님')
 
@@ -1598,6 +1614,9 @@ def t_content_remote_and_resources(site):
     d = site.data()
     check('무료' not in rec(d, 'remote')['keywords'], 'remote 키워드에 무료')
     check(facts(d, 'remote', 'auth'), 'remote: 인증 예외 요약 없음')
+    check('WSJ' in texts(d, 'culture', 'auth'), 'culture: 고친 WSJ 문구의 근거 없음')
+    for rid in ('er-007', 'er-010', 'er-035'):
+        check('로그인' in texts(d, rid, 'auth'), f'{rid}: 새 주의 문구의 로그인 근거 없음')
     check('openlink' in texts(d, 'remote'), 'remote: 공식 이용법(openlink) 없음')
     for rid, word in (('er-085', '학내 IP'), ('er-057', '초대링크'), ('er-090', '로그인 후'), ('er-093', '학교 이메일'),
                       ('er-094', '학교 이메일'), ('er-095', '학교 이메일'), ('er-096', '학교 이메일')):
@@ -1628,10 +1647,14 @@ def t_book_return_guide(site):
     check(g['source'] == SRC + '#/service/circulation/return', f'반납 source {g["source"]}')
     check(g['category'] == 'books', '반납 분류')
     check('제증명' in texts(d, 'book-return'), '연체 시 제증명 발급 제한 없음')
+    check('확인하지 못함' in g['cost'], f'반납 비용 칸이 연체료를 단정함: {g["cost"]}')
+    check('반납 처리' in g['caution'] and '자동반납기' in g['caution'], '반납함 처리 시점·자동반납기 위치 미확인 표시 없음')
     check('book-return' in d['related'].get('loan', []), 'loan → book-return 관련 안내 없음')
 ```
 
-`tests/test_regression.py`의 `d05_book_return_missing`을 아래로 바꾼다(기대값 전환).
+`tests/test_regression.py`에서 `d02_free_word`를 **삭제**한다. 이 작업이 "무료"가 든 키워드와 공통 주의 문구를 바꾸므로 89건 고정값이 깨진다. "무료" 0건 검사는 Task 6의 `t_free_word_zero`가 맡는다(S15).
+
+`d05_book_return_missing`은 아래로 바꾼다(기대값 전환).
 
 ```python
 @test()
@@ -1695,7 +1718,11 @@ SERVICES = {
         'source': SRC + '#/service/facility/studyroom',
         'facts': [
             fact('중앙디지털도서관 201~210호', '#/service/facility/studyroom', 'location'),
-            fact('이용 대상 재학생·교직원. 1일 3시간, 7일 전부터 당일까지 예약', '#/service/facility/studyroom'),
+            fact('운영시간: 중앙디지털도서관과 같음(학기 중 평일 09:00~20:00, 토 09:00~13:00 / 방학 중 평일 09:00~18:00)',
+                 '#/service/facility/studyroom', 'hours'),
+            fact('이용 대상 재학생·교직원, 1일 3시간', '#/service/facility/studyroom'),
+            fact('예약: 모바일 앱 로그인 후 7일 전부터 당일까지, 30분 단위. 예약 20분 뒤까지 입실하지 않으면 자동 취소, '
+                 '한 학기 3회 이상 예약 부도 시 그 학기 사용 제한', '#/service/facility/studyroom'),
         ],
     },
     'maker': {
@@ -1705,6 +1732,8 @@ SERVICES = {
             fact('중앙도서관 2층', '#/guide/hoo/floor', 'location'),
             fact('평일 09:00~18:00, 1일 3시간', '#/service/facility/makerstudio', 'hours'),
             fact('이용 대상 재학생·교직원', '#/service/facility/makerstudio'),
+            fact('예약: 모바일 앱 로그인 후 7일 전부터 당일까지. 예약 10분 뒤까지 입실하지 않으면 자동 취소, '
+                 '한 학기 3회 이상 예약 부도 시 그 학기 사용 제한', '#/service/facility/makerstudio'),
         ],
     },
     'carrel': {
@@ -1717,10 +1746,12 @@ SERVICES = {
         ],
     },
     'seat': {
+        'eligibilityNote': '대상 미확인',
         'source': SRC + '#/service/facility/readingroom',
         'facts': [
             fact('중앙도서관 1층 PC zone, 2층 1열람실, 3층 2·3·4열람실, 교대분관 3층 열람실', '#/service/facility/readingroom', 'location'),
-            fact('좌석발급시스템으로 배정받아 이용, 1회 4시간(1회 연장 가능)', '#/service/facility/readingroom'),
+            fact('좌석발급시스템으로 배정받아 이용. 최초 4시간, 1일 1회 4시간 연장', '#/service/facility/readingroom'),
+            fact('일반열람실 안내에 이용 대상 문구가 없음(대상 미확인)', '#/service/facility/readingroom'),
         ],
     },
     'locker': {
@@ -1736,7 +1767,8 @@ SERVICES = {
     'delivery': {
         'eligibilityNote': '도서관 방문이 어려운 장애인 이용자(담당자 승인 후)',
         'caution': '모든 학생에게 제공되는 일반 배송 서비스는 아닙니다. 이용자격과 담당자 승인 절차를 확인하세요. '
-                   '대상 자료가 서비스 페이지에는 "도서관 자료", 장애학생 안내에는 "미소장 자료"로 다르게 적혀 있습니다.',
+                   '대상 자료가 서비스 페이지에는 "도서관 자료", 장애학생 안내에는 "미소장 자료"로 다르게 적혀 있고, '
+                   '어느 범위가 맞는지는 확인하지 못했습니다.',
         'facts': [
             fact('도서관 방문이 어려운 장애인 이용자에게 도서관 자료를 우체국 택배로 무료 제공. 도서관 담당자 승인 후 이용', '#/service/booknarae'),
             fact('장애학생 안내에는 책나래가 "제주대학교 도서관 미소장 자료" 대상으로 적혀 있음(소장 자료는 장애학생 One Stop 서비스)',
@@ -1755,6 +1787,7 @@ SERVICES = {
     },
     'culture': {
         'caution': 'WSJ는 회원가입 후 이용하며 학내 IP 대역에서만 등록할 수 있다고 안내됩니다. Naxos는 동시 이용자수 제한이 있습니다.',
+        'facts': [fact('WSJ: 회원가입 후 이용, 학내 IP 대역에서만 등록 가능', '#/search/er', 'auth')],
     },
     'mobile': {
         'caution': '앱 이름은 제주대학교 모바일 도서관입니다. 2026년 9월 iOS 27 기기에서 앱 호환성 오류 공지가 있었으니, '
@@ -1774,15 +1807,18 @@ SERVICES = {
 
 CAS_AUTH = [fact('계정은 교내에서 학교 이메일(@jejunu.ac.kr)로 생성', '#/search/er', 'auth')]
 RESOURCES = {
-    'er-007': {'caution': '표절 검사 서비스입니다. 도서관 홈페이지 로그인 후 이용하도록 안내됩니다. 검사 결과를 어떻게 제출하는지는 과제 안내를 따르세요.'},
-    'er-010': {'caution': '공무원 시험 동영상 강의 서비스입니다. 도서관 홈페이지 로그인 후 이용하도록 안내됩니다. 들을 수 있는 강의 범위는 공식 안내에서 확인하세요.'},
+    'er-007': {'caution': '표절 검사 서비스입니다. 도서관 홈페이지 로그인 후 이용하도록 안내됩니다. 검사 결과를 어떻게 제출하는지는 과제 안내를 따르세요.',
+               'facts': [fact('이용방법: 도서관 홈페이지 로그인 후 사용', '#/search/er', 'auth')]},
+    'er-010': {'caution': '공무원 시험 동영상 강의 서비스입니다. 도서관 홈페이지 로그인 후 이용하도록 안내됩니다. 들을 수 있는 강의 범위는 공식 안내에서 확인하세요.',
+               'facts': [fact('도서관 홈페이지 로그인 후 이용 가능', '#/search/er', 'auth')]},
     'er-017': {'caution': '도서관이 구독하는 저널을 알파벳순으로 찾는 도구입니다. 저널이 목록에 있어도 구독 연도에 따라 원문을 볼 수 있는 범위가 다를 수 있습니다.'},
     'er-035': {'caution': '참고문헌 관리 프로그램입니다. 도서관 홈페이지 로그인 후 설치 파일을 받아 개인 PC에 설치하도록 안내되며, '
-                          '설치 순서(파일 저장 → 압축 해제 → 설치)를 지켜야 합니다.'},
+                          '설치 순서(파일 저장 → 압축 해제 → 설치)를 지켜야 합니다.',
+               'facts': [fact('로그인 후 설치 파일을 받아 개인 PC에 설치한 뒤 이용', '#/search/er', 'auth')]},
     'er-037': {'keywords': '공개 오픈액세스 의학 저널'},
     'er-098': {'keywords': '예스24 yes24 크레마클럽 신간 전자책 ebook'},
     'er-085': {'facts': [fact('회원가입 후 이용, 학내 IP 대역에서만 등록 가능', '#/search/er', 'auth')]},
-    'er-057': {'facts': [fact('개인 ID 등록 시 KIS-LINE 기관계정 대신 회사직원 초대링크 입력. 초대링크 문의 research@jejunu.ac.kr, 064-754-2229~30',
+    'er-057': {'facts': [fact('개인 ID 등록 때 기관계정 대신 회사직원 초대링크 입력(문의 research@jejunu.ac.kr, 064-754-2229~30)',
                               '#/search/er', 'auth')]},
     'er-090': {'facts': [fact('개인별 ID 등록. 이용을 위한 ID/PW는 도서관 홈페이지 로그인 후 확인', '#/search/er', 'auth')]},
     'er-093': {'name': 'CAS SciFinder Trial', 'facts': CAS_AUTH},
@@ -1800,9 +1836,10 @@ BOOK_RETURN = {
     'audience': 'all',
     'channel': '자동반납기 · 대출대 · 무인반납함',
     'login': '현장 반납',
-    'cost': '연체료 안내 없음 · 연체 시 대출 정지',
+    'cost': '연체료 금액은 공식 안내에서 확인하지 못함',
     'caution': '딸림자료가 있거나 예약된 책은 대출대에 반납해야 합니다. 연체하면 연체일수만큼 대출이 정지되고 증명서 발급도 제한됩니다. '
-               '다른 분관 책을 어디서 반납하는지는 공식 안내에서 확인하지 못했습니다.',
+               '무인반납함에 넣은 책이 언제 반납 처리되는지, 자동반납기가 어디 있는지, 다른 분관 책을 어디서 반납하는지는 '
+               '공식 안내에서 확인하지 못했습니다.',
     'steps': ['자동반납기에서 직접 반납 처리하고 확인증 받기',
               '딸림자료·예약된 책은 대출대에 반납하고 처리 상황 확인',
               '업무시간이 끝나면 중앙도서관 1층 로비 또는 중앙디지털도서관 정문 앞 무인반납함에 넣기'],
@@ -1856,7 +1893,7 @@ print('콘텐츠 수정 완료: 가이드', len(services), '· 자료', len(reso
 Run: `python .tmp/apply_content.py`
 Expected: `콘텐츠 수정 완료: 가이드 48 · 자료 98`
 
-이 스크립트는 2026-10-13 계획 단계에서 v2 데이터 사본에 미리 적용해 확인했다: 콘텐츠 테스트·데이터 검사 규칙 통과, 대표 검색 수치(q04) 그대로, Task 6 전에도 "책 반납"의 2위가 book-return.
+이 스크립트는 2026-10-13 계획 단계에서 v2 데이터 사본에 미리 적용해 확인했다: 콘텐츠 테스트·데이터 검사 규칙 통과, 대표 검색 수치(q04) 그대로, Task 6 전에도 "책 반납"의 2위가 book-return. 그룹스터디룸·메이커스튜디오의 운영시간·예약 사실은 4차 평가 뒤 시설 페이지 원문에서 확인했다(official_facts 8장).
 
 - [ ] **Step 3: check_data에 facts·주장 단어 검사 추가** — `run_checks`의 `for r in recs:` 반복 안에 추가
 
@@ -1897,6 +1934,8 @@ git commit -m "v3①: 공식 사실로 콘텐츠 수정·반납 안내 추가 (P
 - Consumes: `window.LIBRARY_GUIDE.commonText`
 - Produces:
   - `LG.normalize(v) -> string`, `LG.tokenize(q) -> string[]`, `LG.FREE_WORDS = ['무료','무제한']`
+  - `LG.SEARCH_FIELDS = {guide: [...], resource: [...], menu: [...]}`(PRD 6장 ① 표, K9)
+  - `state.query`는 입력창 원문(공백 포함)이다. 공백·기호만 있으면 안내 화면, 비어 있으면 처음 목록(S3)
   - `LG.buildIndex(records, commonText) -> Map<id, {nameNorm, fields:string[], generated:string[]}>`
   - `LG.matches(entry, tokens) -> boolean`, `LG.rankTier(entry, tokens) -> 0|1|2`, `LG.search(records, index, tokens) -> records`
   - `tools/normalize.normalize(s) -> str`
@@ -1942,7 +1981,7 @@ def t_js_normalize_vectors(site):
 @test()
 def t_symbol_only_query(site):
     site.open()
-    for q in ('!!!', '???', '“”'):
+    for q in ('!!!', '???', '“”', '   '):
         site.search(q)
         check(site.page.locator('#empty').is_visible(), f'{q}: 안내 화면 없음')
         check('검색어를 입력하세요' in site.page.inner_text('#empty'), f'{q}: 안내 문구 없음')
@@ -1989,9 +2028,34 @@ def t_perf_marks(site):
     check(site.page.evaluate("performance.getEntriesByName('first-render').length") == 1, 'first-render 표시 없음')
     site.search('통계')
     check(site.page.evaluate("performance.getEntriesByName('search-rendered').length") >= 1, 'search-rendered 표시 없음')
+
+
+@test()
+def t_cleared_query_shows_all(site):
+    site.open()
+    d = site.data()
+    site.search('통계')
+    site.search('')
+    check(site.count() == sum(len(d[k]) for k in ('services', 'resources', 'directory')), '입력을 지웠는데 처음 목록이 아님')
+
+
+# 메뉴는 단계 문장을 검색하지 않고, 가이드는 검색한다(PRD 6장 ① 표, S2)
+STEP_FIXTURE = r"""(() => { let v; Object.defineProperty(window, 'LIBRARY_GUIDE', { configurable: true, get() { return v; },
+  set(x) { x.directory.push(Object.assign({}, x.directory[0], { id: 'menu-fixture', steps: ['zzmenustepzz'] }));
+           x.services.push(Object.assign({}, x.services[0], { id: 'guide-fixture', steps: ['zzguidestepzz'] })); v = x; } }); })();"""
+
+
+@test()
+def t_search_fields_by_kind(site):
+    site.page.add_init_script(STEP_FIXTURE)
+    site.open()
+    site.search('zzmenustepzz')
+    check(site.count() == 0, '메뉴의 단계 문장이 검색됨')
+    site.search('zzguidestepzz')
+    check('guide-fixture' in site.result_ids(), '가이드의 단계 문장은 검색돼야 함')
 ```
 
-`tests/test_regression.py`에서 `d01`~`d04` 네 함수를 **삭제**한다(위 테스트로 대체).
+`tests/test_regression.py`에서 `d01`·`d03`·`d04` 세 함수를 **삭제**한다(위 테스트로 대체. `d02`는 Task 5에서 이미 지웠다).
 
 Run: `python tests/smoke.py --stage 1 -k test_search`
 Expected: 여러 `FAIL`(LG.normalize 없음 등)
@@ -2006,17 +2070,27 @@ Expected: 여러 `FAIL`(LG.normalize 없음 등)
   // 이 단어는 근거가 확인된 생성 키워드로만 일치(K10). ①에는 생성 키워드가 없다.
   LG.FREE_WORDS = ['무료', '무제한'];
 
-  // ① 검색 색인: v2 필드 이름 기준(PRD 6장 ① 표). 공통 문장은 색인에서만 뺀다.
+  // ① 검색 필드: 종류마다 다르다(PRD 6장 ① 표, K9). 메뉴는 질문·단계를 검색하지 않는다.
+  LG.SEARCH_FIELDS = {
+    guide: ['name', 'question', 'description', 'keywords', 'caution', 'steps'],
+    resource: ['name', 'description', 'officialDescription', 'keywords', 'subject', 'sourceType', 'caution', 'steps'],
+    menu: ['name', 'description', 'keywords', 'menuGroup', 'menuSubgroup', 'caution']
+  };
+
+  // ① 검색 색인. 공통 문장(화면 상수 목록과 똑같은 문장·배열 원소)은 색인에서만 뺀다.
   LG.buildIndex = (records, commonText = {}) => {
     const common = new Set([...(commonText.caution || []), ...(commonText.steps || []), ...(commonText.question || [])]);
     const suffix = commonText.keywordSuffix || '';
     const index = new Map();
     for (const r of records) {
-      let keywords = String(r.keywords || '');
-      if (r.recordKind === 'menu' && suffix && keywords.endsWith(suffix)) keywords = keywords.slice(0, -suffix.length);
-      const raw = [r.name, keywords, common.has(r.question) ? '' : r.question, r.description, r.officialDescription,
-        r.subject, r.sourceType, r.menuGroup, r.menuSubgroup, common.has(r.caution) ? '' : r.caution,
-        ...(r.steps || []).filter(step => !common.has(step))];
+      const raw = [];
+      for (const field of LG.SEARCH_FIELDS[r.recordKind] || LG.SEARCH_FIELDS.guide) {
+        let value = r[field];
+        if (field === 'keywords' && r.recordKind === 'menu' && suffix && String(value || '').endsWith(suffix)) {
+          value = String(value).slice(0, -suffix.length);
+        }
+        for (const v of Array.isArray(value) ? value : [value]) if (v && !common.has(v)) raw.push(v);
+      }
       index.set(r.id, { nameNorm: LG.normalize(r.name), fields: raw.map(LG.normalize).filter(Boolean), generated: [] });
     }
     return index;
@@ -2045,7 +2119,7 @@ Expected: 여러 `FAIL`(LG.normalize 없음 등)
 
 - [ ] **Step 4: app.js 검색을 lib.js로 교체**
 
-1. `const normalized = …` 줄을 삭제하고, `const records = …` 아래에 추가:
+1. `const normalized = …` 줄을 삭제하고, `const kindName = …` 줄 **아래**에 추가한다. 아래 줄은 `$()`를 부르므로 `const $` 선언보다 뒤여야 한다(앞에 두면 선언 전 접근 오류로 화면 코드 전체가 멈춘다, S1).
 
 ```js
   const searchIndex = window.LG.buildIndex(records, window.LIBRARY_GUIDE.commonText);
@@ -2057,7 +2131,7 @@ Expected: 여러 `FAIL`(LG.normalize 없음 등)
 
 ```js
     const tokens = window.LG.tokenize(state.query);
-    const invalidQuery = state.query.trim() !== '' && tokens.length === 0;
+    const invalidQuery = state.query !== '' && tokens.length === 0;  // 공백·기호만 입력(S3)
     currentMatches = invalidQuery ? [] : window.LG.search(records.filter(matchesFilters), searchIndex, tokens);
 ```
 
@@ -2079,12 +2153,14 @@ Expected: 여러 `FAIL`(LG.normalize 없음 등)
 
 ```js
   $('#search-input').addEventListener('input', e => {
-    state.query = e.target.value.trim();
+    state.query = e.target.value;  // 원문 그대로(공백만 입력도 구분, S3)
     state.limit = 12;
     render();
     performance.mark('search-rendered');
   });
 ```
+
+5. submit 처리기의 `state.query = $('#search-input').value.trim();`에서 `.trim()`을 뺀다. `render()`의 결과 수 문구 `(state.query ? ' · “' + state.query + '”' : '')`는 `(state.query.trim() ? ' · “' + state.query.trim() + '”' : '')`로 바꾼다.
 
 - [ ] **Step 5: 붙여 쓰는 말 키워드 보강** — `data/services.json`의 `overseas.keywords` 앞에 `"영어 논문 "`을 붙인다.
 
@@ -2171,25 +2247,24 @@ git commit -m "v3①: 검색 기본 정비 (P1-08)" -m "단어별 정규화·빈
 
 **Files:**
 - Create: `tests/test_notice.py`
-- Modify: `data/notices.json`, `js/lib.js`, `js/app.js`, `index.html`, `styles.css`, `tests/check_data.py`
+- Modify: `data/notices.json`, `js/lib.js`, `js/app.js`, `index.html`, `styles.css`, `tests/check_data.py`, `tests/helpers.py`
 
 **Interfaces:**
 - Produces:
   - `LG.todayLocal(date = new Date()) -> 'YYYY-MM-DD'`, `LG.isActiveOn(item, today) -> boolean`, `LG.activeNotices(notices, today, taskId?) -> notice[]`
   - `notices.json` 항목: `{id, text, link, source, checkedAt, startsOn, endsOn, taskIds}`
   - DOM: `#notices`(홈 공지 영역), 상세의 `.detail-notices`
+  - `app.js`: `todayNow()`(그릴 때마다 오늘 날짜를 다시 계산, S14), `noticeHtml(n)`, `renderNotices()`(`render()` 맨 앞에서 호출)
+  - `tests/helpers.py`: `TEST_NOTICE`(테스트용 공지 하나), `notices_fixture(items) -> str`(notices만 바꾸는 초기화 스크립트). Task 10도 쓴다
 
 - [ ] **Step 1: 실패하는 공지 테스트** — `tests/test_notice.py`
 
 ```python
 """공지: 기간 안에만 보이고, 첫날·마지막 날 포함, 다음 날 숨김. 테스트용 공지(픽스처)를 주입한다(K2)."""
 from harness import check, test
+from helpers import TEST_NOTICE, notices_fixture
 
-FIXTURE = r"""(() => { let v; Object.defineProperty(window, 'LIBRARY_GUIDE', { configurable: true,
-  get() { return v; },
-  set(x) { x.notices = [{ id: 'fixture-exam', text: '테스트 공지: 열람실 24시간 개방', link: 'https://lib.jejunu.ac.kr/#/bbs/notice/6789',
-    source: 'https://lib.jejunu.ac.kr/#/bbs/notice/6789', checkedAt: '2026-10-13', startsOn: '2026-10-07', endsOn: '2026-10-26',
-    taskIds: ['hours'] }]; v = x; } }); })();"""
+FIXTURE = notices_fixture([TEST_NOTICE])
 
 
 def at(site, day):
@@ -2222,6 +2297,31 @@ def t_today_local_midnight(site):
     site.page.clock.set_fixed_time('2026-10-27T00:30:00+09:00')
     site.open()
     check(site.page.evaluate('window.LG.todayLocal()') == '2026-10-27', '한국 시간 자정 직후 날짜가 전날로 계산됨')
+
+
+@test()
+def t_notice_rechecked_after_midnight(site):
+    site.page.clock.set_fixed_time('2026-10-26T23:59:00+09:00')
+    site.page.add_init_script(FIXTURE)
+    site.open()
+    check(site.page.locator('#notices').is_visible(), '종료일 밤에는 보여야 함')
+    site.page.clock.set_fixed_time('2026-10-27T00:01:00+09:00')
+    site.search('통계')  # 다시 그리기
+    check(not site.page.locator('#notices').is_visible(), '자정을 넘긴 뒤 다시 그렸는데 공지가 남음(S14)')
+```
+
+`tests/helpers.py` 맨 위 import에 `import json`을 더하고, 파일 끝에 공지 픽스처 도우미를 추가한다(Task 10도 쓴다).
+
+```python
+TEST_NOTICE = {'id': 'fixture-exam', 'text': '테스트 공지: 열람실 24시간 개방',
+               'link': 'https://lib.jejunu.ac.kr/#/bbs/notice/6789', 'source': 'https://lib.jejunu.ac.kr/#/bbs/notice/6789',
+               'checkedAt': '2026-10-13', 'startsOn': '2026-10-07', 'endsOn': '2026-10-26', 'taskIds': ['hours']}
+
+
+def notices_fixture(items):
+    """window.LIBRARY_GUIDE 대입을 가로채 notices만 바꾸는 초기화 스크립트(file://에서도 동작)."""
+    return ("(() => { let v; Object.defineProperty(window, 'LIBRARY_GUIDE', { configurable: true, get() { return v; },"
+            " set(x) { x.notices = " + json.dumps(items, ensure_ascii=False) + "; v = x; } }); })();")
 ```
 
 Run: `python tests/smoke.py --stage 1 -k test_notice`
@@ -2248,22 +2348,27 @@ Expected: `FAIL`(#notices 없음)
 `js/app.js`의 `$('#checked-at').textContent = …` 아래에 추가:
 
 ```js
-  const today = window.LG.todayLocal();
+  // 오늘 날짜는 그릴 때마다 다시 계산한다(열어 둔 채 자정을 넘겨도 다음 조작 때 맞게, S14)
+  const todayNow = () => window.LG.todayLocal();
   const noticeHtml = n => '<li><strong>' + escape(n.text) + '</strong> <span class="notice-period">'
     + escape(n.startsOn.replaceAll('-', '.')) + ' ~ ' + escape(n.endsOn.replaceAll('-', '.')) + '</span>'
     + (safeUrl(n.link) ? ' <a href="' + escape(safeUrl(n.link)) + '" target="_blank" rel="noopener noreferrer">공지 보기 ↗</a>' : '')
     + '<span class="notice-source">확인일 ' + escape(n.checkedAt.replaceAll('-', '.')) + '</span></li>';
-  const homeNotices = window.LG.activeNotices(window.LIBRARY_GUIDE.notices, today);
-  if (homeNotices.length) {
-    $('#notices').innerHTML = '<h2 class="sr-only">지금 이 시기 공지</h2><ul>' + homeNotices.map(noticeHtml).join('') + '</ul>';
-    $('#notices').hidden = false;
+
+  function renderNotices() {
+    const items = window.LG.activeNotices(window.LIBRARY_GUIDE.notices, todayNow());
+    $('#notices').innerHTML = items.length
+      ? '<h2 class="sr-only">지금 이 시기 공지</h2><ul>' + items.map(noticeHtml).join('') + '</ul>' : '';
+    $('#notices').hidden = items.length === 0;
   }
 ```
+
+`render()`의 맨 앞에 `renderNotices();`를 넣는다.
 
 `openDetail()`의 `$('#detail-content').innerHTML = …` 문자열에서 `<p class="detail-summary">` 바로 앞에 끼운다:
 
 ```js
-      + (() => { const ns = window.LG.activeNotices(window.LIBRARY_GUIDE.notices, today, id);
+      + (() => { const ns = window.LG.activeNotices(window.LIBRARY_GUIDE.notices, todayNow(), id);
         return ns.length ? '<div class="detail-notices"><h3>지금 이 시기</h3><ul>' + ns.map(noticeHtml).join('') + '</ul></div>' : ''; })()
 ```
 
@@ -2353,38 +2458,77 @@ git commit -m "v3①: 최소 공지 기능 (P1-06)" -m "기기 로컬 날짜·�
 - Modify: `js/app.js`(`card`, `openDetail`), `styles.css`, `data/services.json`(목록형 가이드 `findHint`), `tests/test_regression.py`, `tests/check_data.py`
 
 **Interfaces:**
-- Consumes: `facts`, `eligibilityNote`, `costNote`, `findHint`, `LG.activeNotices`
-- Produces: 상세 DOM 계약 — `#detail-content a.primary[data-official]`(공식 버튼, 위쪽), `.find-hint`, `dl.detail-conditions`(대상·비용·인증), `.detail-location`, `.detail-disclaimer`(1개)
+- Consumes: `facts`, `eligibilityNote`, `costNote`, `findHint`(이 작업에서 추가), `LG.activeNotices`, `todayNow()`·`noticeHtml()`(Task 7)
+- Produces: 상세 DOM 계약. 위에서 아래 순서로(PRD P1-07·K21: 요약 바로 아래에 나머지 예외, 접지 않음):
+  1. `h2#detail-title`, `.detail-question`
+  2. `.detail-top`: `a.primary[data-official]`(공식 버튼), `.find-hint`(목록형일 때)
+  3. `dl.detail-conditions`(대상·비용·인증·로그인), `.detail-channel`(이용 경로 한 줄, S6)
+  4. `.detail-notices`(지금 이 시기, 있을 때)
+  5. `.detail-exceptions`: "이용 전 확인할 점" = caution + 위치가 아닌 사실 전부(인증·시간 포함, 사실마다 확인일·출처 링크) `ul.detail-facts-list`
+  6. `.detail-location`(위치 사실, 있을 때)
+  7. `.detail-summary`, (자료) `.official-excerpt`, `ol.detail-steps`
+  8. `.material-list`, `.related`
+  9. `.detail-disclaimer`(1개)
+- 대상 칸의 기본값은 "공식 안내에서 확인"이다. 학부/대학원 분류(`audience`)를 이용 자격처럼 쓰지 않는다(R10, S6).
 
 - [ ] **Step 1: 실패하는 상세 테스트** — `tests/test_detail.py`
 
 ```python
-"""상세: 공식 버튼과 조건이 위쪽, 찾는 방법, 위치, 면책 1회."""
+"""상세: 공식 버튼과 조건이 대화상자의 보이는 첫 화면 안, 예외는 요약 바로 아래, 찾는 방법, 위치, 면책 1회."""
 from harness import check, test
 
+# 요소가 화면 높이와 대화상자의 보이는 영역 양쪽 안에 있는지(대화상자는 높이 제한 + 자체 스크롤이 있다, S7)
+VISIBLE = """sel => { const el = document.querySelector(sel); const dlg = document.querySelector('#detail-dialog');
+  if (!el || !dlg) return false; const r = el.getBoundingClientRect(); const d = dlg.getBoundingClientRect();
+  return r.height > 0 && r.top >= Math.max(0, d.top) && r.bottom <= Math.min(window.innerHeight, d.bottom); }"""
 
-def above_fold(site, selector, height):
-    box = site.page.locator(selector).first.bounding_box()
-    return box is not None and box['y'] + box['height'] <= height
+ORDER = """() => { const els = ['.detail-top', '.detail-conditions', '.detail-exceptions', '.detail-steps']
+    .map(s => document.querySelector('#detail-content ' + s));
+  if (els.some(e => !e)) return 'missing ' + els.map(e => !!e).join(',');
+  for (let i = 1; i < els.length; i++) {
+    if (!(els[i - 1].compareDocumentPosition(els[i]) & Node.DOCUMENT_POSITION_FOLLOWING)) return 'order ' + i;
+  }
+  return 'ok'; }"""
+
+
+def visible_in_dialog(site, selector):
+    return site.page.evaluate(VISIBLE, selector)
 
 
 @test()
 def t_official_button_above_fold_desktop(site):
     site.open()
-    for rid in ('stats', 'group', 'er-044'):
+    for rid in ('stats', 'group', 'er-044', 'remote'):
         site.open_any(rid)
-        check(above_fold(site, '#detail-content a.primary[data-official]', 900), f'{rid}: 공식 버튼이 첫 화면 밖')
+        check(visible_in_dialog(site, '#detail-content a.primary[data-official]'), f'{rid}: 공식 버튼이 첫 화면 밖')
         site.close_detail()
 
 
 @test(viewport='mobile')
 def t_detail_above_fold_mobile(site):
     site.open()
+    for rid, must in (('group', '재학생·교직원'), ('maker', '재학생·교직원'), ('locker', '재학생'), ('delivery', '장애인'),
+                      ('er-057', '초대링크'), ('er-085', '학내 IP')):
+        site.open_any(rid)
+        for sel in ('#detail-content a.primary[data-official]', '.detail-conditions'):
+            check(visible_in_dialog(site, sel), f'{rid} {sel}: 390×844 첫 화면 밖')
+        check(must in site.page.inner_text('.detail-conditions'), f'{rid}: 조건 요약에 "{must}" 없음')
+        site.close_detail()
+    for rid in ('stats', 'er-044'):
+        site.open_any(rid)
+        check(visible_in_dialog(site, '.find-hint'), f'{rid}: 찾는 방법이 첫 화면 밖')
+        site.close_detail()
+
+
+@test()
+def t_detail_order_exceptions_below_summary(site):
+    site.open()
     site.open_any('group')
-    for sel in ('#detail-content a.primary[data-official]', '.detail-conditions'):
-        check(above_fold(site, sel, 844), f'{sel}: 390×844 첫 화면 밖')
-    text = site.page.inner_text('.detail-conditions')
-    check('재학생·교직원' in text, f'대상 요약 없음: {text}')
+    order = site.page.evaluate(ORDER)
+    check(order == 'ok', f'상세 순서(공식 버튼 → 조건 → 확인할 점 → 이용 방법)가 아님: {order}')
+    check(site.page.locator('#detail-content details').count() == 0, '예외를 접어 두면 안 됨(K21)')
+    text = site.page.inner_text('.detail-exceptions')
+    check('30분' in text and '자동 취소' in text, f'예약 규칙이 확인할 점에 없음: {text[:80]}')
 
 
 @test()
@@ -2399,20 +2543,35 @@ def t_find_hint_for_list_links(site):
 
 
 @test()
-def t_location_and_disclaimer_once(site):
+def t_location_channel_and_disclaimer_once(site):
     site.open()
     site.open_any('print')
     loc = site.page.inner_text('.detail-location')
     check('3층 3열람실' in loc and '미디어라운지' in loc, f'위치 {loc}')
     check(site.page.locator('#detail-content .detail-disclaimer').count() == 1, '면책 문구 1개가 아님')
     check(site.page.locator('#detail-content .kind-note, #detail-content .material-note').count() == 0, '중복 면책 남음')
+    site.close_detail()
+    site.open_any('group')
+    check('키오스크' in site.page.inner_text('.detail-channel'), '이용 경로(앱·키오스크)가 상세에 없음')
 
 
 @test()
-def t_auth_note_for_wsj(site):
+def t_auth_fact_with_source(site):
     site.open()
     site.open_any('er-085')
-    check('학내 IP' in site.page.inner_text('.detail-conditions'), 'WSJ 인증 예외 없음')
+    check('학내 IP' in site.page.inner_text('.detail-conditions'), 'WSJ 인증 예외가 조건 요약에 없음')
+    item = site.page.locator('.detail-exceptions li', has_text='학내 IP')
+    check(item.count() == 1 and item.locator('a').count() == 1, '인증 사실의 출처 링크가 확인할 점에 없음')
+
+
+@test()
+def t_eligibility_default_and_unknown(site):
+    site.open()
+    site.open_any('thesis-submit')  # 대학원 대상 가이드지만 eligibilityNote가 없다
+    check('공식 안내에서 확인' in site.page.inner_text('.detail-conditions'), '대상 기본값이 "공식 안내에서 확인"이 아님')
+    site.close_detail()
+    site.open_any('seat')
+    check('미확인' in site.page.inner_text('.detail-conditions'), '일반열람실 대상 미확인 표시 없음')
 
 
 @test()
@@ -2423,7 +2582,7 @@ def t_card_condition_badges(site):
     check(site.page.locator('.badge', has_text='세부 조건 확인').count() == 0, "'세부 조건 확인' 배지 남음")
 ```
 
-`tests/test_regression.py`에서 `d07_official_button_below_fold`와 `d10_vague_badge`를 **삭제**한다(위 테스트로 대체).
+`tests/test_regression.py`에서 `d07_official_button_at_end`와 `d10_vague_badge`를 **삭제**한다(위 테스트로 대체).
 
 Run: `python tests/smoke.py --stage 1 -k test_detail`
 Expected: `FAIL`
@@ -2442,7 +2601,7 @@ Expected: `FAIL`
 | `oreilly` | `"전자책 목록의 검색 칸에 O'Reilly for Higher Education을 입력하세요."` |
 
 근거: 공식 전자정보원 목록과 전자책 목록 위쪽에 "전자정보원을 검색하세요." 입력칸이 있다(official_facts 7장). 예시 이름은 데이터에 실제로 있는 이름만 쓴다(R12. RISS와 약칭 "NYT"는 데이터에 없다). O'Reilly는 전자책 목록 원본(`docs/ebooks-raw.json`)에 있다. 넣은 뒤 이름이 모두 있는지 확인한다.
-Run: `python -c "import json;n=' '.join(r['name'] for r in json.load(open('data/resources.json',encoding='utf-8')));print([k for k in ('Statista','KSDC','ScienceDirect','JSTOR Collection','ProQuest Central Premium','DBPIA','KISS','스콜라','NICE bizLINE','Value-Search','IEL','CINAHL Complete','Westlaw','Naxos Music Library','The New York Times in Education','크레마클럽') if k not in n])"`
+Run: `python -c "import json;n=' '.join(r['name'] for r in json.load(open('data/resources.json',encoding='utf-8')));print([k for k in ('Statista','KSDC','ScienceDirect','JSTOR Collection','ProQuest Central Premium','DBPIA','KISS','스콜라','NICE bizLINE','Value-Search','IEL','CINAHL Complete','Westlaw','Naxos Music Library','The New York Times in Education','제주대학교 전자책','크레마클럽') if k not in n])"`
 Expected: `[]`
 
 `tests/check_data.py`의 `for r in recs:` 반복 안에 목록형 가이드 검사를 추가한다(P1-11. ②의 `official.kind=list` 검사를 ① 필드로 미리 한다).
@@ -2456,8 +2615,7 @@ Expected: `[]`
 
 ```js
       : (s.channel ? '<span class="badge">' + escape(s.channel) + '</span>' : '')
-        + (s.eligibilityNote ? '<span class="badge target">' + escape(s.eligibilityNote) + '</span>'
-          : s.audience === 'grad' ? '<span class="badge target">대학원 대상</span>' : '')
+        + (s.eligibilityNote ? '<span class="badge target">' + escape(s.eligibilityNote) + '</span>' : '')
         + (s.costNote ? '<span class="badge">' + escape(s.costNote) + '</span>' : '');
 ```
 
@@ -2472,12 +2630,8 @@ Expected: `[]`
     return '';
   }
 
-  function factList(s, kind) {
-    return (s.facts || []).filter(f => (kind ? f.kind === kind : !['location', 'auth', 'hours'].includes(f.kind)));
-  }
-
   function factHtml(f) {
-    return '<li>' + escape(f.text) + ' <span class="fact-source">(' + escape(f.checkedAt.replaceAll('-', '.'))
+    return '<li>' + escape(f.text) + ' <span class="fact-source">(' + escape(String(f.checkedAt).replaceAll('-', '.'))
       + (safeUrl(f.source) ? ', <a href="' + escape(safeUrl(f.source)) + '" target="_blank" rel="noopener noreferrer">출처</a>' : '')
       + ')</span></li>';
   }
@@ -2493,11 +2647,11 @@ Expected: `[]`
       : menu ? '공식 메뉴로 이동하기' : '공식 안내 열기';
     const url = safeUrl(s.source);
     const hint = findHint(s);
-    const auth = factList(s, 'auth').map(f => f.text);
-    const eligibility = s.eligibilityNote || (s.audience === 'grad' ? '대학원생' : '공식 안내에서 확인');
-    const notices = window.LG.activeNotices(window.LIBRARY_GUIDE.notices, today, id);
-    const locations = factList(s, 'location');
-    const others = [...factList(s, 'hours'), ...factList(s)];
+    const facts = s.facts || [];
+    const auth = facts.filter(f => f.kind === 'auth').map(f => f.text);
+    const locations = facts.filter(f => f.kind === 'location');
+    const exceptions = facts.filter(f => f.kind !== 'location');
+    const notices = window.LG.activeNotices(window.LIBRARY_GUIDE.notices, todayNow(), id);
     const materials = (s.materials || []).filter(m => safeUrl(m.url));
     const related = (relatedMap[id] || []).filter(byId);
 
@@ -2509,18 +2663,20 @@ Expected: `[]`
       + (hint ? '<p class="find-hint">' + escape(hint) + '</p>' : '')
       + '</div>'
       + '<dl class="detail-conditions">'
-      + '<div><dt>대상</dt><dd>' + escape(eligibility) + '</dd></div>'
+      + '<div><dt>대상</dt><dd>' + escape(s.eligibilityNote || '공식 안내에서 확인') + '</dd></div>'
       + '<div><dt>비용</dt><dd>' + escape(s.costNote || s.cost) + '</dd></div>'
       + '<div><dt>인증·로그인</dt><dd>' + escape([s.login, ...auth].filter(Boolean).join(' · ')) + '</dd></div>'
       + '</dl>'
+      + (s.channel ? '<p class="detail-channel">이용 경로: ' + escape(s.channel) + '</p>' : '')
       + (notices.length ? '<div class="detail-notices"><h3>지금 이 시기</h3><ul>' + notices.map(noticeHtml).join('') + '</ul></div>' : '')
+      + '<div class="detail-exceptions"><h3>이용 전 확인할 점</h3><p class="detail-warning">' + escape(s.caution)
+      + (s.duplicateCount > 1 ? '<br>원목록의 같은 이름 ' + s.duplicateCount + '개 항목을 합쳤습니다.' : '') + '</p>'
+      + (exceptions.length ? '<ul class="detail-facts-list">' + exceptions.map(factHtml).join('') + '</ul>' : '') + '</div>'
       + (locations.length ? '<div class="detail-location"><h3>위치</h3><ul>' + locations.map(factHtml).join('') + '</ul></div>' : '')
       + '<p class="detail-summary">' + escape(s.description) + '</p>'
       + (resource ? '<h3>공식 목록의 설명</h3><div class="official-excerpt">' + escape(s.officialDescription) + '</div>' : '')
-      + '<h3>' + (menu ? '이 메뉴를 찾으려면' : '이렇게 이용해요') + '</h3><ol>' + s.steps.map(step => '<li>' + escape(step) + '</li>').join('') + '</ol>'
-      + '<h3>이용 전 확인할 점</h3><p class="detail-warning">' + escape(s.caution)
-      + (s.duplicateCount > 1 ? '<br>원목록의 같은 이름 ' + s.duplicateCount + '개 항목을 합쳤습니다.' : '') + '</p>'
-      + (others.length ? '<h3>확인한 사실</h3><ul class="detail-facts-list">' + others.map(factHtml).join('') + '</ul>' : '')
+      + '<h3>' + (menu ? '이 메뉴를 찾으려면' : '이렇게 이용해요') + '</h3><ol class="detail-steps">'
+      + s.steps.map(step => '<li>' + escape(step) + '</li>').join('') + '</ol>'
       + (materials.length ? '<h3>공식 제공 매뉴얼·관련 링크</h3><div class="material-list">' + materials.map(m => '<a href="'
         + escape(safeUrl(m.url)) + '" target="_blank" rel="noopener noreferrer">' + escape(m.label) + ' ↗</a>').join('') + '</div>' : '')
       + (related.length ? '<h3>함께 보면 좋은 안내</h3><div class="related">' + related.map(key => '<button type="button" data-open="'
@@ -2533,7 +2689,7 @@ Expected: `[]`
   }
 ```
 
-Task 7에서 `openDetail`에 넣었던 공지 IIFE 조각은 이 교체로 사라진다(공지는 `.detail-notices`로 같은 자리에 들어감).
+Task 7에서 `openDetail`에 넣었던 공지 조각은 이 교체로 사라진다(공지는 같은 자리의 `.detail-notices`로 들어감).
 
 - [ ] **Step 5: 스타일** — `styles.css` 끝에 추가
 
@@ -2555,7 +2711,7 @@ Task 7에서 `openDetail`에 넣었던 공지 IIFE 조각은 이 교체로 사�
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
-  margin: 0 0 12px;
+  margin: 0 0 8px;
 }
 .detail-conditions div {
   background: var(--soft);
@@ -2569,6 +2725,15 @@ Task 7에서 `openDetail`에 넣었던 공지 IIFE 조각은 이 교체로 사�
 .detail-conditions dd {
   margin: 2px 0 0;
   font-weight: 600;
+}
+.detail-channel {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.9em;
+}
+.detail-facts-list {
+  margin: 8px 0 0;
+  padding-left: 18px;
 }
 .fact-source,
 .detail-disclaimer {
@@ -2585,13 +2750,13 @@ Task 7에서 `openDetail`에 넣었던 공지 IIFE 조각은 이 교체로 사�
 - [ ] **Step 6: 생성·테스트**
 
 Run: `python tools/build_data.py && python tests/check_data.py --stage 1 && python tests/smoke.py --stage 1 --browsers chromium,webkit --modes file,http`
-Expected: `문제 0건`, 실패 0(마지막 줄의 두 숫자가 같음). `t_detail_above_fold_mobile`이 실패하면 `.detail-question`·`.detail-top` 여백을 줄여 첫 화면에 맞춘다(조건 요약은 접지 않는다, K21).
+Expected: `문제 0건`, 실패 0(마지막 줄의 두 숫자가 같음). `t_detail_above_fold_mobile`이 실패하면 `.detail-question`·`.detail-top`·조건 칸의 여백을 줄여 첫 화면에 맞춘다. 조건 요약과 예외는 접지 않는다(K21).
 
 - [ ] **Step 7: 커밋**
 
 ```bash
 git add js/app.js styles.css data/ data.js tests/
-git commit -m "v3①: 상세의 마지막 한 걸음과 조건 표시 (P1-07, P1-11)" -m "공식 버튼·찾는 방법(공식 목록 검색 칸 기준)·대상/비용/인증 요약을 위로, 위치·확인한 사실 표시, 면책 1회, 카드 조건 배지, 목록형 가이드 findHint 검사" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
+git commit -m "v3①: 상세의 마지막 한 걸음과 조건 표시 (P1-07, P1-11)" -m "공식 버튼·찾는 방법(공식 목록 검색 칸 기준)·대상/비용/인증 요약을 위로, 이용 경로 한 줄, 예외(주의·출처 있는 사실)는 요약 바로 아래, 위치 표시, 면책 1회, 카드 조건 배지, 목록형 가이드 findHint 검사, 대화상자 보이는 영역 기준 검사" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -2603,13 +2768,22 @@ git commit -m "v3①: 상세의 마지막 한 걸음과 조건 표시 (P1-07, P1
 - Modify: `js/app.js`, `index.html`, `styles.css`, `tests/test_regression.py`
 
 **Interfaces:**
-- Produces: DOM `#active-filters`(필터 칩 `button[data-clear]`), `#empty-clear-filters`. `app.js` 내부 `activeFilters() -> [{key, label}]`, `countWithoutFilters() -> number`
+- Produces: DOM `#active-filters`(필터 칩 `button[data-clear]`), `#empty-clear-filters`(`data-widen="true|false"`). `app.js` 내부 `activeFilters() -> [{key, label}]`, `clearFilter(key)`, `recoveryCounts() -> {sameScope, allScopes}`
+- 0건 복구 안내(S4): 같은 범위에서 필터만 풀었을 때 결과가 있으면 "필터를 풀면 N건"(범위 유지). 그래도 없고 다른 범위에 있으면 "다른 범위까지 보면 N건"(버튼이 범위도 '전체'로). 안내한 N은 버튼을 누른 뒤의 결과 수와 같아야 한다.
 
 - [ ] **Step 1: 실패하는 필터 테스트** — `tests/test_filters.py`
 
 ```python
 """필터·검색어 유지(P1-09)."""
+import re
+
 from harness import check, test
+
+
+def recovery_n(site):
+    text = site.page.inner_text('#empty')
+    m = re.search(r'(\d+)건', text)
+    return text, int(m.group(1)) if m else None
 
 
 @test()
@@ -2639,11 +2813,39 @@ def t_hidden_filter_zero_result_explains(site):
     site.category_tab('space')
     site.search('교외접속')
     check(site.count() == 0, '전제: 공부 공간 안에서 0건')
-    text = site.page.inner_text('#empty')
-    check('필터를 풀면' in text, f'0건 이유 안내 없음: {text}')
+    text, n = recovery_n(site)
+    check('필터를 풀면' in text and n, f'0건 이유 안내 없음: {text}')
     site.page.click('#empty-clear-filters')
     site.page.wait_for_timeout(100)
-    check('remote' in site.result_ids(), '필터 해제 뒤 결과 없음')
+    check(site.count() == n and 'remote' in site.result_ids(), f'안내한 {n}건과 해제 뒤 {site.count()}건이 다름')
+
+
+@test()
+def t_zero_result_other_scope(site):
+    site.open()
+    site.category_card('books')   # 상황 카드는 범위를 '이용 가이드'로 바꾼다
+    site.search('CAS BioFinder')  # 자료에만 있는 말
+    check(site.count() == 0, '전제: 가이드 범위에서 0건')
+    text, n = recovery_n(site)
+    check('다른 범위까지 보면' in text and n, f'다른 범위 안내 없음: {text}')
+    site.page.click('#empty-clear-filters')
+    site.page.wait_for_timeout(100)
+    check(site.count() == n and 'er-096' in site.result_ids(), f'안내한 {n}건과 해제 뒤 {site.count()}건이 다름')
+
+
+@test()
+def t_zero_result_keeps_chosen_scope(site):
+    site.open()
+    site.scope('resource')
+    site.select('resource-subject', '통계·기업')
+    site.search('JSTOR')
+    check(site.count() == 0, '전제: 통계·기업 분야에서 JSTOR 0건')
+    text, n = recovery_n(site)
+    check('필터를 풀면' in text and n == 1, f'같은 범위 안내가 아님: {text}')
+    site.page.click('#empty-clear-filters')
+    site.page.wait_for_timeout(100)
+    check(site.result_ids() == ['er-044'], f'자료 범위를 유지한 채 JSTOR가 나와야 함: {site.result_ids()}')
+    check(site.page.get_attribute('#scope-tabs [data-scope="resource"]', 'aria-pressed') == 'true', '고른 범위가 바뀜')
 
 
 @test()
@@ -2716,9 +2918,14 @@ Expected: `FAIL`
     if (SELECT_OF[key]) $('#' + SELECT_OF[key]).value = 'all';
   }
 
-  function countWithoutFilters() {
+  // 0건일 때 복구 안내용 수: 같은 범위에서 필터만 풀었을 때, 범위까지 풀었을 때(S4)
+  function recoveryCounts() {
     const tokens = window.LG.tokenize(state.query);
-    return tokens.length ? window.LG.search(records, searchIndex, tokens).length : records.length;
+    const count = list => (tokens.length ? window.LG.search(list, searchIndex, tokens).length : list.length);
+    return {
+      sameScope: count(records.filter(r => state.scope === 'all' || r.recordKind === state.scope)),
+      allScopes: count(records)
+    };
   }
 ```
 
@@ -2730,9 +2937,20 @@ Expected: `FAIL`
       + escape(f.label) + ' <span aria-hidden="true">×</span><span class="sr-only"> 필터 해제</span></button>').join('')
       + (filters.length > 1 ? '<button type="button" data-clear="all">모두 해제</button>' : '');
     $('#active-filters').hidden = filters.length === 0;
-    const hiddenBy = currentMatches.length === 0 && filters.length > 0 && !invalidQuery ? countWithoutFilters() : 0;
-    $('#empty-clear-filters').hidden = hiddenBy === 0;
-    if (hiddenBy) $('#empty p').textContent = '적용 중인 필터 때문에 결과가 없어요. 필터를 풀면 ' + hiddenBy + '건이 있어요.';
+    let recovery = null;
+    if (currentMatches.length === 0 && !invalidQuery) {
+      const c = recoveryCounts();
+      if (filters.length && c.sameScope > 0) recovery = { n: c.sameScope, widen: false };
+      else if (c.allScopes > 0 && (filters.length || state.scope !== 'all')) recovery = { n: c.allScopes, widen: true };
+    }
+    $('#empty-clear-filters').hidden = !recovery;
+    if (recovery) {
+      $('#empty p').textContent = recovery.widen
+        ? '지금 범위와 필터에서는 결과가 없어요. 다른 범위까지 보면 ' + recovery.n + '건이 있어요.'
+        : '적용 중인 필터 때문에 결과가 없어요. 필터를 풀면 ' + recovery.n + '건이 있어요.';
+      $('#empty-clear-filters').textContent = recovery.widen ? '전체 범위에서 보기' : '필터 모두 해제';
+      $('#empty-clear-filters').dataset.widen = String(recovery.widen);
+    }
 ```
 
 5. 클릭 위임 맨 앞(`const open = …` 위)에 추가:
@@ -2752,13 +2970,15 @@ Expected: `FAIL`
 
 ```js
   $('#empty-clear-filters').addEventListener('click', () => {
+    const widen = $('#empty-clear-filters').dataset.widen === 'true';
     activeFilters().forEach(f => clearFilter(f.key));
     state.limit = 12;
-    render();
+    if (widen) changeScope('all');
+    else render();
   });
 ```
 
-- [ ] **Step 4: 스타일** — `styles.css` 끝에 추가
+- [ ] **Step 4: 스타일** — `styles.css` 끝에 추가(칩도 누르는 영역 44px, PRD 7장)
 
 ```css
 .active-filters {
@@ -2768,8 +2988,8 @@ Expected: `FAIL`
   margin: 8px 0;
 }
 .active-filters button {
-  min-height: 36px;
-  padding: 4px 12px;
+  min-height: 44px;
+  padding: 4px 14px;
   border: 1px solid var(--green);
   border-radius: 999px;
   background: var(--white);
@@ -2786,61 +3006,110 @@ Expected: 실패 0(마지막 줄의 두 숫자가 같음)
 
 ```bash
 git add js/app.js index.html styles.css tests/
-git commit -m "v3①: 필터·검색어 유지 (P1-09)" -m "상황 탭이 검색어를 지우지 않음, 적용 중 필터 칩과 개별 해제, 숨은 필터로 0건일 때 이유와 해제, 범위 이동 시 숨은 필터 초기화" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
+git commit -m "v3①: 필터·검색어 유지 (P1-09)" -m "상황 탭이 검색어를 지우지 않음, 적용 중 필터 칩과 개별 해제, 0건일 때 같은 범위→다른 범위 순서의 복구 안내(안내 수 = 해제 뒤 결과 수), 범위 이동 시 숨은 필터 초기화" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
 
-### Task 10: 모바일 상단 검색 (P1-10)
+### Task 10: 상단 검색 (P1-10)
 
 **Files:**
 - Create: `tests/test_mobile.py`
 - Modify: `index.html`, `js/app.js`, `styles.css`, `tests/test_regression.py`
 
 **Interfaces:**
-- Produces: DOM `.top-search`(맨 위 검색 영역, `#search-form`이 이동), `button.header-search`(헤더 검색 이동 버튼), `#services-title[tabindex="-1"]`
+- Consumes: `notices_fixture`·`TEST_NOTICE`(Task 7의 `tests/helpers.py`)
+- Produces: DOM `.top-search`(hero 맨 위. `#search-form`이 이곳으로 이동), `button.header-search`(모든 폭), 모든 폭에서 sticky인 `.site-header`, `#services-title[tabindex="-1"]`. `app.js`의 `scrollBehavior()`, `setScrollPadding()`(헤더 높이 + 12px를 `html`의 scroll-padding-top으로)
+- 이유(S12): 검색창을 맨 위로 옮기면 결과와 멀어진다. 헤더를 붙여 두고 헤더 검색 버튼을 모든 폭에 두어, 결과를 본 뒤에도 한 번에 검색창으로 돌아오게 한다. 붙은 헤더가 검색창·결과 제목을 가리지 않게 스크롤 여백을 헤더 높이에 맞춘다.
 
-- [ ] **Step 1: 실패하는 모바일 테스트** — `tests/test_mobile.py`
+- [ ] **Step 1: 실패하는 테스트** — `tests/test_mobile.py`
 
 ```python
-"""모바일 상단 검색(P1-10). 390×844 기준."""
+"""상단 검색(P1-10). 모바일 390×844와 데스크톱 1440×900. 위치는 '가려지지 않았는지'(elementFromPoint)로 검사한다."""
 from harness import check, test
+from helpers import TEST_NOTICE, notices_fixture
+
+HIT = """sel => { const el = document.querySelector(sel); const r = el.getBoundingClientRect();
+  const x = r.left + r.width / 2, y = r.top + r.height / 2;
+  if (y < 0 || y > window.innerHeight) return 'off-screen ' + Math.round(y);
+  const hit = document.elementFromPoint(x, y);
+  return hit && (hit === el || el.contains(hit)) ? 'ok' : 'covered by ' + (hit ? (hit.className || hit.tagName) : 'none'); }"""
 
 
-@test(viewport='mobile')
-def t_search_visible_first_screen(site):
-    site.open()
-    box = site.page.locator('#search-input').bounding_box()
-    check(box['y'] + box['height'] <= 844, f'검색창이 첫 화면 밖: {box}')
+def not_covered(site, selector):
+    return site.page.evaluate(HIT, selector)
 
 
-@test(viewport='mobile')
-def t_search_one_action_after_scroll(site):
-    site.open()
+def back_to_search(site):
     site.page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
-    site.page.wait_for_timeout(200)
     btn = site.page.locator('.header-search')
     check(btn.is_visible(), '스크롤 뒤 헤더 검색 버튼이 안 보임')
     btn.click()
-    site.page.wait_for_timeout(300)
-    focused = site.page.evaluate('document.activeElement && document.activeElement.id')
-    box = site.page.locator('#search-input').bounding_box()
-    check(focused == 'search-input' and 0 <= box['y'] < 844, f'검색창 포커스·위치 {focused} {box}')
+    site.page.wait_for_function("document.activeElement && document.activeElement.id === 'search-input'")
+    state = not_covered(site, '#search-input')
+    check(state == 'ok', f'검색창이 보이지 않거나 가려짐: {state}')
+
+
+@test(viewport='mobile')
+def t_search_first_screen_no_notice(site):
+    site.page.add_init_script(notices_fixture([]))
+    site.open()
+    state = not_covered(site, '#search-input')
+    check(state == 'ok', f'첫 화면 검색창(공지 없음): {state}')
+
+
+@test(viewport='mobile')
+def t_search_first_screen_with_notice(site):
+    site.page.add_init_script(notices_fixture([TEST_NOTICE]))
+    site.open()
+    check(site.page.locator('#notices').is_visible(), '전제: 공지가 보임')
+    state = not_covered(site, '#search-input')
+    check(state == 'ok', f'첫 화면 검색창(공지 있음): {state}')
+
+
+@test(viewport='mobile')
+def t_search_one_action_after_scroll_mobile(site):
+    site.open()
+    back_to_search(site)
+
+
+@test()
+def t_search_one_action_after_scroll_desktop(site):
+    site.open()
+    back_to_search(site)
 
 
 @test(viewport='mobile')
 def t_mobile_nav_links(site):
     site.open()
-    visible = site.page.eval_on_selector_all('nav a', 'els => els.filter(e => e.offsetParent !== null).length')
-    check(visible >= 3, f'모바일 주요 메뉴 {visible}개')
+    visible = site.page.eval_on_selector_all('nav a', 'els => els.filter(e => e.offsetParent !== null).map(e => e.textContent.trim())')
+    check(len(visible) >= 4, f'모바일 주요 메뉴(상황별·전체 검색·자료·공식 도서관): {visible}')
 
 
 @test()
-def t_submit_moves_to_results(site):
+def t_submit_moves_to_results_not_covered(site):
     site.open()
     site.search('통계')
-    box = site.page.locator('#result-count').bounding_box()
-    check(0 <= box['y'] < 900, f'검색 뒤 결과 머리가 화면 밖 {box}')
+    state = not_covered(site, '#result-count')
+    check(state == 'ok', f'검색 뒤 결과 머리: {state}')
+
+
+@test()
+def t_search_form_keeps_style(site):
+    site.open()
+    border = site.page.evaluate("getComputedStyle(document.querySelector('#search-form')).borderTopWidth")
+    bg = site.page.evaluate("getComputedStyle(document.querySelector('#search-form button')).backgroundColor")
+    check(border not in ('0px', ''), f'검색 폼 테두리 스타일이 빠짐: {border}')
+    check(bg not in ('rgba(0, 0, 0, 0)', 'transparent'), f'검색 버튼 배경 스타일이 빠짐: {bg}')
+
+
+@test(viewport='mobile', motion='no-preference')
+def t_default_motion_uses_smooth_scroll(site):
+    site.page.add_init_script("""window.__scrolls = []; const o = Element.prototype.scrollIntoView;
+      Element.prototype.scrollIntoView = function (a) { window.__scrolls.push(a && a.behavior); return o.call(this, a); };""")
+    site.open()
+    site.search('통계')
+    check('smooth' in site.page.evaluate('window.__scrolls'), '기본 설정에서 부드러운 스크롤을 쓰지 않음')
 ```
 
 `tests/test_regression.py`에서 `d09_mobile_search_far`를 **삭제**한다.
@@ -2871,6 +3140,13 @@ Expected: `FAIL`
 ```js
   const scrollBehavior = () => (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
 
+  // 헤더가 화면 위에 붙어 있으므로 스크롤이 헤더 아래에서 멈추게 한다(S12)
+  const setScrollPadding = () => {
+    document.documentElement.style.scrollPaddingTop = Math.ceil($('.site-header').getBoundingClientRect().height + 12) + 'px';
+  };
+  setScrollPadding();
+  window.addEventListener('resize', setScrollPadding);
+
   $('.header-search').addEventListener('click', () => {
     $('.top-search').scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
     $('#search-input').focus({ preventScroll: true });
@@ -2880,7 +3156,7 @@ Expected: `FAIL`
 ```js
   $('#search-form').addEventListener('submit', e => {
     e.preventDefault();
-    state.query = $('#search-input').value.trim();
+    state.query = $('#search-input').value;
     state.limit = 12;
     render();
     $('#services').scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
@@ -2889,46 +3165,45 @@ Expected: `FAIL`
 
 기존의 두 `scrollIntoView({ behavior: 'smooth' })`도 `scrollIntoView({ behavior: scrollBehavior() })`로 바꾼다.
 
-- [ ] **Step 4: 스타일** — `styles.css` 끝에 추가
+- [ ] **Step 4: 스타일** — `styles.css`
+
+1. 검색창 스타일이 폼 위치에 묶이지 않게 선택자를 바꾼다(기본 규칙과 560px 미디어쿼리 모두): `.search-row form` → `#search-form`, `.search-row input` → `#search-form input`, `.search-row form button` → `#search-form button`.
+2. 모바일에서 메뉴를 숨기던 두 규칙을 지운다: L1의 `@media (max-width: 560px)` 안 `nav>a:not(.official) { display: none; }`, L3의 `.site-header nav>a[data-scope] { display: none; }`(포맷 후 각각 여러 줄).
+3. 끝에 추가:
 
 ```css
 .top-search {
   margin: 0 0 20px;
 }
-.top-search form {
-  display: flex;
-  gap: 8px;
-}
 .top-search input {
-  flex: 1;
   min-height: 48px;
 }
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--paper);
+  /* 가운데 정렬된 헤더의 바탕을 화면 양옆까지 칠한다 */
+  box-shadow: 0 0 0 100vmax var(--paper);
+  clip-path: inset(0 -100vmax);
+}
 .header-search {
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--green);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--green);
 }
 @media (max-width: 560px) {
-  .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: var(--paper);
-  }
-  .header-search {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: 0 14px;
-    border: 1px solid var(--green);
-    border-radius: 999px;
-    background: var(--white);
-    color: var(--green);
-  }
   nav {
     display: flex;
     overflow-x: auto;
     gap: 4px;
   }
-  nav > a:not(.official) {
+  nav > a {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
@@ -2937,18 +3212,16 @@ Expected: `FAIL`
 }
 ```
 
-그리고 기존 규칙 `@media(max-width:560px){nav>a:not(.official){display:none}}`(포맷 후 여러 줄)을 삭제한다.
-
 - [ ] **Step 5: 테스트**
 
 Run: `python tests/smoke.py --stage 1 --browsers chromium,webkit --modes file,http`
-Expected: 실패 0(마지막 줄의 두 숫자가 같음). q11의 `scrollWidth ≤ 390`도 통과해야 한다(nav는 가로 스크롤 영역 안에서만 넘침).
+Expected: 실패 0(마지막 줄의 두 숫자가 같음). q11의 `scrollWidth ≤ 390`도 통과해야 한다(nav는 가로 스크롤 영역 안에서만 넘침). 가림 검사가 실패하면 `setScrollPadding()`의 여유(12px)를 늘리거나 헤더 세로 여백을 줄인다.
 
 - [ ] **Step 6: 커밋**
 
 ```bash
 git add index.html js/app.js styles.css tests/
-git commit -m "v3①: 모바일 상단 검색 (P1-10)" -m "검색창을 첫 화면 맨 위로, 스크롤 뒤 헤더 검색 버튼, 모바일 주요 메뉴 표시, 검색 시 결과로 이동(동작 줄이기 존중)" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
+git commit -m "v3①: 상단 검색 (P1-10)" -m "검색창을 첫 화면 맨 위로, 붙은 헤더와 헤더 검색 버튼(모든 폭), 헤더 높이에 맞춘 스크롤 여백, 검색창 스타일 유지, 모바일 주요 메뉴 표시, 검색 시 결과로 이동(동작 줄이기 존중), 가림 검사" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -3007,9 +3280,12 @@ def t_focus_after_category_card(site):
 @test()
 def t_contrast(site):
     site.open()
-    # code_map 4장: muted 글자가 놓이는 배경 — .book-guide(#e9eee4), .resource-filters(soft), body(paper)
+    # 결함 재현(v2 미달): .book-guide p:not(.eyebrow) on #e9eee4 4.31, .resource-filters>div on soft 4.48
+    # 회귀 확인(v2 통과): .coverage on paper 4.86, 상세 조건 칸 dt on soft (S11)
     site.scope('resource')
-    pairs = [('.book-guide p', '.book-guide'), ('.resource-filters > div label', '.resource-filters'), ('.coverage', 'body')]
+    pairs = [('.book-guide p:not(.eyebrow)', '.book-guide'), ('.resource-filters > div', '.resource-filters'), ('.coverage', 'body')]
+    site.open_any('group')
+    pairs.append(('.detail-conditions dt', '.detail-conditions div'))
     for fg, bg in pairs:
         ratio = site.page.evaluate(CONTRAST, [fg, bg])
         check(ratio >= 4.5, f'{fg} on {bg} 대비 {ratio:.2f}')
@@ -3018,14 +3294,21 @@ def t_contrast(site):
     check(rules and all('var(--green)' in r for r in rules), f'포커스 링 규칙 {rules}(var(--green) 기대)')
 
 
+SMALL = """sels => Array.from(document.querySelectorAll(sels)).filter(e => e.offsetParent !== null || e.closest('dialog[open]'))
+  .map(e => [e.textContent.trim().slice(0, 12), Math.round(e.getBoundingClientRect().height)]).filter(([, h]) => h < 44)"""
+
+
 @test(viewport='mobile')
 def t_target_sizes_mobile(site):
     site.open()
-    small = site.page.evaluate("""() => Array.from(document.querySelectorAll(
-      '#scope-tabs button, #category-tabs button, #search-form button, .book-options button, .service-card button, #load-more, nav a, .header-search'))
-      .filter(e => e.offsetParent !== null).map(e => [e.textContent.trim().slice(0, 12), e.getBoundingClientRect().height])
-      .filter(([, h]) => h < 44)""")
-    check(not small, f'44px 미만: {small[:5]}')
+    small = site.page.evaluate(SMALL, '#scope-tabs button, #category-tabs button, #search-form button, .book-options button, '
+                               '.service-card button, #load-more, nav a, .header-search')
+    site.category_tab('space')
+    site.search('교외접속')  # 필터 칩과 0건 해제 버튼이 보이는 상태(S11)
+    small += site.page.evaluate(SMALL, '.active-filters button, #empty-clear-filters')
+    site.open_any('group')
+    small += site.page.evaluate(SMALL, '#close-dialog, #detail-content a.primary, .related button, .material-list a')
+    check(not small, f'44px 미만: {small[:6]}')
 
 
 @test()
@@ -3086,6 +3369,11 @@ Expected: `FAIL`
 #load-more,
 .related button,
 .material-list a,
+.active-filters button,
+#empty-clear-filters,
+.dialog-top button,
+#detail-content a.primary,
+.header-search,
 nav a {
   min-height: 44px;
 }
@@ -3124,10 +3412,11 @@ from harness import check, test
 @test()
 def t_terms(site):
     site.open()
+    site.scope('resource')  # 숨어 있던 자료 필터를 연 상태에서 본다(S11)
     body = site.page.inner_text('body')
     for old in ('공식 메뉴 위치', '제공 표시', '원목록 97개'):
         check(old not in body, f'옛 용어 남음: {old}')
-    site.scope('resource')
+    check('논문·자료 사이트(전자정보원)' in site.page.inner_text('#scope-tabs'), '범위 탭에 공식 용어 괄호가 없음(부록 D, S19)')
     check('논문·자료 사이트' in site.page.inner_text('#result-count'), '자료 범위 이름')
     cards = site.page.inner_text('#service-grid')
     check('국외DB' not in cards, '국외DB 표시 남음')
@@ -3139,6 +3428,20 @@ def t_audience_options(site):
     site.open()
     values = site.page.eval_on_selector_all('#audience option', 'els => els.map(e => e.value)')
     check(values == ['all', 'undergrad'], f'이용 대상 선택지 {values}')
+
+
+@test()
+def t_audience_filter_only_when_it_matters(site):
+    site.open()
+    visible = lambda: site.page.locator('.audience-control').is_visible()  # noqa: E731
+    check(visible(), '전체 범위에는 대학원 대상이 있어 학부생 필터가 보여야 함')
+    site.scope('resource')
+    check(not visible(), '자료 범위에는 대학원 대상이 없어 숨겨야 함(P1-15)')
+    site.scope('guide')
+    site.category_tab('books')
+    check(not visible(), '책·자료 상황에는 대학원 대상이 없어 숨겨야 함')
+    site.category_tab('space')
+    check(visible(), '공부 공간에는 캐럴(대학원 대상)이 있어 보여야 함')
 ```
 
 Run: `python tests/smoke.py --stage 1 -k test_terms`
@@ -3147,7 +3450,7 @@ Expected: `FAIL`
 - [ ] **Step 2: app.js 용어**
 
 ```js
-  const kindName = kind => ({ guide: '이용 가이드', resource: '논문·자료 사이트', menu: '공식 사이트 메뉴' }[kind] || '이용 가이드');
+  const kindName = kind => ({ guide: '이용 가이드', resource: '논문·자료 사이트(전자정보원)', menu: '공식 사이트 메뉴' }[kind] || '이용 가이드');
   const SOURCE_TYPE_LABEL = { '국외DB': '해외 자료', '국내DB': '국내 자료' };
   const sourceTypeLabel = v => SOURCE_TYPE_LABEL[v] || v;
   const ACCESS_BADGE = { '공개자료 안내': ['open', '공개 자료'], '시범서비스': ['trial', '시범 서비스'] };
@@ -3156,7 +3459,16 @@ Expected: `FAIL`
 - `card()`의 자료 배지 식을 바꾼다: `'<span class="badge">' + escape(s.subject) + '</span>' + (ACCESS_BADGE[s.accessType] ? '<span class="badge ' + ACCESS_BADGE[s.accessType][0] + '">' + ACCESS_BADGE[s.accessType][1] + '</span>' : '')`
 - `card()`의 `escape(resource ? s.sourceType : …)` → `escape(resource ? sourceTypeLabel(s.sourceType) : …)`, 버튼 문구 `'공식 메뉴 위치 보기'` → `'공식 사이트에서 찾는 곳 보기'`
 - `openDetail()`의 `s.subject + ' · ' + s.sourceType` → `s.subject + ' · ' + sourceTypeLabel(s.sourceType)`
-- 범위 탭 이름: `'전자정보원'` → `'논문·자료 사이트'`, `'공식 메뉴'` → `'공식 사이트 메뉴'`
+- 범위 탭 이름: `'전자정보원'` → `'논문·자료 사이트(전자정보원)'`(부록 D 후보. 공식 사이트·상세 버튼이 쓰는 말과 이어지게 괄호를 남긴다, S19), `'공식 메뉴'` → `'공식 사이트 메뉴'`
+- 학부생 필터는 결과가 달라질 때만 보이게 한다(P1-15, S5). `render()` 위에 아래 함수를 두고, `render()` 끝에 `$('.audience-control').hidden = !audienceMatters();`를 넣는다. Task 9의 `activeFilters()`에서 대상 칩 조건을 `if (state.audience !== 'all' && audienceMatters())`로 바꾼다(숨은 필터의 칩은 보이지 않게).
+
+```js
+  // 학부생 필터는 지금 범위·상황에 대학원 대상이 있을 때만 의미가 있다. 입력 중에 깜빡이지 않게 검색어는 보지 않는다
+  function audienceMatters() {
+    return records.some(r => r.audience === 'grad' && (state.scope === 'all' || r.recordKind === state.scope)
+      && (state.category === 'all' || r.category === state.category));
+  }
+```
 - `notes`를 바꾼다:
 
 ```js
@@ -3201,7 +3513,7 @@ git commit -m "v3①: 화면 용어 정리 (P1-15)" -m "전자정보원→논문
 ### Task 13: 배포 준비와 push 게이트 (P1-14)
 
 **Files:**
-- Create: `js/config.js`, `favicon.svg`, `tools/gate.py`, `tools/deploy_check.py`, `tests/test_deploy.py`
+- Create: `js/config.js`, `favicon.svg`, `tools/gate.py`, `tools/deploy_check.py`, `tests/test_deploy.py`, `tests/check_links.py`
 - Modify: `index.html`, `js/lib.js`, `js/app.js`, `docs/DEV.md`
 
 **Interfaces:**
@@ -3209,6 +3521,7 @@ git commit -m "v3①: 화면 용어 정리 (P1-15)" -m "전자정보원→논문
   - `window.LG_CONFIG = {siteUrl, feedbackFormUrl, feedbackFields: {query, card}}`
   - `LG.feedbackUrl(config, {query, card}) -> string` (폼 주소가 없으면 `''`)
   - `python tools/gate.py` (실패 시 종료 코드 1), `python tools/deploy_check.py <배포 주소>`
+  - `python tests/check_links.py [--only 문자열] [--limit N] [--out 경로]` → `.tmp/links-report.md`(정상·경고·실패 기록. 종료 코드는 늘 0, S9)
 
 - [ ] **Step 1: 실패하는 배포 테스트** — `tests/test_deploy.py`
 
@@ -3230,21 +3543,38 @@ def t_head_meta(site):
     check('비공식' in site.page.inner_text('.site-header'), '헤더에 비공식 표시 없음')
 
 
+# 실제 config.js 값과 상관없이 돌도록 "폼 없음"도 명시적으로 주입한다(S16)
+NO_FORM = """(() => { let v; Object.defineProperty(window, 'LG_CONFIG', { configurable: true, get() { return v; },
+  set(x) { x.feedbackFormUrl = ''; v = x; } }); })();"""
+
+
 @test()
 def t_feedback_hidden_without_form(site):
+    site.page.add_init_script(NO_FORM)
     site.open()
-    site.search('zzzz없는검색어qq')
+    site.search('zzqq없는말')
     check(site.page.locator('#feedback-link').is_hidden(), '폼 주소가 없는데 제보 링크가 보임')
+    site.open_any('group')
+    check(site.page.locator('#detail-content .feedback-link').count() == 0, '폼 주소가 없는데 상세에 제보 링크가 있음')
 
 
 @test()
 def t_feedback_prefilled(site):
     site.page.add_init_script(FORM)
     site.open()
-    site.search('없는 검색어')
+    site.search('zzqq없는말')
     href = site.page.get_attribute('#feedback-link', 'href')
     check(href and href.startswith('https://docs.google.com/forms/') and 'entry.1=' in href, f'제보 링크 {href}')
-    check('%EC%97%86%EB%8A%94' in href, '검색어가 미리 채워지지 않음')
+    check('zzqq' in href, '검색어가 미리 채워지지 않음')
+
+
+@test()
+def t_feedback_card_prefill(site):
+    site.page.add_init_script(FORM)
+    site.open()
+    site.open_any('group')
+    href = site.page.get_attribute('#detail-content .feedback-link', 'href')
+    check(href and 'entry.2=group' in href, f'상세 제보 링크에 카드 id가 없음: {href}')
 ```
 
 Run: `python tests/smoke.py --stage 1 -k test_deploy`
@@ -3344,9 +3674,10 @@ def clean_tree():
 
 
 def private_ok():
-    tracked = subprocess.run(['git', 'ls-files'], cwd=ROOT, capture_output=True, check=True).stdout.decode('utf-8')
+    # 경로를 직접 지정해 묻는다. 출력 문자열 검색은 한글 경로가 8진수로 바뀌면 놓친다(S17)
+    tracked = subprocess.run(['git', 'ls-files', '-z', '--', '_비공개'], cwd=ROOT, capture_output=True, check=True).stdout
     ignored = subprocess.run(['git', 'check-ignore', '-q', '_비공개/x'], cwd=ROOT).returncode == 0
-    return '_비공개' not in tracked and ignored
+    return tracked == b'' and ignored
 
 
 def main():
@@ -3404,7 +3735,138 @@ if __name__ == '__main__':
     main()
 ```
 
-- [ ] **Step 9: DEV.md 갱신** — 로딩 순서를 `data.js → js/config.js → js/lib.js → js/app.js`로 고치고, 끝에 추가
+- [ ] **Step 9: 링크 도착 점검 도구** — `tests/check_links.py`(PRD 8장·부록 A 분류표·부록 B, S9. 게이트에는 넣지 않는다)
+
+```python
+"""공식 링크 도착 점검(PRD 8장, 부록 A 도착 상태 분류표, 부록 B). 기록용이며 게이트에는 넣지 않는다.
+사용: python tests/check_links.py [--only 주소일부] [--limit N] [--out .tmp/links-report.md]
+- 해시 주소(https://lib.jejunu.ac.kr/#/…): 브라우저로 열어 최종 주소·제목을 기록하고 정상/경고/실패로 나눈다.
+- 그 밖의 https 주소(매뉴얼 첨부 등): GET 응답 코드만 본다.
+- 공식 사이트에 부담을 주지 않도록 하나씩, 요청 사이에 쉰다. 브라우저에서는 GET이 아닌 요청을 막는다.
+- 공식 사이트 쪽 장애는 우리 테스트 실패로 치지 않는다(K1). 종료 코드는 항상 0이고, 결과는 보고서로 남긴다."""
+import argparse
+import collections
+import pathlib
+import sys
+import time
+import urllib.error
+import urllib.request
+
+from playwright.sync_api import sync_playwright
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+import datajs  # noqa: E402
+
+BASE = 'https://lib.jejunu.ac.kr/'
+NOT_FOUND = ('데이터가 존재하지 않습니다', '페이지를 찾을 수 없습니다')
+
+
+def collect(d):
+    """주소 → 그 주소를 쓰는 곳 목록."""
+    used = collections.defaultdict(list)
+    for kind in ('services', 'resources', 'directory'):
+        for r in d[kind]:
+            used[r['source']].append(f'{r["id"]}.source')
+            for f in r.get('facts') or []:
+                used[f['source']].append(f'{r["id"]}.facts')
+            for m in r.get('materials') or []:
+                used[m['url']].append(f'{r["id"]}.materials')
+    for n in d.get('notices') or []:
+        for key in ('link', 'source'):
+            used[n[key]].append(f'notice {n["id"]}.{key}')
+    return used
+
+
+def classify_page(requested, final, title, text):
+    if any(s in text for s in NOT_FOUND):
+        return '실패', '오류 문구'
+    if '#/login' in final and '#/login' not in requested:
+        return '경고', '로그인 화면으로 전환'
+    if final.rstrip('/') in (BASE.rstrip('/'), BASE + '#') or final.endswith('#/'):
+        if requested.rstrip('/') not in (BASE.rstrip('/'), BASE + '#/'):
+            return '실패', '홈으로 이동'
+    req_path = requested.split('#', 1)[-1].split('?')[0].rstrip('/')
+    fin_path = final.split('#', 1)[-1].split('?')[0].rstrip('/')
+    if fin_path != req_path:
+        if fin_path.startswith(req_path + '/'):
+            return '정상', '기본 탭으로 이동'  # 예: #/service/facility → #/service/facility/all
+        return '경고', '다른 주소로 이동'
+    return '정상', ''
+
+
+def check_page(context, url):
+    page = context.new_page()  # 주소마다 새 문서로 연다(같은 문서 안 해시 이동은 제목·상태가 남는다)
+    try:
+        page.goto(url, timeout=20000)
+        page.wait_for_timeout(2500)
+        text = page.evaluate('document.body ? document.body.innerText : ""')
+        title = page.title()
+        state, why = classify_page(url, page.url, title, text)
+        return state, why, page.url, title
+    except Exception as e:  # noqa: BLE001
+        return '실패', f'열기 실패: {str(e).splitlines()[0][:80]}', '', ''
+    finally:
+        page.close()
+
+
+def check_file(url):
+    req = urllib.request.Request(url, headers={'User-Agent': 'library-guide-link-check', 'Range': 'bytes=0-0'})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            return ('정상', '', str(r.status), '') if r.status < 400 else ('실패', f'HTTP {r.status}', str(r.status), '')
+    except urllib.error.HTTPError as e:
+        return '실패', f'HTTP {e.code}', str(e.code), ''
+    except Exception as e:  # noqa: BLE001
+        return '실패', f'요청 실패: {str(e)[:80]}', '', ''
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--only', default='')
+    ap.add_argument('--limit', type=int, default=0)
+    ap.add_argument('--out', default=str(ROOT / '.tmp' / 'links-report.md'))
+    a = ap.parse_args()
+    used = collect(datajs.load(ROOT / 'data.js'))
+    urls = sorted(u for u in used if a.only in u)
+    if a.limit:
+        urls = urls[:a.limit]
+    rows = []
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        context = browser.new_context(locale='ko-KR')
+        context.route('**/*', lambda r: r.abort() if r.request.method != 'GET' else r.continue_())
+        for i, url in enumerate(urls, 1):
+            if url.startswith(BASE) and '#/' in url:
+                state, why, final, title = check_page(context, url)
+                time.sleep(1.5)
+            else:
+                state, why, final, title = check_file(url)
+                time.sleep(1)
+            rows.append((state, url, why, final, title, used[url]))
+            print(f'[{i}/{len(urls)}] {state} {url} {why}', flush=True)
+        browser.close()
+    count = collections.Counter(r[0] for r in rows)
+    out = pathlib.Path(a.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    lines = [f'# 공식 링크 점검 ({time.strftime("%Y-%m-%d")})', '',
+             f'정상 {count["정상"]} · 경고 {count["경고"]} · 실패 {count["실패"]} (주소 {len(rows)}개)', '',
+             '| 상태 | 주소 | 이유 | 최종 주소 | 제목 | 쓰는 곳 |', '|---|---|---|---|---|---|']
+    for state, url, why, final, title, where in sorted(rows, key=lambda r: ('실패', '경고', '정상').index(r[0])):
+        lines.append(f'| {state} | {url} | {why} | {final if final != url else ""} | {title} | {", ".join(where[:4])}'
+                     + (f' 외 {len(where) - 4}' if len(where) > 4 else '') + ' |')
+    out.write_text('\n'.join(lines) + '\n', encoding='utf-8', newline='\n')
+    print(f'\n정상 {count["정상"]} · 경고 {count["경고"]} · 실패 {count["실패"]} → {out}')
+
+
+if __name__ == '__main__':
+    main()
+```
+
+Run: `python tests/check_links.py --only facility`
+Expected: 시설 주소들이 `정상`으로 나오고 마지막 줄에 `정상 N · 경고 0 · 실패 0 → .tmp/links-report.md`
+
+- [ ] **Step 10: DEV.md 갱신** — 로딩 순서를 `data.js → js/config.js → js/lib.js → js/app.js`로 고치고, 끝에 추가
 
 ```markdown
 ## push와 배포
@@ -3413,20 +3875,21 @@ if __name__ == '__main__':
 3. push 뒤: `python tools/deploy_check.py https://lumos0107.github.io/jejunu-library-guide/`
 4. 배포 주소가 정해지면 `js/config.js`의 `siteUrl`을 채운다. 구글 폼을 만들면 `feedbackFormUrl`과 미리 채우기 entry 이름을 채운다.
 5. ① 동안은 `<meta name="robots" content="noindex">`를 유지하고, ② 커뮤니티 공개 때 뺀다.
+6. 링크 도착 점검: `python tests/check_links.py` → `.tmp/links-report.md`. 공식 사이트에 부담을 주지 않게 하나씩 천천히 연다. 첫 push 전과 월 1회(D14).
 ```
 
-- [ ] **Step 10: 테스트와 게이트**
+- [ ] **Step 11: 테스트와 상태 확인**
 
 Run: `python tests/smoke.py --stage 1 --browsers chromium,webkit --modes file,http`
 Expected: 실패 0(마지막 줄의 두 숫자가 같음)
 
 ```bash
-git add -A && git status --short
+git status --short
 ```
 
-Expected: `_비공개` 관련 줄이 없음
+Expected: 이 작업에서 만든·고친 파일만 보이고 `_비공개`·`.tmp`·`__pycache__` 줄이 없음(전체 스테이징은 하지 않는다, S17)
 
-- [ ] **Step 11: 커밋**
+- [ ] **Step 12: 커밋**
 
 ```bash
 git add index.html favicon.svg js/ tools/gate.py tools/deploy_check.py tests/ docs/DEV.md
@@ -3448,11 +3911,21 @@ git commit -m "v3①: 배포 준비와 push 게이트 (P1-14)" -m "noindex·og·
 Run: `python tools/gate.py`
 Expected: 마지막 줄 `게이트 통과: push해도 됩니다.`
 
-- [ ] **Step 2: 코드 교차 리뷰(사용자 지시)** — GPT 2명·Claude 2명(관점 A: 학생 사용·콘텐츠 정확성, B: 코드 품질·보안·테스트)이 ① 작업 전체(`git diff $(git log --format=%H --grep='회귀 테스트 기반 추가 (P1-01)' -1)^..HEAD`)와 PRD ①을 평가하고 2라운드 교차 평가한다. 방법은 `docs/v3/REVIEW-2026-10-13.md` 1장과 같다. 합의 지적은 고치고, 각 수정마다 해당 테스트를 먼저 추가한다.
+- [ ] **Step 2: 성능 확인(필수, S18)**
 
-- [ ] **Step 3: 크로스 체크(보조)** — Playwright MCP와 Aside MCP로 로컬 서버(`python -m http.server 8765 --bind 127.0.0.1`)를 열어 S1 대표 과업 A1~A6을 손으로 따라가 보고, 자동 테스트와 다른 결과가 있으면 기록한다.
+Run: `python tools/perf.py`
+Expected: 종료 코드 0(첫 화면 1000ms 이하, 검색 50ms 이하). 넘으면 원인을 고치고 다시 잰다. 고쳐도 넘으면 **push하지 말고 사용자에게 결과를 보여 주고 결정을 받는다.** data.js 크기는 예산(313,537B)을 넘어도 이유와 실제 시간을 기록하면 된다(PRD 7장).
 
-- [ ] **Step 4: QA 기록** — `docs/v3/QA-1.md`에 남긴다: 실행 환경(브라우저·모드), 게이트 결과, 테스트 수, `python tools/perf.py` 결과(첫 화면·검색 시간, data.js 크기와 313KB 예산 대비. 예산을 넘으면 이유, R19·R21), 교차 리뷰 요약, 크로스 체크 결과, 남은 사용자 작업(Pages 켜기·구글 폼·학생 테스트), 확인하지 못한 것.
+- [ ] **Step 3: 링크 도착 점검(기록, S9)**
+
+Run: `python tests/check_links.py`
+Expected: `.tmp/links-report.md` 생성. `실패` 줄은 하나씩 본다. 우리 데이터의 주소가 틀렸으면 고치고(Task 5 방식으로 출처·확인일과 함께), 공식 사이트 쪽 장애면 QA 기록에 경고로 남긴다(PRD 부록 A 분류표).
+
+- [ ] **Step 4: 코드 교차 리뷰(사용자 지시)** — GPT 2명·Claude 2명(관점 A: 학생 사용·콘텐츠 정확성, B: 코드 품질·보안·테스트)이 ① 작업 전체(`git diff $(git log --format=%H --grep='회귀 테스트 기반 추가 (P1-01)' -1)^..HEAD`)와 PRD ①을 평가하고 2라운드 교차 평가한다. 방법은 `docs/v3/REVIEW-2026-10-13.md` 1장과 같다. 합의 지적은 고치고, 각 수정마다 해당 테스트를 먼저 추가한다.
+
+- [ ] **Step 5: 크로스 체크(보조)** — Playwright MCP와 Aside MCP로 로컬 서버(`python -m http.server 8765 --bind 127.0.0.1`)를 열어 S1 대표 과업 A1~A6을 손으로 따라가 보고, 자동 테스트와 다른 결과가 있으면 기록한다.
+
+- [ ] **Step 6: QA 기록** — `docs/v3/QA-1.md`에 남긴다: 실행 환경(브라우저·모드), 게이트 결과, 테스트 수, `python tools/perf.py` 결과(첫 화면·검색 시간, data.js 크기와 313KB 예산 대비. 예산을 넘으면 이유, R19·R21), 링크 점검 요약(정상·경고·실패 수와 실패·경고 목록), 교차 리뷰 요약, 크로스 체크 결과, 남은 사용자 작업(Pages 켜기·구글 폼·학생 테스트), 확인하지 못한 것.
 
 QA-1.md 끝에 **실제 기기 체크리스트**(R22)를 둔다. 배포 주소가 생기면 사용자가 iOS Safari와 삼성 인터넷에서 확인한다.
 
@@ -3463,11 +3936,11 @@ QA-1.md 끝에 **실제 기기 체크리스트**(R22)를 둔다. 배포 주소�
 | 3 | 그룹스터디룸 상세: 스크롤 전에 공식 버튼과 대상·비용·인증 요약이 보인다 | | |
 | 4 | 공식 버튼이 새 탭에서 공식 페이지를 연다 | | |
 | 5 | 상세를 닫기 버튼으로 닫으면 목록으로 돌아온다 | | |
-| 6 | 스크롤한 뒤 헤더 '검색' 버튼을 누르면 검색창으로 가고 키보드가 뜬다 | | |
+| 6 | 스크롤한 뒤 헤더 '검색' 버튼을 누르면 검색창으로 가고 키보드가 뜬다(검색창이 헤더에 가리지 않음) | | |
 | 7 | 글자 크기를 크게 해도 가로로 넘치지 않는다 | | |
 | 8 | 상세가 열린 상태에서 뒤로가기를 누르면 어떻게 되는지 기록(①은 보장하지 않음, D15) | | |
 
-- [ ] **Step 5: 커밋과 push**
+- [ ] **Step 7: 커밋과 push**
 
 ```bash
 git add docs/v3/QA-1.md
@@ -3477,7 +3950,7 @@ python tools/gate.py && git push -u origin main
 
 Expected: 게이트 통과 뒤 push 성공
 
-- [ ] **Step 6: 사용자에게 넘길 일**
+- [ ] **Step 8: 사용자에게 넘길 일**
 
 1. GitHub Pages 켜기(DEV.md 절차) → 끝나면 `python tools/deploy_check.py <주소>`
 2. 구글 폼 만들기(로그인 없이 제출·익명·연락처 미수집) → 주소와 entry 이름을 `js/config.js`에
