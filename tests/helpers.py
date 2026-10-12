@@ -1,4 +1,5 @@
 """화면을 '행동' 단위로 다루는 도우미. 테스트는 선택자를 직접 쓰지 않고 이 클래스를 쓴다."""
+import json
 import re
 
 VIEWPORTS = {'desktop': {'width': 1440, 'height': 900}, 'mobile': {'width': 390, 'height': 844}}
@@ -99,3 +100,14 @@ class Site:
 
     def data(self):
         return self.page.evaluate('window.LIBRARY_GUIDE')
+
+
+TEST_NOTICE = {'id': 'fixture-exam', 'text': '테스트 공지: 열람실 24시간 개방',
+               'link': 'https://lib.jejunu.ac.kr/#/bbs/notice/6789', 'source': 'https://lib.jejunu.ac.kr/#/bbs/notice/6789',
+               'checkedAt': '2026-10-13', 'startsOn': '2026-10-07', 'endsOn': '2026-10-26', 'taskIds': ['hours']}
+
+
+def notices_fixture(items):
+    """window.LIBRARY_GUIDE 대입을 가로채 notices만 바꾸는 초기화 스크립트(file://에서도 동작)."""
+    return ("(() => { let v; Object.defineProperty(window, 'LIBRARY_GUIDE', { configurable: true, get() { return v; },"
+            " set(x) { x.notices = " + json.dumps(items, ensure_ascii=False) + "; v = x; } }); })();")

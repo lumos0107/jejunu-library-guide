@@ -71,6 +71,23 @@ def run_checks(d, stage, today):
         for s in (d.get('commonText') or {}).get(field, []):
             if not any(s == r.get(field) or s in (r.get(field) or []) for r in recs):
                 errs.append(f'commonText.{field}: 데이터에 없는 문장')
+    date_re = re.compile(r'^\d{4}-\d{2}-\d{2}$')
+    for n in d.get('notices') or []:
+        nid = n.get('id', '?')
+        for f in ('id', 'text', 'checkedAt', 'startsOn', 'endsOn'):
+            if not n.get(f):
+                errs.append(f'notice {nid}: {f} 없음')
+        if not (https(n.get('link')) and https(n.get('source'))):
+            errs.append(f'notice {nid}: link·source가 https 아님')
+        if not all(date_re.match(n.get(f, '')) for f in ('checkedAt', 'startsOn', 'endsOn')):
+            errs.append(f'notice {nid}: 날짜 형식 YYYY-MM-DD')
+        elif n['startsOn'] > n['endsOn']:
+            errs.append(f'notice {nid}: 시작일 > 종료일')
+        elif n['endsOn'] < today:
+            errs.append(f'notice {nid}: 기간이 지났습니다({n["endsOn"]}). 공지를 지우거나 갱신하세요(K18)')
+        for t in n.get('taskIds') or []:
+            if t not in have:
+                errs.append(f'notice {nid}: 없는 taskId {t}')
     return errs
 
 

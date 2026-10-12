@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": "exam-2026-2-midterm",
+    "text": "중간시험 대비 중앙도서관 열람실 24시간 개방(중앙디지털도서관·제주자료실은 기존 시간)",
+    "link": "https://lib.jejunu.ac.kr/#/bbs/notice/6789",
+    "source": "https://lib.jejunu.ac.kr/#/bbs/notice/6789",
+    "checkedAt": "2026-10-13",
+    "startsOn": "2026-10-07",
+    "endsOn": "2026-10-26",
+    "taskIds": ["hours"]
+  }
+]

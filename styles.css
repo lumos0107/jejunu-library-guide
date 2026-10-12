@@ -967,3 +967,22 @@ dialog li {
     display:none;
   }
 }
+.notices {
+  margin: 16px auto 0;
+  max-width: 1180px;
+  padding: 12px 18px;
+  border: 1px solid var(--green);
+  border-radius: var(--radius);
+  background: var(--soft);
+}
+.notices ul,
+.detail-notices ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.notice-period,
+.notice-source {
+  color: var(--muted);
+  font-size: 0.9em;
+  margin-left: 6px;
+}

@@ -6830,7 +6830,20 @@ window.LIBRARY_GUIDE = {
       ]
     }
   },
-  "notices": [],
+  "notices": [
+    {
+      "id": "exam-2026-2-midterm",
+      "text": "중간시험 대비 중앙도서관 열람실 24시간 개방(중앙디지털도서관·제주자료실은 기존 시간)",
+      "link": "https://lib.jejunu.ac.kr/#/bbs/notice/6789",
+      "source": "https://lib.jejunu.ac.kr/#/bbs/notice/6789",
+      "checkedAt": "2026-10-13",
+      "startsOn": "2026-10-07",
+      "endsOn": "2026-10-26",
+      "taskIds": [
+        "hours"
+      ]
+    }
+  ],
   "commonText": {
     "caution": [
       "공식 메뉴명과 링크를 확인한 항목입니다. 메뉴의 모든 하위 내용·첨부자료·실제 로그인 후 기능까지 검증한 것은 아닙니다. 자세한 사용조건은 공식 안내를 확인하세요.",

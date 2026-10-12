@@ -59,6 +59,7 @@
   }
 
   function render() {
+    renderNotices();
     const tokens = window.LG.tokenize(state.query);
     const invalidQuery = state.query !== '' && tokens.length === 0;  // 공백·기호만 입력(S3)
     currentMatches = invalidQuery ? [] : window.LG.search(records.filter(matchesFilters), searchIndex, tokens);
@@ -117,6 +118,20 @@
     + directory.length + '개도 검색할 수 있어요';
   $('#checked-at').textContent = checkedAt.replaceAll('-', '.');
 
+  // 오늘 날짜는 그릴 때마다 다시 계산한다(열어 둔 채 자정을 넘겨도 다음 조작 때 맞게, S14)
+  const todayNow = () => window.LG.todayLocal();
+  const noticeHtml = n => '<li><strong>' + escape(n.text) + '</strong> <span class="notice-period">'
+    + escape(n.startsOn.replaceAll('-', '.')) + ' ~ ' + escape(n.endsOn.replaceAll('-', '.')) + '</span>'
+    + (safeUrl(n.link) ? ' <a href="' + escape(safeUrl(n.link)) + '" target="_blank" rel="noopener noreferrer">공지 보기 ↗</a>' : '')
+    + '<span class="notice-source">확인일 ' + escape(n.checkedAt.replaceAll('-', '.')) + '</span></li>';
+
+  function renderNotices() {
+    const items = window.LG.activeNotices(window.LIBRARY_GUIDE.notices, todayNow());
+    $('#notices').innerHTML = items.length
+      ? '<h2 class="sr-only">지금 이 시기 공지</h2><ul>' + items.map(noticeHtml).join('') + '</ul>' : '';
+    $('#notices').hidden = items.length === 0;
+  }
+
   const relatedMap = window.LIBRARY_GUIDE.related || {};
 
   const dialog = $('#detail-dialog');
@@ -138,7 +153,10 @@
     const materials = (s.materials || []).filter(m => safeUrl(m.url));
     $('#detail-content').innerHTML = '<h2 id="detail-title">' + escape(s.name) + '</h2><p class="detail-question">'
       + escape(resource ? s.subject + ' · ' + s.sourceType : menu ? s.description : s.question) + '</p><p class="kind-note">'
-      + escape(kindNote) + '</p><p class="detail-summary">' + escape(s.description) + '</p><dl class="detail-facts"><div><dt>이용 경로</dt><dd>'
+      + escape(kindNote) + '</p>'
+      + (() => { const ns = window.LG.activeNotices(window.LIBRARY_GUIDE.notices, todayNow(), id);
+        return ns.length ? '<div class="detail-notices"><h3>지금 이 시기</h3><ul>' + ns.map(noticeHtml).join('') + '</ul></div>' : ''; })()
+      + '<p class="detail-summary">' + escape(s.description) + '</p><dl class="detail-facts"><div><dt>이용 경로</dt><dd>'
       + escape(s.channel) + '</dd></div><div><dt>실제 서비스 로그인</dt><dd>' + escape(s.login) + '</dd></div><div><dt>비용</dt><dd>'
       + escape(s.cost) + '</dd></div></dl>'
       + (resource ? '<h3>공식 목록의 설명</h3><div class="official-excerpt">' + escape(s.officialDescription)

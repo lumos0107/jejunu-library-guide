@@ -62,4 +62,12 @@
       .sort((a, b) => a.tier - b.tier || a.i - b.i)
       .map(x => x.r);
   };
+
+  // 기기 로컬 날짜 'YYYY-MM-DD'. toISOString은 UTC라 쓰지 않는다(PRD 5장 날짜 규칙).
+  LG.todayLocal = (d = new Date()) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-'
+    + String(d.getDate()).padStart(2, '0');
+  // 시작·종료일 당일 포함. 'YYYY-MM-DD' 문자열 비교.
+  LG.isActiveOn = (item, today) => (!item.startsOn || item.startsOn <= today) && (!item.endsOn || today <= item.endsOn);
+  LG.activeNotices = (notices, today, taskId) => (notices || [])
+    .filter(n => LG.isActiveOn(n, today) && (!taskId || (n.taskIds || []).includes(taskId)));
 })();
