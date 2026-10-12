@@ -184,15 +184,6 @@ def d06_category_tab_clears_query(site):  # → Task 9
 
 
 @test()
-def d07_official_button_at_end(site):  # → Task 8
-    # 1440×900에서는 버튼이 이미 화면 안(y≈861)이라 좌표로는 결함이 재현되지 않는다. 결함은 '맨 끝 배치'다(S20)
-    site.open()
-    site.open_any('stats')
-    at_end = site.page.evaluate("document.querySelector('#detail-content').lastElementChild.querySelector('a.primary') !== null")
-    check(at_end, 'v2: 공식 버튼이 상세의 맨 끝 블록에 있음')
-
-
-@test()
 def d08_a11y_structure(site):  # → Task 11
     site.open()
     check(site.page.locator('#category-grid button h3').count() == 6, 'v2: button 안 h3')
@@ -204,9 +195,3 @@ def d09_mobile_search_far(site):  # → Task 10
     site.open()
     top = site.page.locator('#search-input').bounding_box()['y']
     check(top > 844, f'v2: 검색창 {top}px')
-
-
-@test()
-def d10_vague_badge(site):  # → Task 8
-    site.open()
-    check(site.page.locator('.badge', has_text='세부 조건 확인').count() > 0, "v2: '세부 조건 확인' 배지")

@@ -613,7 +613,8 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/search/er",
       "keywords": "DBpia DBPIA KISS 스콜라 논문 레포트 리포트 국내",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "findHint": "전자정보원 목록의 검색 칸에 DBPIA, KISS, 스콜라 같은 이름을 입력하세요."
     },
     {
       "id": "overseas",
@@ -634,7 +635,8 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/search/er",
       "keywords": "영어 논문 영어 해외 저널 ScienceDirect Wiley JSTOR ProQuest Scopus Web of Science",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "findHint": "전자정보원 목록의 검색 칸에 ScienceDirect, JSTOR Collection, ProQuest Central Premium 같은 이름을 입력하세요."
     },
     {
       "id": "stats",
@@ -655,7 +657,8 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/search/er",
       "keywords": "Statista KSDC 통계 설문 그래프 데이터 시장 조사",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "findHint": "전자정보원 목록의 검색 칸에 Statista 또는 KSDC를 입력하세요."
     },
     {
       "id": "business",
@@ -676,7 +679,8 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/search/er",
       "keywords": "NICE bizLINE KisLine Value-Search 재무 주식 기업 경영 경제",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "findHint": "전자정보원 목록의 검색 칸에 NICE bizLINE 또는 Value-Search를 입력하세요."
     },
     {
       "id": "discipline",
@@ -697,7 +701,8 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/search/er",
       "keywords": "공학 컴퓨터 IEEE 교육 Education CINAHL 간호 의학 Embase 약학 화학 Reaxys 법학 Westlaw 케이스노트",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "findHint": "전자정보원 목록의 검색 칸에 IEL(IEEE/IET), CINAHL Complete, Westlaw 같은 전공 서비스 이름을 입력하세요."
     },
     {
       "id": "citation",
@@ -781,7 +786,8 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/search/er-ebook",
       "keywords": "알라딘 교보 북큐브 북레일 예스24 크레마클럽 이북 ebook 전자책",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "findHint": "전자책 목록에서 제주대학교 전자책(알라딘·교보문고·북레일·북큐브)이나 예스24 크레마클럽을 고르세요."
     },
     {
       "id": "oreilly",
@@ -802,7 +808,8 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/search/er-ebook",
       "keywords": "OReilly O’Reilly 프로그래밍 코딩 개발 컴퓨터 IT 기술 책",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "findHint": "전자책 목록의 검색 칸에 O'Reilly for Higher Education을 입력하세요."
     },
     {
       "id": "lectures",
@@ -852,7 +859,8 @@ window.LIBRARY_GUIDE = {
           "source": "https://lib.jejunu.ac.kr/#/search/er",
           "checkedAt": "2026-10-13"
         }
-      ]
+      ],
+      "findHint": "전자정보원 목록의 검색 칸에 Naxos Music Library, The New York Times in Education 같은 이름을 입력하세요."
     },
     {
       "id": "training",

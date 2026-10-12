@@ -48,6 +48,8 @@ def run_checks(d, stage, today):
                 errs.append(f'{rid}: facts.kind {f.get("kind")}(location·auth·hours만, D16)')
         if (r.get('eligibilityNote') or r.get('costNote')) and not r.get('facts'):
             errs.append(f'{rid}: eligibilityNote·costNote의 근거 facts 없음(P1-05)')
+        if r.get('recordKind') == 'guide' and re.search(r'#/search/er(-ebook)?$', r.get('source', '')) and not r.get('findHint'):
+            errs.append(f'{rid}: 목록형 링크인데 findHint 없음(P1-11)')
         for field in ('name', 'question', 'description', 'keywords'):
             if re.search('무료|무제한', str(r.get(field) or '')):
                 errs.append(f'{rid}: 주장 필드 {field}에 무료·무제한(PRD K10)')

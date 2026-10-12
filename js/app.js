@@ -35,8 +35,9 @@
       ? '<span class="badge">' + escape(s.subject) + '</span><span class="badge '
         + (s.accessType === '시범서비스' ? 'trial' : s.accessType === '공개자료 안내' ? 'open' : '') + '">'
         + escape(s.accessType) + '</span>'
-      : '<span class="badge">' + escape(s.channel) + '</span><span class="badge' + (s.audience === 'grad' ? ' target' : '')
-        + '">' + (s.audience === 'grad' ? '대학원 대상' : '세부 조건 확인') + '</span>';
+      : (s.channel ? '<span class="badge">' + escape(s.channel) + '</span>' : '')
+        + (s.eligibilityNote ? '<span class="badge target">' + escape(s.eligibilityNote) + '</span>' : '')
+        + (s.costNote ? '<span class="badge">' + escape(s.costNote) + '</span>' : '');
     return '<article class="service-card"><div class="record-kind"><span>' + kindName(s.recordKind) + '</span><span>'
       + escape(resource ? s.sourceType : menu ? s.menuGroup : categoryName(s.category)) + '</span></div><h3>'
       + escape(s.name) + '</h3>'
@@ -136,41 +137,67 @@
 
   const dialog = $('#detail-dialog');
 
+  const isListUrl = url => /#\/search\/er(-ebook)?$/.test(url || '');
+
+  function findHint(s) {
+    if (s.findHint) return s.findHint;
+    if (s.recordKind === 'resource' && isListUrl(s.source)) return "공식 목록 위쪽의 검색 칸에 '" + s.name + "'을(를) 입력하세요.";
+    return '';
+  }
+
+  function factHtml(f) {
+    return '<li>' + escape(f.text) + ' <span class="fact-source">(' + escape(String(f.checkedAt).replaceAll('-', '.'))
+      + (safeUrl(f.source) ? ', <a href="' + escape(safeUrl(f.source)) + '" target="_blank" rel="noopener noreferrer">출처</a>' : '')
+      + ')</span></li>';
+  }
+
   function openDetail(id) {
     const s = byId(id);
     if (!s) return;
     const resource = s.recordKind === 'resource';
     const menu = s.recordKind === 'menu';
     $('#detail-category').textContent = kindName(s.recordKind) + ' · ' + (resource ? s.subject : menu ? s.menuGroup : categoryName(s.category));
-    const kindNote = resource
-      ? '공식 목록의 설명과 매뉴얼 링크를 정리한 항목이에요. 실제 외부 접속·회원가입·자료 이용은 시험하지 않았어요.'
-      : menu
-        ? '이 항목은 상세 사용설명서가 아닌 공식 메뉴 위치 안내입니다. 메뉴명·경로·링크를 확인했어요.'
-        : '공개 상세 안내를 바탕으로 정리한 가이드입니다. 현재 운영·개인 이용자격은 이용 직전 확인해주세요.';
     const sourceLabel = resource
-      ? (s.source.endsWith('er-ebook') ? '공식 전자책 목록에서 확인하기' : '공식 전자정보원 목록에서 이름 검색하기')
-      : menu ? '공식 메뉴로 이동하기' : '공식 안내에서 확인하기';
+      ? (s.source.endsWith('er-ebook') ? '공식 전자책 목록 열기' : '공식 전자정보원 목록 열기')
+      : menu ? '공식 메뉴로 이동하기' : '공식 안내 열기';
+    const url = safeUrl(s.source);
+    const hint = findHint(s);
+    const facts = s.facts || [];
+    const auth = facts.filter(f => f.kind === 'auth').map(f => f.text);
+    const locations = facts.filter(f => f.kind === 'location');
+    const exceptions = facts.filter(f => f.kind !== 'location');
+    const notices = window.LG.activeNotices(window.LIBRARY_GUIDE.notices, todayNow(), id);
     const materials = (s.materials || []).filter(m => safeUrl(m.url));
-    $('#detail-content').innerHTML = '<h2 id="detail-title">' + escape(s.name) + '</h2><p class="detail-question">'
-      + escape(resource ? s.subject + ' · ' + s.sourceType : menu ? s.description : s.question) + '</p><p class="kind-note">'
-      + escape(kindNote) + '</p>'
-      + (() => { const ns = window.LG.activeNotices(window.LIBRARY_GUIDE.notices, todayNow(), id);
-        return ns.length ? '<div class="detail-notices"><h3>지금 이 시기</h3><ul>' + ns.map(noticeHtml).join('') + '</ul></div>' : ''; })()
-      + '<p class="detail-summary">' + escape(s.description) + '</p><dl class="detail-facts"><div><dt>이용 경로</dt><dd>'
-      + escape(s.channel) + '</dd></div><div><dt>실제 서비스 로그인</dt><dd>' + escape(s.login) + '</dd></div><div><dt>비용</dt><dd>'
-      + escape(s.cost) + '</dd></div></dl>'
-      + (resource ? '<h3>공식 목록의 설명</h3><div class="official-excerpt">' + escape(s.officialDescription)
-        + '</div><p class="material-note">원문 표기에 오류·과거 정보가 있을 수 있습니다. 제공 연도·수량·조건은 공식 안내를 재확인하세요.</p>' : '')
-      + '<h3>' + (menu ? '이 메뉴를 찾으려면' : '이렇게 확인해요') + '</h3><ol>' + s.steps.map(step => '<li>' + escape(step) + '</li>').join('')
-      + '</ol><h3>이용 전 확인할 점</h3><p class="detail-warning">' + escape(s.caution)
+    const related = (relatedMap[id] || []).filter(byId);
+
+    $('#detail-content').innerHTML = '<h2 id="detail-title">' + escape(s.name) + '</h2>'
+      + '<p class="detail-question">' + escape(resource ? s.subject + ' · ' + s.sourceType : menu ? s.description : s.question) + '</p>'
+      + '<div class="detail-top">'
+      + (url ? '<a class="primary" data-official href="' + escape(url) + '" target="_blank" rel="noopener noreferrer">' + sourceLabel + ' ↗</a>'
+        : '<p>공식 링크를 확인할 수 없어요.</p>')
+      + (hint ? '<p class="find-hint">' + escape(hint) + '</p>' : '')
+      + '</div>'
+      + '<dl class="detail-conditions">'
+      + '<div><dt>대상</dt><dd>' + escape(s.eligibilityNote || '공식 안내에서 확인') + '</dd></div>'
+      + '<div><dt>비용</dt><dd>' + escape(s.costNote || s.cost) + '</dd></div>'
+      + '<div><dt>인증·로그인</dt><dd>' + escape([s.login, ...auth].filter(Boolean).join(' · ')) + '</dd></div>'
+      + '</dl>'
+      + (s.channel ? '<p class="detail-channel">이용 경로: ' + escape(s.channel) + '</p>' : '')
+      + (notices.length ? '<div class="detail-notices"><h3>지금 이 시기</h3><ul>' + notices.map(noticeHtml).join('') + '</ul></div>' : '')
+      + '<div class="detail-exceptions"><h3>이용 전 확인할 점</h3><p class="detail-warning">' + escape(s.caution)
       + (s.duplicateCount > 1 ? '<br>원목록의 같은 이름 ' + s.duplicateCount + '개 항목을 합쳤습니다.' : '') + '</p>'
+      + (exceptions.length ? '<ul class="detail-facts-list">' + exceptions.map(factHtml).join('') + '</ul>' : '') + '</div>'
+      + (locations.length ? '<div class="detail-location"><h3>위치</h3><ul>' + locations.map(factHtml).join('') + '</ul></div>' : '')
+      + '<p class="detail-summary">' + escape(s.description) + '</p>'
+      + (resource ? '<h3>공식 목록의 설명</h3><div class="official-excerpt">' + escape(s.officialDescription) + '</div>' : '')
+      + '<h3>' + (menu ? '이 메뉴를 찾으려면' : '이렇게 이용해요') + '</h3><ol class="detail-steps">'
+      + s.steps.map(step => '<li>' + escape(step) + '</li>').join('') + '</ol>'
       + (materials.length ? '<h3>공식 제공 매뉴얼·관련 링크</h3><div class="material-list">' + materials.map(m => '<a href="'
-        + escape(m.url) + '" target="_blank" rel="noopener noreferrer">' + escape(m.label) + ' ↗</a>').join('')
-        + '</div><p class="material-note">목록에서 링크를 확인했으며 각 파일의 내용을 모두 읽거나 다운로드한 것은 아닙니다.</p>' : '')
-      + (relatedMap[id] ? '<h3>함께 보면 좋은 안내</h3><div class="related">' + relatedMap[id].filter(byId).map(key => '<button type="button" data-open="'
+        + escape(safeUrl(m.url)) + '" target="_blank" rel="noopener noreferrer">' + escape(m.label) + ' ↗</a>').join('') + '</div>' : '')
+      + (related.length ? '<h3>함께 보면 좋은 안내</h3><div class="related">' + related.map(key => '<button type="button" data-open="'
         + escape(key) + '">' + escape(byId(key).name) + '</button>').join('') + '</div>' : '')
-      + '<div class="detail-source">' + (safeUrl(s.source) ? '<a class="primary" href="' + escape(safeUrl(s.source))
-      + '" target="_blank" rel="noopener noreferrer">' + sourceLabel + ' ↗</a>' : '<p>공식 링크를 확인할 수 없어요.</p>') + '<p>공개 안내 확인일 ' + escape(s.checkedAt) + ' · 비공식 학생용 가이드<br>이 사이트는 학교 계정·개인정보를 수집하지 않습니다. 실제 서비스는 별도 인증이 필요할 수 있습니다.</p></div>';
+      + '<p class="detail-disclaimer">공개 안내 확인일 ' + escape(s.checkedAt) + ' · 비공식 학생용 가이드. 학교 계정·개인정보를 수집하지 않아요. '
+      + '원문 표기에 오류·과거 정보가 있을 수 있으니 이용 직전 공식 안내를 확인하세요.</p>';
     if (!dialog.open) dialog.showModal();
     dialog.scrollTop = 0;
     $('#close-dialog').focus();
