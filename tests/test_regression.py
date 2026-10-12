@@ -176,14 +176,6 @@ def d05_book_return_found(site):  # Task 5에서 전환
 
 
 @test()
-def d06_category_tab_clears_query(site):  # → Task 9
-    site.open()
-    site.search('통계')
-    site.category_tab('assignment')
-    check(site.query_value() == '', 'v2: 상황 탭이 검색어를 지움')
-
-
-@test()
 def d08_a11y_structure(site):  # → Task 11
     site.open()
     check(site.page.locator('#category-grid button h3').count() == 6, 'v2: button 안 h3')

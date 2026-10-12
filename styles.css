@@ -1037,3 +1037,17 @@ dialog li {
     grid-template-columns: 1fr;
   }
 }
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+.active-filters button {
+  min-height: 44px;
+  padding: 4px 14px;
+  border: 1px solid var(--green);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--green);
+}

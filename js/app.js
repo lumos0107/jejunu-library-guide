@@ -59,6 +59,38 @@
       && (state.scope !== 'menu' || state.menuGroup === 'all' || s.menuGroup === state.menuGroup);
   }
 
+  const FILTER_LABELS = { audience: { undergrad: '학부생' } };
+
+  function activeFilters() {
+    const list = [];
+    if (state.category !== 'all' && state.scope !== 'resource' && state.scope !== 'menu') {
+      list.push({ key: 'category', label: categoryName(state.category) });
+    }
+    if (state.audience !== 'all') list.push({ key: 'audience', label: FILTER_LABELS.audience[state.audience] || state.audience });
+    if (state.scope === 'resource') {
+      for (const key of ['subject', 'sourceType', 'access']) if (state[key] !== 'all') list.push({ key, label: state[key] });
+    }
+    if (state.scope === 'menu' && state.menuGroup !== 'all') list.push({ key: 'menuGroup', label: state.menuGroup });
+    return list;
+  }
+
+  const SELECT_OF = { audience: 'audience', subject: 'resource-subject', sourceType: 'resource-type', access: 'resource-access', menuGroup: 'menu-group' };
+
+  function clearFilter(key) {
+    state[key] = 'all';
+    if (SELECT_OF[key]) $('#' + SELECT_OF[key]).value = 'all';
+  }
+
+  // 0건일 때 복구 안내용 수: 같은 범위에서 필터만 풀었을 때, 범위까지 풀었을 때(S4)
+  function recoveryCounts() {
+    const tokens = window.LG.tokenize(state.query);
+    const count = list => (tokens.length ? window.LG.search(list, searchIndex, tokens).length : list.length);
+    return {
+      sameScope: count(records.filter(r => state.scope === 'all' || r.recordKind === state.scope)),
+      allScopes: count(records)
+    };
+  }
+
   function render() {
     renderNotices();
     const tokens = window.LG.tokenize(state.query);
@@ -84,6 +116,25 @@
     $('#category-tabs').hidden = state.scope === 'resource' || state.scope === 'menu';
     document.querySelectorAll('button[data-category]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.category === state.category)));
     document.querySelectorAll('button[data-scope]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.scope === state.scope)));
+    const filters = activeFilters();
+    $('#active-filters').innerHTML = filters.map(f => '<button type="button" data-clear="' + escape(f.key) + '">'
+      + escape(f.label) + ' <span aria-hidden="true">×</span><span class="sr-only"> 필터 해제</span></button>').join('')
+      + (filters.length > 1 ? '<button type="button" data-clear="all">모두 해제</button>' : '');
+    $('#active-filters').hidden = filters.length === 0;
+    let recovery = null;
+    if (currentMatches.length === 0 && !invalidQuery) {
+      const c = recoveryCounts();
+      if (filters.length && c.sameScope > 0) recovery = { n: c.sameScope, widen: false };
+      else if (c.allScopes > 0 && (filters.length || state.scope !== 'all')) recovery = { n: c.allScopes, widen: true };
+    }
+    $('#empty-clear-filters').hidden = !recovery;
+    if (recovery) {
+      $('#empty p').textContent = recovery.widen
+        ? '지금 범위와 필터에서는 결과가 없어요. 다른 범위까지 보면 ' + recovery.n + '건이 있어요.'
+        : '적용 중인 필터 때문에 결과가 없어요. 필터를 풀면 ' + recovery.n + '건이 있어요.';
+      $('#empty-clear-filters').textContent = recovery.widen ? '전체 범위에서 보기' : '필터 모두 해제';
+      $('#empty-clear-filters').dataset.widen = String(recovery.widen);
+    }
   }
 
   function reset() {
@@ -94,6 +145,10 @@
   }
 
   function changeScope(scope) {
+    if (scope !== state.scope) {
+      Object.assign(state, { subject: 'all', sourceType: 'all', access: 'all', menuGroup: 'all' });
+      ['resource-subject', 'resource-type', 'resource-access', 'menu-group'].forEach(sid => { $('#' + sid).value = 'all'; });
+    }
     state.scope = scope;
     state.category = 'all';
     state.limit = 12;
@@ -213,6 +268,14 @@
   const bookCases = window.LIBRARY_GUIDE.bookCases || {};
 
   document.addEventListener('click', e => {
+    const clear = e.target.closest('[data-clear]');
+    if (clear) {
+      if (clear.dataset.clear === 'all') activeFilters().forEach(f => clearFilter(f.key));
+      else clearFilter(clear.dataset.clear);
+      state.limit = 12;
+      render();
+      return;
+    }
     const open = e.target.closest('[data-open]');
     if (open) { openDetail(open.dataset.open); return; }
     const scope = e.target.closest('[data-scope]');
@@ -225,10 +288,10 @@
     const cat = e.target.closest('[data-category]');
     if (cat) {
       state.category = cat.dataset.category;
-      state.query = '';
       state.limit = 12;
-      $('#search-input').value = '';
       if (cat.classList.contains('category-card')) {
+        state.query = '';
+        $('#search-input').value = '';
         state.scope = 'guide';
         $('#services').scrollIntoView({ behavior: 'smooth' });
       }
@@ -264,6 +327,13 @@
   $('#load-more').addEventListener('click', () => { state.limit += 12; render(); });
   $('#reset').addEventListener('click', reset);
   $('#empty-reset').addEventListener('click', () => { reset(); $('#search-input').focus(); });
+  $('#empty-clear-filters').addEventListener('click', () => {
+    const widen = $('#empty-clear-filters').dataset.widen === 'true';
+    activeFilters().forEach(f => clearFilter(f.key));
+    state.limit = 12;
+    if (widen) changeScope('all');
+    else render();
+  });
 
   render();
   performance.mark('first-render');
