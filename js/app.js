@@ -10,7 +10,10 @@
   const { escapeHtml: escape, safeUrl } = window.LG;
   const byId = id => records.find(s => s.id === id);
   const categoryName = id => categories.find(c => c.id === id)?.name || id;
-  const kindName = kind => ({ guide: '이용 가이드', resource: '전자정보원', menu: '공식 메뉴 위치' }[kind] || '이용 가이드');
+  const kindName = kind => ({ guide: '이용 가이드', resource: '논문·자료 사이트(전자정보원)', menu: '공식 사이트 메뉴' }[kind] || '이용 가이드');
+  const SOURCE_TYPE_LABEL = { '국외DB': '해외 자료', '국내DB': '국내 자료' };
+  const sourceTypeLabel = v => SOURCE_TYPE_LABEL[v] || v;
+  const ACCESS_BADGE = { '공개자료 안내': ['open', '공개 자료'], '시범서비스': ['trial', '시범 서비스'] };
   const searchIndex = window.LG.buildIndex(records, window.LIBRARY_GUIDE.commonText);
   const emptyHeading = $('#empty h3').textContent;
   const emptyText = $('#empty p').innerHTML;
@@ -21,31 +24,29 @@
   let currentMatches = [];
 
   const notes = {
-    all: '이용 가이드 ' + services.length + '개 · 전자정보원 ' + resources.length + '개 · 공식 메뉴 위치 ' + directory.length
-      + '개를 함께 검색해요. 같은 서비스가 가이드와 공식 메뉴에 각각 표시될 수 있어요.',
-    guide: '공개 상세 안내를 학생의 질문으로 풀어쓴 가이드예요. 실제 서비스의 이용 대상·비용·인증 조건은 공식 안내를 다시 확인해주세요.',
-    resource: '전자정보원 원목록 97개에서 중복 1개를 합친 96개 + 전자책 목록의 추가 2개예요. 공개자료·시범서비스·나머지 목록 등재 항목은 이용조건이 다릅니다.',
-    menu: '공식 상위 6개 메뉴의 하위 메뉴 89개예요. 메뉴 위치·링크를 확인했지만 모든 하위 본문이나 로그인 후 기능을 검증한 것은 아닙니다.'
+    all: '이용 가이드, 논문·자료 사이트, 공식 사이트 메뉴를 함께 찾아요. 같은 서비스가 여러 곳에 보일 수 있어요.',
+    guide: '학생 질문으로 풀어 쓴 이용 안내예요. 대상·비용·인증은 공식 안내를 다시 확인해 주세요.',
+    resource: '도서관 전자자료 목록 98개예요. 공개 자료·시범 서비스·그 밖의 자료는 이용 조건이 달라요.',
+    menu: '공식 사이트의 메뉴 89개를 어디서 찾는지 알려 줘요. 로그인 뒤 기능까지 확인한 것은 아니에요.'
   };
 
   function card(s) {
     const resource = s.recordKind === 'resource';
     const menu = s.recordKind === 'menu';
     const badges = resource
-      ? '<span class="badge">' + escape(s.subject) + '</span><span class="badge '
-        + (s.accessType === '시범서비스' ? 'trial' : s.accessType === '공개자료 안내' ? 'open' : '') + '">'
-        + escape(s.accessType) + '</span>'
+      ? '<span class="badge">' + escape(s.subject) + '</span>' + (ACCESS_BADGE[s.accessType]
+        ? '<span class="badge ' + ACCESS_BADGE[s.accessType][0] + '">' + ACCESS_BADGE[s.accessType][1] + '</span>' : '')
       : (s.channel ? '<span class="badge">' + escape(s.channel) + '</span>' : '')
         + (s.eligibilityNote ? '<span class="badge target">' + escape(s.eligibilityNote) + '</span>' : '')
         + (s.costNote ? '<span class="badge">' + escape(s.costNote) + '</span>' : '');
     return '<article class="service-card"><div class="record-kind"><span>' + kindName(s.recordKind) + '</span><span>'
-      + escape(resource ? s.sourceType : menu ? s.menuGroup : categoryName(s.category)) + '</span></div><h3>'
+      + escape(resource ? sourceTypeLabel(s.sourceType) : menu ? s.menuGroup : categoryName(s.category)) + '</span></div><h3>'
       + escape(s.name) + '</h3>'
       + (!menu ? '<p class="service-question">' + escape(resource ? s.subject + ' 분야에서 활용하기' : s.question) + '</p>' : '')
       + '<p class="service-description' + (menu ? ' official-path' : '') + '">' + escape(s.description) + '</p>'
       + '<div class="badges">' + badges + '</div><button type="button" data-open="' + escape(s.id) + '" aria-label="'
       + escape(s.name) + ' ' + kindName(s.recordKind) + ' 보기">'
-      + (resource ? '설명·매뉴얼 보기' : menu ? '공식 메뉴 위치 보기' : '이용 방법 보기')
+      + (resource ? '설명·매뉴얼 보기' : menu ? '공식 사이트에서 찾는 곳 보기' : '이용 방법 보기')
       + '<span aria-hidden="true">↗</span></button></article>';
   }
 
@@ -66,7 +67,7 @@
     if (state.category !== 'all' && state.scope !== 'resource' && state.scope !== 'menu') {
       list.push({ key: 'category', label: categoryName(state.category) });
     }
-    if (state.audience !== 'all') list.push({ key: 'audience', label: FILTER_LABELS.audience[state.audience] || state.audience });
+    if (state.audience !== 'all' && audienceMatters()) list.push({ key: 'audience', label: FILTER_LABELS.audience[state.audience] || state.audience });
     if (state.scope === 'resource') {
       for (const key of ['subject', 'sourceType', 'access']) if (state[key] !== 'all') list.push({ key, label: state[key] });
     }
@@ -89,6 +90,12 @@
       sameScope: count(records.filter(r => state.scope === 'all' || r.recordKind === state.scope)),
       allScopes: count(records)
     };
+  }
+
+  // 학부생 필터는 지금 범위·상황에 대학원 대상이 있을 때만 의미가 있다. 입력 중에 깜빡이지 않게 검색어는 보지 않는다
+  function audienceMatters() {
+    return records.some(r => r.audience === 'grad' && (state.scope === 'all' || r.recordKind === state.scope)
+      && (state.category === 'all' || r.category === state.category));
   }
 
   function render() {
@@ -121,6 +128,7 @@
       + escape(f.label) + ' <span aria-hidden="true">×</span><span class="sr-only"> 필터 해제</span></button>').join('')
       + (filters.length > 1 ? '<button type="button" data-clear="all">모두 해제</button>' : '');
     $('#active-filters').hidden = filters.length === 0;
+    $('.audience-control').hidden = !audienceMatters();
     let recovery = null;
     if (currentMatches.length === 0 && !invalidQuery) {
       const c = recoveryCounts();
@@ -162,16 +170,17 @@
   $('#category-tabs').innerHTML = [{ id: 'all', name: '모든 상황' }, ...categories].map(c => '<button type="button" data-category="'
     + escape(c.id) + '" aria-pressed="' + (c.id === 'all') + '">' + escape(c.name) + '</button>').join('');
   $('#scope-tabs').innerHTML = [['all', '전체 검색', records.length], ['guide', '이용 가이드', services.length],
-    ['resource', '전자정보원', resources.length], ['menu', '공식 메뉴', directory.length]]
+    ['resource', '논문·자료 사이트(전자정보원)', resources.length], ['menu', '공식 사이트 메뉴', directory.length]]
     .map(([id, label, count]) => '<button type="button" data-scope="' + id + '" aria-pressed="' + (id === 'all') + '">' + label
       + '<span class="scope-count">' + count + '</span></button>').join('');
   for (const [id, values] of [['resource-subject', [...new Set(resources.map(r => r.subject))]],
     ['resource-type', [...new Set(resources.map(r => r.sourceType))]],
     ['menu-group', [...new Set(directory.map(r => r.menuGroup))]]]) {
-    $('#' + id).insertAdjacentHTML('beforeend', values.map(v => '<option value="' + escape(v) + '">' + escape(v) + '</option>').join(''));
+    const label = id === 'resource-type' ? sourceTypeLabel : v => v;  // 값은 데이터 그대로, 표시만 바꾼다
+    $('#' + id).insertAdjacentHTML('beforeend', values.map(v => '<option value="' + escape(v) + '">' + escape(label(v)) + '</option>').join(''));
   }
-  $('#coverage').textContent = services.length + '개 활용 안내 · ' + resources.length + '개 전자정보원 · 공식 메뉴 '
-    + directory.length + '개도 검색할 수 있어요';
+  $('#coverage').textContent = services.length + '개 이용 안내 · 논문·자료 사이트 ' + resources.length + '개 · 공식 사이트 메뉴 '
+    + directory.length + '개를 찾을 수 있어요';
   $('#checked-at').textContent = checkedAt.replaceAll('-', '.');
 
   // 오늘 날짜는 그릴 때마다 다시 계산한다(열어 둔 채 자정을 넘겨도 다음 조작 때 맞게, S14)
@@ -226,7 +235,7 @@
     const related = (relatedMap[id] || []).filter(byId);
 
     $('#detail-content').innerHTML = '<h2 id="detail-title">' + escape(s.name) + '</h2>'
-      + '<p class="detail-question">' + escape(resource ? s.subject + ' · ' + s.sourceType : menu ? s.description : s.question) + '</p>'
+      + '<p class="detail-question">' + escape(resource ? s.subject + ' · ' + sourceTypeLabel(s.sourceType) : menu ? s.description : s.question) + '</p>'
       + '<div class="detail-top">'
       + (url ? '<a class="primary" data-official href="' + escape(url) + '" target="_blank" rel="noopener noreferrer">' + sourceLabel + ' ↗</a>'
         : '<p>공식 링크를 확인할 수 없어요.</p>')
