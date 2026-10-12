@@ -177,13 +177,6 @@ def d01_symbol_only_query(site):  # → Task 6
 
 
 @test()
-def d02_free_word(site):  # → Task 5에서 삭제
-    site.open()
-    site.search('무료')
-    check(site.count() == 89, f'v2: 무료 {site.count()}건')
-
-
-@test()
 def d03_remote_noise(site):  # → Task 6
     site.open()
     site.search('교외접속')
@@ -200,10 +193,10 @@ def d04_quote_and_joined_words(site):  # → Task 6
 
 
 @test()
-def d05_book_return_missing(site):  # → Task 5
+def d05_book_return_found(site):  # Task 5에서 전환
     site.open()
     site.search('책 반납')
-    check('book-return' not in site.result_ids(), 'v2: 반납 안내 없음')
+    check('book-return' in site.result_ids()[:3], f'책 반납 상위 3개 {site.result_ids()[:3]}')
 
 
 @test()

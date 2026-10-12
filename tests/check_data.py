@@ -40,6 +40,16 @@ def run_checks(d, stage, today):
         for m in r.get('materials') or []:
             if not https(m.get('url')):
                 errs.append(f'{rid}: 매뉴얼 링크가 https 아님 {m.get("url")}')
+        for f in r.get('facts') or []:
+            if not f.get('text') or not https(f.get('source')) or not re.match(r'^\d{4}-\d{2}-\d{2}$', f.get('checkedAt', '')):
+                errs.append(f'{rid}: facts 형식(text·https source·YYYY-MM-DD checkedAt)')
+            if f.get('kind') not in (None, 'location', 'auth', 'hours'):
+                errs.append(f'{rid}: facts.kind {f.get("kind")}(location·auth·hours만, D16)')
+        if (r.get('eligibilityNote') or r.get('costNote')) and not r.get('facts'):
+            errs.append(f'{rid}: eligibilityNote·costNote의 근거 facts 없음(P1-05)')
+        for field in ('name', 'question', 'description', 'keywords'):
+            if re.search('무료|무제한', str(r.get(field) or '')):
+                errs.append(f'{rid}: 주장 필드 {field}에 무료·무제한(PRD K10)')
     fixture = json.loads((ROOT / 'tests' / 'fixtures' / 'v2-ids.json').read_text(encoding='utf-8'))
     missing = [i for k in fixture for i in fixture[k] if i not in have]
     if missing:

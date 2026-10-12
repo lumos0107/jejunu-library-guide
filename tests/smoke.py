@@ -78,7 +78,7 @@ def main():
                         print('PASS', label)
                     except Exception as e:  # noqa: BLE001
                         failures += 1
-                        print('FAIL', label, '-', str(e).splitlines()[0][:300])
+                        print('FAIL', label, '-', (str(e).splitlines() or [repr(e)])[0][:300])  # 메시지 없는 예외도 출력
                     finally:
                         ctx.close()
             browser.close()

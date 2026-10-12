@@ -49,7 +49,7 @@ window.LIBRARY_GUIDE = {
       "channel": "도서관 앱",
       "login": "필요",
       "cost": "공식 안내 확인",
-      "caution": "앱 이름은 제주대학교 모바일 도서관입니다. 앱의 실제 운영 상태는 최신 공지를 확인하세요.",
+      "caution": "앱 이름은 제주대학교 모바일 도서관입니다. 2026년 9월 iOS 27 기기에서 앱 호환성 오류 공지가 있었으니, 앱이 동작하지 않으면 최신 공지를 확인하세요.",
       "steps": [
         "앱스토어 또는 Play 스토어에서 앱 이름 검색",
         "앱 설치 후 본인 계정으로 로그인",
@@ -58,7 +58,14 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/service/mobile",
       "keywords": "학생증 출입 QR 신입생 앱 설치",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "facts": [
+        {
+          "text": "iOS 27 기기 앱 호환성 오류 공지(2026.09.17). 복구 여부는 확인하지 못함",
+          "source": "https://lib.jejunu.ac.kr/#/bbs/notice/6648",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "loan",
@@ -80,6 +87,40 @@ window.LIBRARY_GUIDE = {
       "keywords": "반납 연체 책 빌리기 예약 연장",
       "checkedAt": "2026-10-12",
       "recordKind": "guide"
+    },
+    {
+      "id": "book-return",
+      "name": "책 반납하기",
+      "question": "다 읽은 책을 반납하고 싶어",
+      "category": "books",
+      "description": "자동반납기·대출대·무인반납함에서 반납할 수 있어요. 늦으면 늦은 날수만큼 대출이 정지돼요.",
+      "audience": "all",
+      "channel": "자동반납기 · 대출대 · 무인반납함",
+      "login": "현장 반납",
+      "cost": "연체료 금액은 공식 안내에서 확인하지 못함",
+      "caution": "딸림자료가 있거나 예약된 책은 대출대에 반납해야 합니다. 연체하면 연체일수만큼 대출이 정지되고 증명서 발급도 제한됩니다. 무인반납함에 넣은 책이 언제 반납 처리되는지, 자동반납기가 어디 있는지, 다른 분관 책을 어디서 반납하는지는 공식 안내에서 확인하지 못했습니다.",
+      "steps": [
+        "자동반납기에서 직접 반납 처리하고 확인증 받기",
+        "딸림자료·예약된 책은 대출대에 반납하고 처리 상황 확인",
+        "업무시간이 끝나면 중앙도서관 1층 로비 또는 중앙디지털도서관 정문 앞 무인반납함에 넣기"
+      ],
+      "source": "https://lib.jejunu.ac.kr/#/service/circulation/return",
+      "keywords": "반납 책 반납 반납함 무인반납 자동반납기 연체 늦게 돌려주기",
+      "checkedAt": "2026-10-13",
+      "recordKind": "guide",
+      "facts": [
+        {
+          "kind": "location",
+          "text": "무인반납함: 중앙도서관 1층 로비, 중앙디지털도서관 정문 앞(업무시간 종료 이후)",
+          "source": "https://lib.jejunu.ac.kr/#/service/circulation/return",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "연체하면 연체일수만큼 대출이 정지되고, 도서 대출과 제증명 발급이 제한됨",
+          "source": "https://lib.jejunu.ac.kr/#/service/circulation/return",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "wish",
@@ -244,10 +285,29 @@ window.LIBRARY_GUIDE = {
         "도서관·열람실·좌석 선택 후 발권",
         "이용이 끝나면 앱 또는 키오스크에서 좌석 반납"
       ],
-      "source": "https://lib.jejunu.ac.kr/#/service/facility",
+      "source": "https://lib.jejunu.ac.kr/#/service/facility/readingroom",
       "keywords": "자리 발권 노트북 열람실 공부",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "eligibilityNote": "대상 미확인",
+      "facts": [
+        {
+          "kind": "location",
+          "text": "중앙도서관 1층 PC zone, 2층 1열람실, 3층 2·3·4열람실, 교대분관 3층 열람실",
+          "source": "https://lib.jejunu.ac.kr/#/service/facility/readingroom",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "좌석발급시스템으로 배정받아 이용. 최초 4시간, 1일 1회 4시간 연장",
+          "source": "https://lib.jejunu.ac.kr/#/service/facility/readingroom",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "일반열람실 안내에 이용 대상 문구가 없음(대상 미확인)",
+          "source": "https://lib.jejunu.ac.kr/#/service/facility/readingroom",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "group",
@@ -265,10 +325,35 @@ window.LIBRARY_GUIDE = {
         "입실 가능한 인증 시간에 키오스크에서 예약자 인증",
         "생성된 비밀번호로 입실하고 사용 후 정리"
       ],
-      "source": "https://lib.jejunu.ac.kr/#/service/facility",
+      "source": "https://lib.jejunu.ac.kr/#/service/facility/studyroom",
       "keywords": "팀플 팀 프로젝트 스터디 모임 회의",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "eligibilityNote": "재학생·교직원",
+      "facts": [
+        {
+          "kind": "location",
+          "text": "중앙디지털도서관 201~210호",
+          "source": "https://lib.jejunu.ac.kr/#/service/facility/studyroom",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "hours",
+          "text": "운영시간: 중앙디지털도서관과 같음(학기 중 평일 09:00~20:00, 토 09:00~13:00 / 방학 중 평일 09:00~18:00)",
+          "source": "https://lib.jejunu.ac.kr/#/service/facility/studyroom",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "이용 대상 재학생·교직원, 1일 3시간",
+          "source": "https://lib.jejunu.ac.kr/#/service/facility/studyroom",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "예약: 모바일 앱 로그인 후 7일 전부터 당일까지, 30분 단위. 예약 20분 뒤까지 입실하지 않으면 자동 취소, 한 학기 3회 이상 예약 부도 시 그 학기 사용 제한",
+          "source": "https://lib.jejunu.ac.kr/#/service/facility/studyroom",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "carrel",
@@ -286,10 +371,29 @@ window.LIBRARY_GUIDE = {
         "정해진 인증 시간 내 키오스크 인증",
         "비밀번호로 입실. 이용 중 다른 좌석 배정 불가"
       ],
-      "source": "https://lib.jejunu.ac.kr/#/service/facility",
+      "source": "https://lib.jejunu.ac.kr/#/service/facility/carrel",
       "keywords": "개인 연구 대학원 석사 박사",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "eligibilityNote": "대학원생·교직원(학부생 이용 불가)",
+      "facts": [
+        {
+          "kind": "location",
+          "text": "중앙디지털도서관 2층",
+          "source": "https://lib.jejunu.ac.kr/#/service/facility/carrel",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "이용 대상 대학원생·교직원",
+          "source": "https://lib.jejunu.ac.kr/#/service/facility/carrel",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "학부생 안내: 캐럴 이용 불가",
+          "source": "https://lib.jejunu.ac.kr/#/service/user/user01",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "maker",
@@ -307,31 +411,88 @@ window.LIBRARY_GUIDE = {
         "정해진 인증 시간 내 키오스크에서 예약자 인증",
         "배정된 비밀번호로 이용하고 사용 후 정리"
       ],
-      "source": "https://lib.jejunu.ac.kr/#/service/facility",
+      "source": "https://lib.jejunu.ac.kr/#/service/facility/makerstudio",
       "keywords": "영상 유튜브 촬영 편집 방송 스튜디오",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "eligibilityNote": "재학생·교직원",
+      "facts": [
+        {
+          "kind": "location",
+          "text": "중앙도서관 2층",
+          "source": "https://lib.jejunu.ac.kr/#/guide/hoo/floor",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "hours",
+          "text": "평일 09:00~18:00, 1일 3시간",
+          "source": "https://lib.jejunu.ac.kr/#/service/facility/makerstudio",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "이용 대상 재학생·교직원",
+          "source": "https://lib.jejunu.ac.kr/#/service/facility/makerstudio",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "예약: 모바일 앱 로그인 후 7일 전부터 당일까지. 예약 10분 뒤까지 입실하지 않으면 자동 취소, 한 학기 3회 이상 예약 부도 시 그 학기 사용 제한",
+          "source": "https://lib.jejunu.ac.kr/#/service/facility/makerstudio",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "print",
       "name": "스캔·인쇄·복사",
       "question": "자료를 스캔하거나 출력하고 싶어",
       "category": "facilities",
-      "description": "도서관 내 지정 장소에서 스캔·인쇄·복사를 할 수 있어요.",
+      "description": "중앙도서관 3층 3열람실과 중앙디지털도서관 1층 미디어라운지에서 인쇄·복사를, 지정석에서 스캔을 할 수 있어요.",
       "audience": "all",
       "channel": "현장",
       "login": "불필요",
       "cost": "스캔 무료 · 인쇄·복사 유료",
       "caution": "안내 요금은 인쇄 100원, 복사 50원이며 신용·교통카드 결제로 표시됩니다. 출력 세부 조건은 현장에서 확인하세요.",
       "steps": [
-        "공식 안내에서 가까운 장비 위치 확인",
-        "스캔은 지정석에서 직접 이용",
-        "인쇄·복사는 장비 안내와 요금을 확인 후 이용"
+        "인쇄·복사는 중앙도서관 3층 3열람실 또는 중앙디지털도서관 1층 미디어라운지로 이동",
+        "스캔은 스캔 지정석에서 직접 이용",
+        "인쇄·복사는 신용카드·교통카드로 결제"
       ],
       "source": "https://lib.jejunu.ac.kr/#/service/print",
       "keywords": "프린트 출력 PDF 복사 스캐너",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "costNote": "인쇄 100원 · 복사 50원 · 스캔 무료",
+      "facts": [
+        {
+          "kind": "location",
+          "text": "인쇄·복사: 중앙도서관 3층 3열람실, 중앙디지털도서관 1층 미디어라운지",
+          "source": "https://lib.jejunu.ac.kr/#/service/print",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "location",
+          "text": "스캔: 중앙도서관 1층 PC존·1층 제주자료실·3층 3열람실, 중앙디지털도서관 1층 미디어라운지",
+          "source": "https://lib.jejunu.ac.kr/#/service/print",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "요금: 인쇄 100원, 복사 50원(신용카드·교통카드). 스캔은 무료",
+          "source": "https://lib.jejunu.ac.kr/#/service/print",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "hours",
+          "text": "이용시간은 자료실(열람실) 운영시간과 같음",
+          "source": "https://lib.jejunu.ac.kr/#/service/print",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "hours",
+          "text": "중앙디지털도서관 미디어라운지: 학기 중 평일 09:00~20:00, 토 09:00~13:00, 일요일·공휴일 휴관",
+          "source": "https://lib.jejunu.ac.kr/#/guide/hoo/hoo",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "locker",
@@ -352,7 +513,26 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/service/locker",
       "keywords": "짐 보관 가방 사물함 추첨",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "eligibilityNote": "재학생(휴학생·연체도서가 있는 경우 신청 불가)",
+      "facts": [
+        {
+          "kind": "location",
+          "text": "중앙도서관 2층 210개, 3층 309개",
+          "source": "https://lib.jejunu.ac.kr/#/service/locker",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "이용 대상 재학생(신청 불가: 휴학생, 연체도서가 있는 경우). 신청은 매 학기초(3월·9월), 사용 기간 1학기(약 6개월)",
+          "source": "https://lib.jejunu.ac.kr/#/service/locker",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "2026-2학기 신청 경로는 \"도서관서비스 - 프로그램 신청 - 사물함 신청\"으로 공지됨(서비스 페이지의 메뉴 이름과 다름)",
+          "source": "https://lib.jejunu.ac.kr/#/bbs/notice/6547",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "bus",
@@ -380,7 +560,7 @@ window.LIBRARY_GUIDE = {
       "name": "교외접속",
       "question": "집에서도 학교 전자자료를 쓰고 싶어",
       "category": "assignment",
-      "description": "교외에서도 도서관 전자정보원에 학교 인증으로 접속할 수 있어요.",
+      "description": "교외에서도 도서관 전자정보원을 이용하도록 안내돼요. 일부 자료는 교내 등록이나 별도 계정이 필요해요.",
       "audience": "all",
       "channel": "홈페이지 → 외부 서비스",
       "login": "필요",
@@ -392,9 +572,27 @@ window.LIBRARY_GUIDE = {
         "전자정보원 목록에서 원하는 서비스 접속"
       ],
       "source": "https://lib.jejunu.ac.kr/#/research/offacess",
-      "keywords": "집 밖 교외 무료 유료 결제 논문 접근",
+      "keywords": "집 밖 교외 학교 밖 논문 접근 원격",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "facts": [
+        {
+          "kind": "auth",
+          "text": "일부 자료는 예외(WSJ·CAS·NICE bizLINE·Value-Search)",
+          "source": "https://lib.jejunu.ac.kr/#/search/er",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "공식 이용법: DB 주소 앞에 교외접속(openlink) 주소를 붙여 접속. 별도 프로그램이나 설정은 필요 없음",
+          "source": "https://lib.jejunu.ac.kr/#/research/offacess",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "예외: WSJ는 학내 IP 대역에서만 회원가입 등록, CAS는 교내에서 학교 이메일로 계정 생성, NICE bizLINE은 회사직원 초대링크 입력, Value-Search는 개인 ID 등록(ID/PW는 도서관 로그인 후 확인)",
+          "source": "https://lib.jejunu.ac.kr/#/search/er",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "domestic",
@@ -637,7 +835,7 @@ window.LIBRARY_GUIDE = {
       "channel": "홈페이지 → 외부 서비스 · 앱",
       "login": "서비스별 상이",
       "cost": "계정·구독 범위 확인",
-      "caution": "WSJ 최초 등록은 교내 IP에서 진행하도록 안내됩니다. Naxos는 동시 이용자수 제한이 있습니다.",
+      "caution": "WSJ는 회원가입 후 이용하며 학내 IP 대역에서만 등록할 수 있다고 안내됩니다. Naxos는 동시 이용자수 제한이 있습니다.",
       "steps": [
         "전자정보원 목록에서 콘텐츠 서비스 검색",
         "계정·기기·동시접속 조건 확인",
@@ -646,7 +844,15 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/search/er",
       "keywords": "모아진 잡지 신문 음악 Naxos AVON Artstor Vogue NYT New York Times WSJ 뉴스 악보",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "facts": [
+        {
+          "kind": "auth",
+          "text": "WSJ: 회원가입 후 이용, 학내 IP 대역에서만 등록 가능",
+          "source": "https://lib.jejunu.ac.kr/#/search/er",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "training",
@@ -679,7 +885,7 @@ window.LIBRARY_GUIDE = {
       "channel": "책나래 사이트 · 담당자 승인",
       "login": "필요",
       "cost": "무료 택배 안내",
-      "caution": "모든 학생에게 제공되는 일반 배송 서비스는 아닙니다. 이용자격과 담당자 승인 절차를 확인하세요.",
+      "caution": "모든 학생에게 제공되는 일반 배송 서비스는 아닙니다. 이용자격과 담당자 승인 절차를 확인하세요. 대상 자료가 서비스 페이지에는 \"도서관 자료\", 장애학생 안내에는 \"미소장 자료\"로 다르게 적혀 있고, 어느 범위가 맞는지는 확인하지 못했습니다.",
       "steps": [
         "책나래 사이트 회원가입과 나의 도서관 등록",
         "소속 도서관 담당자 승인 확인",
@@ -688,7 +894,20 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/service/booknarae",
       "keywords": "장애학생 장애인 접근성 택배 배송 방문 어려움",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "eligibilityNote": "도서관 방문이 어려운 장애인 이용자(담당자 승인 후)",
+      "facts": [
+        {
+          "text": "도서관 방문이 어려운 장애인 이용자에게 도서관 자료를 우체국 택배로 무료 제공. 도서관 담당자 승인 후 이용",
+          "source": "https://lib.jejunu.ac.kr/#/service/booknarae",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "장애학생 안내에는 책나래가 \"제주대학교 도서관 미소장 자료\" 대상으로 적혀 있음(소장 자료는 장애학생 One Stop 서비스)",
+          "source": "https://lib.jejunu.ac.kr/#/service/user/user04",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "programs",
@@ -836,7 +1055,15 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/research/correction",
       "keywords": "에디티지 Editage 영어 영문 외국어 교정 협약 할인 논문",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "costNote": "유료 협약가 · 견적 확인",
+      "facts": [
+        {
+          "text": "공동웹페이지로 의뢰한 연구자에게 협약가로 교정 제공. 무료는 저자 질문 답변·학술지 서식 설정(일반교정 1회) 같은 일부 부가서비스",
+          "source": "https://lib.jejunu.ac.kr/#/research/correction",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "enago",
@@ -857,7 +1084,15 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/research/correction-enago",
       "keywords": "이나고 Enago 영어 영문 외국어 교정 번역 저널 투고",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "costNote": "유료 협약가 · VAT 별도",
+      "facts": [
+        {
+          "text": "공동웹페이지로 의뢰한 연구자에게 협약가 제공(VAT 별도). 제주대 웹메일 외 계정도 사용 가능",
+          "source": "https://lib.jejunu.ac.kr/#/research/correction-enago",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "wifi",
@@ -911,7 +1146,7 @@ window.LIBRARY_GUIDE = {
       "channel": "홈페이지 · 최신 공지",
       "login": "안내 열람 불필요",
       "cost": "안내 열람",
-      "caution": "중앙 열람실 정규 안내는 06:00~24:00. 디지털도서관은 학기중 평일09~20·토09~13, 방학중 평일09~18로 안내됩니다. 제주자료실 시간은 상세 안내와 시험 공지 표현이 달라 확인이 필요합니다. 실시간 운영 상태는 표시하지 않습니다.",
+      "caution": "중앙도서관 1~4열람실·PC zone은 06:00~24:00(연중무휴)이고, 시험기간(중간·기말)에는 3주간 24시간 개방한다고 안내됩니다. 중앙디지털도서관은 학기 중 평일 09~20·토 09~13, 방학 중 평일 09~18이고 일요일·공휴일은 휴관입니다. 제주자료실 시간은 이용시간 페이지와 시험 공지의 표기가 달라 확인이 필요합니다. 교대분관 열람실이 시험기간 24시간 개방에 포함되는지는 확인하지 못했습니다. 실시간 운영 상태는 표시하지 않습니다.",
       "steps": [
         "건물과 공간을 정확히 구분",
         "공식 이용시간과 학기·방학 조건 확인",
@@ -921,10 +1156,18 @@ window.LIBRARY_GUIDE = {
       "keywords": "시간 운영 몇시 밤 시험기간 방학 휴관 개방 24시간",
       "checkedAt": "2026-10-12",
       "recordKind": "guide",
-      "materials": [
+      "facts": [
         {
-          "label": "시험기간 공지 (2026.10.02)",
-          "url": "https://lib.jejunu.ac.kr/#/bbs/notice/6789"
+          "kind": "hours",
+          "text": "중앙도서관 1~4열람실(2·3층)·PC zone: 06:00~24:00(연중무휴). 시험기간(중간·기말)은 3주간 24시간 개방",
+          "source": "https://lib.jejunu.ac.kr/#/guide/hoo/hoo",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "hours",
+          "text": "중앙디지털도서관 1·2자료실·그룹스터디라운지·미디어라운지 등: 학기 중 평일 09:00~20:00, 토 09:00~13:00(방학 중 평일 09:00~18:00), 일요일·공휴일 휴관",
+          "source": "https://lib.jejunu.ac.kr/#/guide/hoo/hoo",
+          "checkedAt": "2026-10-13"
         }
       ]
     },
@@ -1246,7 +1489,7 @@ window.LIBRARY_GUIDE = {
       "channel": "홈페이지 → 외부 서비스",
       "login": "개별 안내 확인",
       "cost": "구독·무료 여부 확인",
-      "caution": "목록에 등재되어 있다는 사실만으로 모든 자료의 무료·원문 이용을 보장하지 않습니다. 학교 인증, 별도 등록, 구독 연도, 동시접속 조건을 확인하세요.",
+      "caution": "표절 검사 서비스입니다. 도서관 홈페이지 로그인 후 이용하도록 안내됩니다. 검사 결과를 어떻게 제출하는지는 과제 안내를 따르세요.",
       "steps": [
         "공식 전자정보원 목록에서 서비스 이름 검색",
         "설명·매뉴얼에서 학교 인증 및 개별 등록 조건 확인",
@@ -1261,7 +1504,15 @@ window.LIBRARY_GUIDE = {
           "url": "https://manual.muhayu.com/copykiller-campus-v2"
         }
       ],
-      "duplicateCount": 1
+      "duplicateCount": 1,
+      "facts": [
+        {
+          "kind": "auth",
+          "text": "이용방법: 도서관 홈페이지 로그인 후 사용",
+          "source": "https://lib.jejunu.ac.kr/#/search/er",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "er-008",
@@ -1351,7 +1602,7 @@ window.LIBRARY_GUIDE = {
       "channel": "홈페이지 → 외부 서비스",
       "login": "개별 안내 확인",
       "cost": "구독·무료 여부 확인",
-      "caution": "목록에 등재되어 있다는 사실만으로 모든 자료의 무료·원문 이용을 보장하지 않습니다. 학교 인증, 별도 등록, 구독 연도, 동시접속 조건을 확인하세요.",
+      "caution": "공무원 시험 동영상 강의 서비스입니다. 도서관 홈페이지 로그인 후 이용하도록 안내됩니다. 들을 수 있는 강의 범위는 공식 안내에서 확인하세요.",
       "steps": [
         "공식 전자정보원 목록에서 서비스 이름 검색",
         "설명·매뉴얼에서 학교 인증 및 개별 등록 조건 확인",
@@ -1370,7 +1621,15 @@ window.LIBRARY_GUIDE = {
           "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/a88a1fa8-1db6-4655-be2a-b3d6a9e80a3d"
         }
       ],
-      "duplicateCount": 1
+      "duplicateCount": 1,
+      "facts": [
+        {
+          "kind": "auth",
+          "text": "도서관 홈페이지 로그인 후 이용 가능",
+          "source": "https://lib.jejunu.ac.kr/#/search/er",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "er-011",
@@ -1596,7 +1855,7 @@ window.LIBRARY_GUIDE = {
       "channel": "홈페이지 → 외부 서비스",
       "login": "개별 안내 확인",
       "cost": "구독·무료 여부 확인",
-      "caution": "목록에 등재되어 있다는 사실만으로 모든 자료의 무료·원문 이용을 보장하지 않습니다. 학교 인증, 별도 등록, 구독 연도, 동시접속 조건을 확인하세요.",
+      "caution": "도서관이 구독하는 저널을 알파벳순으로 찾는 도구입니다. 저널이 목록에 있어도 구독 연도에 따라 원문을 볼 수 있는 범위가 다를 수 있습니다.",
       "steps": [
         "공식 전자정보원 목록에서 서비스 이름 검색",
         "설명·매뉴얼에서 학교 인증 및 개별 등록 조건 확인",
@@ -2187,7 +2446,7 @@ window.LIBRARY_GUIDE = {
       "channel": "홈페이지 → 외부 서비스",
       "login": "개별 안내 확인",
       "cost": "구독·무료 여부 확인",
-      "caution": "목록에 등재되어 있다는 사실만으로 모든 자료의 무료·원문 이용을 보장하지 않습니다. 학교 인증, 별도 등록, 구독 연도, 동시접속 조건을 확인하세요.",
+      "caution": "참고문헌 관리 프로그램입니다. 도서관 홈페이지 로그인 후 설치 파일을 받아 개인 PC에 설치하도록 안내되며, 설치 순서(파일 저장 → 압축 해제 → 설치)를 지켜야 합니다.",
       "steps": [
         "공식 전자정보원 목록에서 서비스 이름 검색",
         "설명·매뉴얼에서 학교 인증 및 개별 등록 조건 확인",
@@ -2206,7 +2465,15 @@ window.LIBRARY_GUIDE = {
           "url": "https://www.youtube.com/playlist?list=PLdXN2GLS2aE3y_RzboT2XBWmaMKc8DyAK"
         }
       ],
-      "duplicateCount": 1
+      "duplicateCount": 1,
+      "facts": [
+        {
+          "kind": "auth",
+          "text": "로그인 후 설치 파일을 받아 개인 PC에 설치한 뒤 이용",
+          "source": "https://lib.jejunu.ac.kr/#/search/er",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "er-036",
@@ -2260,7 +2527,7 @@ window.LIBRARY_GUIDE = {
         "학교 인증이 필요한 별도 자료는 교외접속 안내도 확인"
       ],
       "source": "https://lib.jejunu.ac.kr/#/search/er",
-      "keywords": "무료 공개 오픈액세스 의학 저널",
+      "keywords": "공개 오픈액세스 의학 저널",
       "checkedAt": "2026-10-12",
       "materials": [],
       "duplicateCount": 1
@@ -2921,7 +3188,15 @@ window.LIBRARY_GUIDE = {
           "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/849c4f01-a8c6-4fb4-8d26-2bd39134af21"
         }
       ],
-      "duplicateCount": 1
+      "duplicateCount": 1,
+      "facts": [
+        {
+          "kind": "auth",
+          "text": "개인 ID 등록 때 기관계정 대신 회사직원 초대링크 입력(문의 research@jejunu.ac.kr, 064-754-2229~30)",
+          "source": "https://lib.jejunu.ac.kr/#/search/er",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "er-058",
@@ -3820,7 +4095,15 @@ window.LIBRARY_GUIDE = {
           "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/ad008369-4fa5-4054-88f9-d955ded78c72"
         }
       ],
-      "duplicateCount": 1
+      "duplicateCount": 1,
+      "facts": [
+        {
+          "kind": "auth",
+          "text": "회원가입 후 이용, 학내 IP 대역에서만 등록 가능",
+          "source": "https://lib.jejunu.ac.kr/#/search/er",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "er-086",
@@ -4007,7 +4290,15 @@ window.LIBRARY_GUIDE = {
           "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/400626fc-5a32-43b9-90ba-81ea86562100"
         }
       ],
-      "duplicateCount": 1
+      "duplicateCount": 1,
+      "facts": [
+        {
+          "kind": "auth",
+          "text": "개인별 ID 등록. 이용을 위한 ID/PW는 도서관 홈페이지 로그인 후 확인",
+          "source": "https://lib.jejunu.ac.kr/#/search/er",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "er-091",
@@ -4082,7 +4373,7 @@ window.LIBRARY_GUIDE = {
     {
       "id": "er-093",
       "recordKind": "resource",
-      "name": "CAS SciFinder",
+      "name": "CAS SciFinder Trial",
       "category": "assignment",
       "subject": "화학·생명",
       "description": "문헌·특허·화합물·반응 검색 시범서비스",
@@ -4108,12 +4399,20 @@ window.LIBRARY_GUIDE = {
           "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/07a20dfc-3529-45ba-bfc4-59ead5a91551"
         }
       ],
-      "duplicateCount": 1
+      "duplicateCount": 1,
+      "facts": [
+        {
+          "kind": "auth",
+          "text": "계정은 교내에서 학교 이메일(@jejunu.ac.kr)로 생성",
+          "source": "https://lib.jejunu.ac.kr/#/search/er",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "er-094",
       "recordKind": "resource",
-      "name": "CAS Analytical Methods",
+      "name": "CAS Analytical Methods Trial",
       "category": "assignment",
       "subject": "화학·생명",
       "description": "분석물질·기기·시약별 분석 프로토콜 시범서비스",
@@ -4139,12 +4438,20 @@ window.LIBRARY_GUIDE = {
           "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/07a20dfc-3529-45ba-bfc4-59ead5a91551"
         }
       ],
-      "duplicateCount": 1
+      "duplicateCount": 1,
+      "facts": [
+        {
+          "kind": "auth",
+          "text": "계정은 교내에서 학교 이메일(@jejunu.ac.kr)로 생성",
+          "source": "https://lib.jejunu.ac.kr/#/search/er",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "er-095",
       "recordKind": "resource",
-      "name": "CAS Formulus",
+      "name": "CAS Formulus Trial",
       "category": "assignment",
       "subject": "화학·생명",
       "description": "제형·제제·성분·제조공정 정보 시범서비스",
@@ -4170,12 +4477,20 @@ window.LIBRARY_GUIDE = {
           "url": "https://formulus.cas.org/"
         }
       ],
-      "duplicateCount": 1
+      "duplicateCount": 1,
+      "facts": [
+        {
+          "kind": "auth",
+          "text": "계정은 교내에서 학교 이메일(@jejunu.ac.kr)로 생성",
+          "source": "https://lib.jejunu.ac.kr/#/search/er",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "er-096",
       "recordKind": "resource",
-      "name": "CAS BioFinder",
+      "name": "CAS BioFinder Trial",
       "category": "assignment",
       "subject": "화학·생명",
       "description": "생명과학·신약개발 정보 시범서비스",
@@ -4201,7 +4516,15 @@ window.LIBRARY_GUIDE = {
           "url": "https://cas-biofinder.zendesk.com/hc/en-us"
         }
       ],
-      "duplicateCount": 2
+      "duplicateCount": 2,
+      "facts": [
+        {
+          "kind": "auth",
+          "text": "계정은 교내에서 학교 이메일(@jejunu.ac.kr)로 생성",
+          "source": "https://lib.jejunu.ac.kr/#/search/er",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "er-097",
@@ -4263,7 +4586,7 @@ window.LIBRARY_GUIDE = {
         "공식 안내에 따라 계정 인증 또는 전용 앱·뷰어 이용"
       ],
       "source": "https://lib.jejunu.ac.kr/#/search/er-ebook",
-      "keywords": "예스24 yes24 크레마클럽 신간 전자책 ebook 무제한",
+      "keywords": "예스24 yes24 크레마클럽 신간 전자책 ebook",
       "checkedAt": "2026-10-12",
       "materials": [],
       "duplicateCount": 1
@@ -6329,7 +6652,7 @@ window.LIBRARY_GUIDE = {
     "additionalEbookServices": 2,
     "resourceCount": 98,
     "menuCount": 89,
-    "guideCount": 47,
+    "guideCount": 48,
     "duplicateMerged": [
       "CAS BioFinder"
     ],
@@ -6337,6 +6660,7 @@ window.LIBRARY_GUIDE = {
   },
   "related": {
     "loan": [
+      "book-return",
       "night",
       "wish"
     ],
@@ -6461,6 +6785,10 @@ window.LIBRARY_GUIDE = {
     ],
     "enago": [
       "editage"
+    ],
+    "book-return": [
+      "loan",
+      "my-library"
     ]
   },
   "bookCases": {
