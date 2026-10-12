@@ -7,9 +7,7 @@
   const records = [...services, ...resources, ...directory];
 
   const $ = selector => document.querySelector(selector);
-  const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  }[c]));
+  const { escapeHtml: escape, safeUrl } = window.LG;
   const byId = id => records.find(s => s.id === id);
   const categoryName = id => categories.find(c => c.id === id)?.name || id;
   const kindName = kind => ({ guide: '이용 가이드', resource: '전자정보원', menu: '공식 메뉴 위치' }[kind] || '이용 가이드');
@@ -43,7 +41,7 @@
       + escape(s.name) + '</h3>'
       + (!menu ? '<p class="service-question">' + escape(resource ? s.subject + ' 분야에서 활용하기' : s.question) + '</p>' : '')
       + '<p class="service-description' + (menu ? ' official-path' : '') + '">' + escape(s.description) + '</p>'
-      + '<div class="badges">' + badges + '</div><button type="button" data-open="' + s.id + '" aria-label="'
+      + '<div class="badges">' + badges + '</div><button type="button" data-open="' + escape(s.id) + '" aria-label="'
       + escape(s.name) + ' ' + kindName(s.recordKind) + ' 보기">'
       + (resource ? '설명·매뉴얼 보기' : menu ? '공식 메뉴 위치 보기' : '이용 방법 보기')
       + '<span aria-hidden="true">↗</span></button></article>';
@@ -100,11 +98,11 @@
   }
 
   // 첫 그리기
-  $('#category-grid').innerHTML = categories.map((c, i) => '<button type="button" class="category-card" data-category="' + c.id
+  $('#category-grid').innerHTML = categories.map((c, i) => '<button type="button" class="category-card" data-category="' + escape(c.id)
     + '"><span class="category-index"><span>0' + (i + 1) + ' / ' + escape(c.name)
     + '</span><span aria-hidden="true">↗</span></span><h3>' + escape(c.question) + '</h3><p>' + escape(c.desc) + '</p></button>').join('');
   $('#category-tabs').innerHTML = [{ id: 'all', name: '모든 상황' }, ...categories].map(c => '<button type="button" data-category="'
-    + c.id + '" aria-pressed="' + (c.id === 'all') + '">' + escape(c.name) + '</button>').join('');
+    + escape(c.id) + '" aria-pressed="' + (c.id === 'all') + '">' + escape(c.name) + '</button>').join('');
   $('#scope-tabs').innerHTML = [['all', '전체 검색', records.length], ['guide', '이용 가이드', services.length],
     ['resource', '전자정보원', resources.length], ['menu', '공식 메뉴', directory.length]]
     .map(([id, label, count]) => '<button type="button" data-scope="' + id + '" aria-pressed="' + (id === 'all') + '">' + label
@@ -136,7 +134,7 @@
     const sourceLabel = resource
       ? (s.source.endsWith('er-ebook') ? '공식 전자책 목록에서 확인하기' : '공식 전자정보원 목록에서 이름 검색하기')
       : menu ? '공식 메뉴로 이동하기' : '공식 안내에서 확인하기';
-    const materials = (s.materials || []).filter(m => /^https?:\/\//i.test(m.url));
+    const materials = (s.materials || []).filter(m => safeUrl(m.url));
     $('#detail-content').innerHTML = '<h2 id="detail-title">' + escape(s.name) + '</h2><p class="detail-question">'
       + escape(resource ? s.subject + ' · ' + s.sourceType : menu ? s.description : s.question) + '</p><p class="kind-note">'
       + escape(kindNote) + '</p><p class="detail-summary">' + escape(s.description) + '</p><dl class="detail-facts"><div><dt>이용 경로</dt><dd>'
@@ -150,10 +148,10 @@
       + (materials.length ? '<h3>공식 제공 매뉴얼·관련 링크</h3><div class="material-list">' + materials.map(m => '<a href="'
         + escape(m.url) + '" target="_blank" rel="noopener noreferrer">' + escape(m.label) + ' ↗</a>').join('')
         + '</div><p class="material-note">목록에서 링크를 확인했으며 각 파일의 내용을 모두 읽거나 다운로드한 것은 아닙니다.</p>' : '')
-      + (relatedMap[id] ? '<h3>함께 보면 좋은 안내</h3><div class="related">' + relatedMap[id].map(key => '<button type="button" data-open="'
-        + key + '">' + escape(byId(key).name) + '</button>').join('') + '</div>' : '')
-      + '<div class="detail-source"><a class="primary" href="' + escape(s.source) + '" target="_blank" rel="noopener noreferrer">'
-      + sourceLabel + ' ↗</a><p>공개 안내 확인일 ' + escape(s.checkedAt) + ' · 비공식 학생용 가이드<br>이 사이트는 학교 계정·개인정보를 수집하지 않습니다. 실제 서비스는 별도 인증이 필요할 수 있습니다.</p></div>';
+      + (relatedMap[id] ? '<h3>함께 보면 좋은 안내</h3><div class="related">' + relatedMap[id].filter(byId).map(key => '<button type="button" data-open="'
+        + escape(key) + '">' + escape(byId(key).name) + '</button>').join('') + '</div>' : '')
+      + '<div class="detail-source">' + (safeUrl(s.source) ? '<a class="primary" href="' + escape(safeUrl(s.source))
+      + '" target="_blank" rel="noopener noreferrer">' + sourceLabel + ' ↗</a>' : '<p>공식 링크를 확인할 수 없어요.</p>') + '<p>공개 안내 확인일 ' + escape(s.checkedAt) + ' · 비공식 학생용 가이드<br>이 사이트는 학교 계정·개인정보를 수집하지 않습니다. 실제 서비스는 별도 인증이 필요할 수 있습니다.</p></div>';
     if (!dialog.open) dialog.showModal();
     dialog.scrollTop = 0;
     $('#close-dialog').focus();
@@ -196,8 +194,8 @@
       const result = bookCases[book.dataset.book];
       document.querySelectorAll('[data-book]').forEach(b => b.setAttribute('aria-pressed', String(b === book)));
       $('#book-result').hidden = false;
-      $('#book-result').innerHTML = '<p>' + escape(result.text) + '</p>' + result.ids.map(id => '<button type="button" data-open="'
-        + id + '">' + escape(byId(id).name) + ' 이용 방법 ↗</button>').join('');
+      $('#book-result').innerHTML = '<p>' + escape(result.text) + '</p>' + result.ids.filter(byId).map(id => '<button type="button" data-open="'
+        + escape(id) + '">' + escape(byId(id).name) + ' 이용 방법 ↗</button>').join('');
     }
   });
 
