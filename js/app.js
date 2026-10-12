@@ -282,7 +282,7 @@
     if (scope) {
       e.preventDefault();
       changeScope(scope.dataset.scope);
-      if (scope.tagName === 'A') $('#services').scrollIntoView({ behavior: 'smooth' });
+      if (scope.tagName === 'A') $('#services').scrollIntoView({ behavior: scrollBehavior() });
       return;
     }
     const cat = e.target.closest('[data-category]');
@@ -293,7 +293,7 @@
         state.query = '';
         $('#search-input').value = '';
         state.scope = 'guide';
-        $('#services').scrollIntoView({ behavior: 'smooth' });
+        $('#services').scrollIntoView({ behavior: scrollBehavior() });
       }
       render();
       return;
@@ -319,6 +319,7 @@
     state.query = $('#search-input').value;
     state.limit = 12;
     render();
+    $('#services').scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
   });
   $('#audience').addEventListener('change', e => { state.audience = e.target.value; state.limit = 12; render(); });
   for (const [id, key] of [['resource-subject', 'subject'], ['resource-type', 'sourceType'], ['resource-access', 'access'], ['menu-group', 'menuGroup']]) {
@@ -333,6 +334,20 @@
     state.limit = 12;
     if (widen) changeScope('all');
     else render();
+  });
+
+  const scrollBehavior = () => (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
+
+  // 헤더가 화면 위에 붙어 있으므로 스크롤이 헤더 아래에서 멈추게 한다(S12)
+  const setScrollPadding = () => {
+    document.documentElement.style.scrollPaddingTop = Math.ceil($('.site-header').getBoundingClientRect().height + 12) + 'px';
+  };
+  setScrollPadding();
+  window.addEventListener('resize', setScrollPadding);
+
+  $('.header-search').addEventListener('click', () => {
+    $('.top-search').scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
+    $('#search-input').focus({ preventScroll: true });
   });
 
   render();

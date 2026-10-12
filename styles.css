@@ -307,7 +307,7 @@ h2 {
   gap:16px;
   align-items:center;
 }
-.search-row form {
+#search-form {
   display:flex;
   flex:1;
   min-width:0;
@@ -316,7 +316,7 @@ h2 {
   background:white;
   overflow:hidden;
 }
-.search-row input {
+#search-form input {
   min-width:0;
   flex:1;
   border:0;
@@ -325,7 +325,7 @@ h2 {
   outline-offset:-4px;
   font-size:14px;
 }
-.search-row form button {
+#search-form button {
   margin:6px;
   border:0;
   border-radius:6px;
@@ -648,9 +648,6 @@ dialog li {
   .brand span {
     font-size:10px;
   }
-  nav>a:not(.official) {
-    display:none;
-  }
   .official {
     font-size:11px;
     padding:7px 10px;
@@ -717,11 +714,11 @@ dialog li {
   .service-card {
     padding:20px;
   }
-  .search-row input {
+  #search-form input {
     font-size:12px;
     padding:13px 12px;
   }
-  .search-row form button {
+  #search-form button {
     padding:6px 14px;
   }
   .tabs {
@@ -963,9 +960,6 @@ dialog li {
   .service-card h3 {
     font-size:18px;
   }
-  .site-header nav>a[data-scope] {
-    display:none;
-  }
 }
 .notices {
   margin: 16px auto 0;
@@ -1050,4 +1044,59 @@ dialog li {
   border-radius: 999px;
   background: var(--white);
   color: var(--green);
+}
+.top-search {
+  margin: 0 0 20px;
+}
+.top-search input {
+  min-height: 48px;
+}
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--paper);
+  /* 가운데 정렬된 헤더의 바탕을 화면 양옆까지 칠한다 */
+  box-shadow: 0 0 0 100vmax var(--paper);
+  clip-path: inset(0 -100vmax);
+}
+.header-search {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--green);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--green);
+}
+@media (max-width: 560px) {
+  nav {
+    display: flex;
+    overflow-x: auto;
+    gap: 4px;
+  }
+  nav > a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    white-space: nowrap;
+  }
+}
+/* 데스크톱: 검색 버튼을 메뉴 바로 왼쪽에 붙인다 */
+.header-search {
+  margin-left: auto;
+}
+@media (max-width: 560px) {
+  /* 모바일: 첫 줄 = 이름 + 검색 버튼, 둘째 줄 = 메뉴(가로 스크롤) */
+  .site-header {
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 4px;
+    padding: 10px 16px 6px;
+  }
+  .site-header nav {
+    order: 3;
+    width: 100%;
+  }
 }

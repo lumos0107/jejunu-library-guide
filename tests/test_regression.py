@@ -180,10 +180,3 @@ def d08_a11y_structure(site):  # → Task 11
     site.open()
     check(site.page.locator('#category-grid button h3').count() == 6, 'v2: button 안 h3')
     check(site.page.get_attribute('#scope-tabs', 'role') is None, 'v2: 탭 묶음 role 없음')
-
-
-@test(viewport='mobile')
-def d09_mobile_search_far(site):  # → Task 10
-    site.open()
-    top = site.page.locator('#search-input').bounding_box()['y']
-    check(top > 844, f'v2: 검색창 {top}px')
