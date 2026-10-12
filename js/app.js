@@ -1,5 +1,5 @@
 // 도서관의 쓸모 — 화면 코드
-// 로딩 순서(index.html, 모두 defer): data.js → js/lib.js → js/app.js
+// 로딩 순서(index.html, 모두 defer): data.js → js/config.js → js/lib.js → js/app.js
 (() => {
   'use strict';
 
@@ -129,6 +129,9 @@
       + (filters.length > 1 ? '<button type="button" data-clear="all">모두 해제</button>' : '');
     $('#active-filters').hidden = filters.length === 0;
     $('.audience-control').hidden = !audienceMatters();
+    const fb = window.LG.feedbackUrl(window.LG_CONFIG, { query: state.query });
+    $('#feedback-link').hidden = !fb || currentMatches.length !== 0;
+    if (fb) $('#feedback-link').href = fb;
     let recovery = null;
     if (currentMatches.length === 0 && !invalidQuery) {
       const c = recoveryCounts();
@@ -261,7 +264,9 @@
       + (related.length ? '<h3>함께 보면 좋은 안내</h3><div class="related">' + related.map(key => '<button type="button" data-open="'
         + escape(key) + '">' + escape(byId(key).name) + '</button>').join('') + '</div>' : '')
       + '<p class="detail-disclaimer">공개 안내 확인일 ' + escape(s.checkedAt) + ' · 비공식 학생용 가이드. 학교 계정·개인정보를 수집하지 않아요. '
-      + '원문 표기에 오류·과거 정보가 있을 수 있으니 이용 직전 공식 안내를 확인하세요.</p>';
+      + '원문 표기에 오류·과거 정보가 있을 수 있으니 이용 직전 공식 안내를 확인하세요.</p>'
+      + (() => { const u = window.LG.feedbackUrl(window.LG_CONFIG, { card: id });
+        return u ? '<p><a class="feedback-link" href="' + escape(u) + '" target="_blank" rel="noopener noreferrer">이 안내가 틀렸나요? 알려 주세요 ↗</a></p>' : ''; })();
     if (!dialog.open) dialog.showModal();
     dialog.scrollTop = 0;
     $('#close-dialog').focus();

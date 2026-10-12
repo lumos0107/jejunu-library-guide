@@ -70,4 +70,16 @@
   LG.isActiveOn = (item, today) => (!item.startsOn || item.startsOn <= today) && (!item.endsOn || today <= item.endsOn);
   LG.activeNotices = (notices, today, taskId) => (notices || [])
     .filter(n => LG.isActiveOn(n, today) && (!taskId || (n.taskIds || []).includes(taskId)));
+
+  // 구글 폼 미리 채우기 주소. 폼이 없으면 '' (링크를 숨긴다).
+  LG.feedbackUrl = (config, values = {}) => {
+    const base = LG.safeUrl(config && config.feedbackFormUrl);
+    if (!base) return '';
+    const fields = (config && config.feedbackFields) || {};
+    const params = ['usp=pp_url'];
+    for (const key of ['query', 'card']) {
+      if (fields[key] && values[key]) params.push(encodeURIComponent(fields[key]) + '=' + encodeURIComponent(values[key]));
+    }
+    return base + (base.includes('?') ? '&' : '?') + params.join('&');
+  };
 })();
