@@ -2,13 +2,13 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** PRD v1.0의 ①(P1-01~P1-15)을 구현해, 틀린 정보·검색·상세·모바일·접근성 문제를 고친 정적 사이트를 조용히 배포할 수 있는 상태로 만든다.
+**Goal:** PRD v1.1의 ①(P1-01~P1-15)을 구현해, 틀린 정보·검색·상세·모바일·접근성 문제를 고친 정적 사이트를 조용히 배포할 수 있는 상태로 만든다.
 
 **Architecture:** 빌드 도구 없는 정적 사이트를 유지한다. 데이터는 `data/*.json`(편집 원본)에서 `tools/build_data.py`가 `data.js`를 만들고, 화면 코드는 일반 스크립트 `js/config.js` → `js/lib.js`(순수 함수, `window.LG`) → `js/app.js`(DOM) 순서로 읽는다. 검증은 외부 패키지 없는 Python 테스트 실행기(`tests/smoke.py`)와 Playwright로 한다.
 
 **Tech Stack:** HTML·CSS·바닐라 JS(일반 `<script defer>`), Python 3.14(도구·테스트), Playwright 1.62(Chromium·WebKit), Node 24(P1-03 일회성 추출만).
 
-**Spec:** [PRD.md](PRD.md) v1.0, [RESEARCH.md](RESEARCH.md), [research/code_map.md](research/code_map.md), [research/official_facts.md](research/official_facts.md), [DECISIONS.md](DECISIONS.md)
+**Spec:** [PRD.md](PRD.md) v1.1, [RESEARCH.md](RESEARCH.md), [research/code_map.md](research/code_map.md), [research/official_facts.md](research/official_facts.md), [DECISIONS.md](DECISIONS.md), [REVIEW-2026-10-13-3.md](REVIEW-2026-10-13-3.md)(3차 평가의 R 번호)
 
 ## Global Constraints
 
@@ -20,7 +20,10 @@
 - 편집 원본은 `data/*.json`. `data.js`는 생성물이며 직접 고치지 않는다(2장 6번).
 - 기존 자료 98개·메뉴 89개 ID 유실 금지. 기준 목록 `tests/fixtures/v2-ids.json`(2장 7번, M1).
 - `_비공개/`는 커밋 금지(2장 8번).
-- push 전 검사 순서: 생성 → `git diff --exit-code data.js` → 데이터 검사 → Playwright → `_비공개/` 제외 확인(2장 9번, K17).
+- push 전 검사 순서: 작업 트리 깨끗함(`git status --porcelain`이 비어 있음) → 생성 → `git diff --exit-code data.js` → 데이터 검사 → Playwright → `_비공개/` 제외 확인(2장 9번, K17, D16).
+- 로컬 자동 검사는 file://과 `http://127.0.0.1` 서버로 한다. https는 배포 주소에서 검사한다(D16).
+- 사실 하나에 출처 하나: 고치는 변동 사실(시간·요금·대상·위치·인증)은 `facts`에 출처·확인일과 함께 넣는다. 확인하지 못한 것은 쓰지 않거나 "확인하지 못함"으로 쓴다. `audience` 값은 바꾸지 않는다(RESEARCH 5장).
+- 도구가 저장소 파일을 쓸 때는 `newline='\n'`(LF)으로 쓴다. 이 저장소는 `core.autocrlf=true`이고 작업 폴더의 data.js는 LF다. 파일 비교는 텍스트(줄바꿈 정규화)로 한다.
 - 데이터·주소 값을 믿지 않는다. 화면 삽입은 이스케이프, 링크는 https만(2장 10번).
 - 공식 사이트 기준 주소: `https://lib.jejunu.ac.kr/`.
 - 날짜는 `YYYY-MM-DD` 문자열, 기기 로컬 날짜 기준, 시작·종료일 당일 포함. `new Date('YYYY-MM-DD')`·`toISOString()`으로 오늘 날짜를 만들지 않는다(5장 날짜 규칙).
@@ -61,6 +64,7 @@
 | `tools/extract_v2.py` | v2 → data/*.json 추출·검증(1회) | Task 3 |
 | `tools/build_data.py` | data/*.json → data.js, `--check` | Task 3 |
 | `tools/normalize.py` | Python 정규화(검사용) | Task 6 |
+| `tools/perf.py` | 첫 화면·검색 시간과 data.js 크기 측정(PRD 7장, 기록용) | Task 6 |
 | `tools/gate.py` | push 전 검사 순서 실행 | Task 13 |
 | `tools/deploy_check.py` | 배포본 = HEAD 확인 후 배포 주소 테스트 | Task 13 |
 | `tools/v2-base.txt` | 추출 기준 커밋 | Task 3 |
@@ -69,6 +73,7 @@
 | `tests/check_data.py` | 데이터 검사(stage 1) | Task 4, 확장 5·6·7 |
 | `tests/fixtures/v2-ids.json` | v2 ID 234개 | Task 1 |
 | `docs/DEV.md` | 로딩 순서·전역·명령·배포 방법 | Task 2, 갱신 13 |
+| `docs/v3/QA-1.md` | ① 검증 기록(성능·크기·교차 리뷰·실제 기기 체크리스트) | Task 14 |
 
 ## 실행 명령 요약
 
@@ -78,6 +83,7 @@ python tools/build_data.py --check    # 생성물 일치 확인(쓰지 않음)
 python tests/check_data.py --stage 1  # 데이터 검사
 python tests/smoke.py --stage 1 --browsers chromium,webkit --modes file,http
 python tools/gate.py                  # push 전 전체 검사(Task 13부터)
+python tools/perf.py                  # 성능·크기 측정(Task 6부터, 기록용)
 ```
 
 ---
@@ -111,7 +117,7 @@ python tools/gate.py                  # push 전 전체 검사(Task 13부터)
 - Produces:
   - `datajs.load(path='data.js') -> dict`, `datajs.dump(obj) -> str`, `datajs.PREFIX = 'window.LIBRARY_GUIDE = '`
   - `harness.test(stage=1, viewport='desktop')` 데코레이터, `harness.check(cond, msg)`, `harness.REGISTRY`
-  - `helpers.Site(page, base, errors)`: `open(hash_='')`, `search(q)`, `count()`, `result_ids()`, `scope(s)`, `category_tab(cid)`, `category_card(cid)`, `select(sel_id, value)`, `load_more()`, `card_count()`, `open_detail(rid)`, `open_any(rid)`, `detail_text()`, `official_href()`, `close_detail()`, `dialog_open()`, `book_case(key)`, `console_errors()`, `data()`, `query_value()`
+  - `helpers.Site(page, base, errors)`: `open(hash_='')`, `search(q)`, `count()`, `result_ids()`, `scope(s)`, `category_tab(cid)`, `category_card(cid)`, `select(sel_id, value)`, `load_more()`, `card_count()`, `open_detail(rid)`, `open_any(rid)`, `detail_text()`, `official_href()`, `close_detail()`, `dialog_open()`, `book_case(key)`, `console_errors()`, `data()`, `query_value()`, `close_with_button()`, `open_from_hero(rid)`, `material_links()`, `category_card_count()`, `resource_filters_visible()`
   - `helpers.VIEWPORTS = {'desktop': {'width':1440,'height':900}, 'mobile': {'width':390,'height':844}}`
   - `smoke.py` CLI: `--stage N --browsers a,b --modes file,http --base URL -k 이름`
 
@@ -151,6 +157,8 @@ def dump(obj):
 Run: `python -c "import sys;sys.path.insert(0,'tools');import datajs,pathlib;t=pathlib.Path('data.js').read_text(encoding='utf-8');print(datajs.dump(datajs.load())==t)"`
 Expected: `True` (False면 PREFIX·들여쓰기를 data.js 첫 줄과 맞춘다)
 
+줄바꿈: 비교는 `read_text`(줄바꿈 정규화)로 하고, 쓸 때는 `newline='\n'`으로 LF를 쓴다(Global Constraints).
+
 - [ ] **Step 4: v2 ID 기준 목록 생성 도구** — `tools/make_v2_ids.py`
 
 ```python
@@ -167,7 +175,7 @@ data = datajs.load(ROOT / 'data.js')
 ids = {k: [r['id'] for r in data[k]] for k in ('services', 'resources', 'directory')}
 out = ROOT / 'tests' / 'fixtures' / 'v2-ids.json'
 out.parent.mkdir(parents=True, exist_ok=True)
-out.write_text(json.dumps(ids, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+out.write_text(json.dumps(ids, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
 print(out, {k: len(v) for k, v in ids.items()})
 ```
 
@@ -273,12 +281,29 @@ class Site:
         self.page.keyboard.press('Escape')
         self.page.wait_for_timeout(120)
 
+    def close_with_button(self):
+        self.page.click('#close-dialog')
+        self.page.wait_for_timeout(120)
+
     def dialog_open(self):
         return self.page.locator('#detail-dialog[open]').count() == 1
 
     def book_case(self, key):
         self.page.click(f'[data-book="{key}"]')
         self.page.wait_for_timeout(80)
+
+    def open_from_hero(self, rid):
+        self.page.click(f'.hero-aside [data-open="{rid}"]')
+        self.page.wait_for_selector('#detail-dialog[open]')
+
+    def material_links(self):
+        return self.page.eval_on_selector_all('#detail-content .material-list a', 'els => els.map(e => e.getAttribute("href"))')
+
+    def category_card_count(self):
+        return self.page.locator('#category-grid .category-card').count()
+
+    def resource_filters_visible(self):
+        return self.page.locator('#resource-filters').is_visible()
 
     def console_errors(self):
         return [e for e in self.errors if 'favicon' not in e]
@@ -357,10 +382,14 @@ def main():
                     page = ctx.new_page()
                     errors = []
                     page.on('pageerror', lambda e, errs=errors: errs.append(str(e)))
-                    page.on('console', lambda m, errs=errors: errs.append(m.text) if m.type == 'error' else None)
+                    page.on('console', lambda m, errs=errors: errs.append(f'{m.text} @ {m.location.get("url", "")}')
+                            if m.type == 'error' else None)
                     label = f'[{bname}/{mode}] {t["name"]}'
                     try:
-                        t['fn'](Site(page, base, errors))
+                        site = Site(page, base, errors)
+                        t['fn'](site)
+                        # 지난 35개 항목의 '콘솔·페이지 오류 없음'을 모든 테스트에 적용한다(RESEARCH 6장)
+                        harness.check(not site.console_errors(), f'콘솔·페이지 오류: {site.console_errors()[:3]}')
                         print('PASS', label)
                     except Exception as e:  # noqa: BLE001
                         failures += 1
@@ -378,7 +407,7 @@ if __name__ == '__main__':
 
 - [ ] **Step 8: 회귀 테스트 작성** — `tests/test_regression.py`
 
-`q*` = 유지할 약속(수치는 데이터에서 계산), `d*` = v2 동작 고정값(해당 작업에서 기대값을 바꾼다).
+`q*` = 유지할 약속(수치는 데이터에서 계산), `d*` = v2 동작 고정값(해당 작업에서 기대값을 바꾼다). 지난 Playwright 확인 35개 항목과의 대응은 RESEARCH 6장 표다. 표의 모든 항목이 q01~q12나 실행기의 오류 검사(Step 7)에 들어 있어야 한다.
 
 ```python
 """① 회귀 테스트. q* = 유지할 약속, d* = v2 동작 고정값(표시된 작업에서 기대값을 바꾼다)."""
@@ -429,6 +458,7 @@ def q03_initial_list_and_load_more(site):
     site.load_more()
     check(site.card_count() == 24, '더 보기 뒤 24개')
     check(site.page.inner_text('#checked-at').strip() != '', '확인일 표시 없음')
+    check(site.category_card_count() == len(d['categories']), f'상황 카드 {site.category_card_count()}')
 
 
 @test()
@@ -448,6 +478,7 @@ def q05_resource_and_menu_filters(site):
     site.open()
     site.scope('resource')
     check(site.count() == 98, f'전자정보원 {site.count()}')
+    check(site.resource_filters_visible(), '전자정보원 필터 영역이 안 보임')
     site.select('resource-access', '공개자료 안내')
     check(site.count() == 6, f'공개자료 {site.count()}')
     site.select('resource-access', '시범서비스')
@@ -471,6 +502,7 @@ def q06_statista_detail(site):
     check(ids, 'Statista 결과 없음')
     site.open_detail(ids[0])
     check('Statista' in site.detail_text(), '상세에 Statista 없음')
+    check(len(site.material_links()) >= 1, '매뉴얼 링크 없음')
     check(site.official_href() == 'https://lib.jejunu.ac.kr/#/search/er', f'공식 링크 {site.official_href()}')
     site.close_detail()
     check(not site.dialog_open(), 'Escape로 닫히지 않음')
@@ -482,6 +514,7 @@ def q07_undergrad_filter(site):
     d = site.data()
     grad = sum(1 for s in d['services'] if s.get('audience') == 'grad')
     site.scope('guide')
+    check(site.count() == len(d['services']), f'가이드 {site.count()}')
     site.select('audience', 'undergrad')
     check(site.count() == len(d['services']) - grad, f'가이드+학부생 {site.count()}')
     site.scope('all')
@@ -533,6 +566,15 @@ def q11_mobile_basics(site):
     check(box['x'] >= 0 and box['x'] + box['width'] <= 390, f'상세 폭 {box}')
     site.close_detail()
     check(not site.dialog_open(), 'Escape로 닫히지 않음')
+
+
+@test()
+def q12_hero_button_and_close(site):
+    site.open()
+    site.open_from_hero('maker')
+    check('메이커' in site.detail_text(), '히어로 버튼으로 메이커 상세가 열리지 않음')
+    site.close_with_button()
+    check(not site.dialog_open(), '닫기 버튼으로 닫히지 않음')
 
 
 # ---- v2 동작 고정값: 표시된 작업에서 기대값을 바꾼다 ----
@@ -614,13 +656,13 @@ def d10_vague_badge(site):  # → Task 8
 - [ ] **Step 9: 실행해 전부 통과 확인 (v2 그대로)**
 
 Run: `python tests/smoke.py --stage 1 --browsers chromium,webkit --modes file,http`
-Expected: 모든 줄 `PASS`, 실패 0(마지막 줄의 두 숫자가 같음) (21개 × 브라우저 2 × 모드 2). 실패하면 사이트가 아니라 테스트의 선택자·기대값을 v2 실측에 맞춘다.
+Expected: 모든 줄 `PASS`, 실패 0(마지막 줄의 두 숫자가 같음) (22개 × 브라우저 2 × 모드 2 = 88줄). 실패하면 사이트가 아니라 테스트의 선택자·기대값을 v2 실측에 맞춘다.
 
 - [ ] **Step 10: 커밋**
 
 ```bash
 git add .gitignore tools/datajs.py tools/make_v2_ids.py tests/
-git commit -m "v3①: 회귀 테스트 기반 추가 (P1-01)" -m "행동 단위 도우미, 외부 의존성 없는 실행기, 유지할 약속 11개와 v2 고정값 10개, v2 ID 기준 목록" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
+git commit -m "v3①: 회귀 테스트 기반 추가 (P1-01)" -m "행동 단위 도우미, 외부 의존성 없는 실행기, 유지할 약속 12개(지난 35개 항목 포함)와 v2 고정값 10개, 모든 테스트 끝의 콘솔 오류 검사, v2 ID 기준 목록" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -662,7 +704,9 @@ def snapshot(site, out):
     res = {}
     with sync_playwright() as pw:
         b = pw.chromium.launch()
-        for name, vp in (('desktop', {'width': 1440, 'height': 900}), ('mobile', {'width': 390, 'height': 844})):
+        # 800px: 561~850px 구간(두 미디어쿼리 사이)의 회귀를 잡는다(R20)
+        for name, vp in (('desktop', {'width': 1440, 'height': 900}), ('tablet', {'width': 800, 'height': 1000}),
+                         ('mobile', {'width': 390, 'height': 844})):
             p = b.new_page(viewport=vp)
             p.goto(pathlib.Path(site).resolve().joinpath('index.html').as_uri())
             p.wait_for_selector('#service-grid .service-card')
@@ -748,7 +792,7 @@ def format_css(src):
 
 if __name__ == '__main__':
     p = pathlib.Path(sys.argv[1])
-    p.write_text(format_css(p.read_text(encoding='utf-8')), encoding='utf-8')
+    p.write_text(format_css(p.read_text(encoding='utf-8')), encoding='utf-8', newline='\n')
 ```
 
 Run: `python tools/format_css.py styles.css && python tools/css_snapshot.py . .tmp/css-after.json && python tools/css_snapshot.py --compare .tmp/css-before.json .tmp/css-after.json`
@@ -756,7 +800,7 @@ Expected: `차이 없음`
 
 - [ ] **Step 4: 중복 규칙 정리**
 
-RESEARCH 7장·code_map 4장의 중복 6곳(`.result-heading`, `.result-heading p`, `.service-card h3`, `.coverage`, `.kind-note`, `button`)을 하나씩 처리한다. 규칙: **나중 블록의 선언이 이기므로**, 앞 블록에만 있는 속성을 나중 블록으로 옮기고 앞 블록을 지운다. 한 곳을 고칠 때마다 아래를 실행하고, `차이 없음`이 아니면 그 한 곳만 되돌린 뒤 `/* 중복 유지: 미디어쿼리 순서 때문 */` 주석을 단다.
+RESEARCH 7장·code_map 4장의 중복 6곳(`.result-heading`, `.result-heading p`, `.service-card h3`, `.coverage`, `.kind-note`, `button`)을 하나씩 처리한다. 먼저 중복마다 앞 블록의 속성을 둘로 나눠 `.tmp/css-dedupe.txt`에 한 줄씩 적는다(R20): **덮어씀**(나중 블록에 같은 속성이 있어 이미 지는 값 → 지운다), **추가**(앞 블록에만 있는 값 → 나중 블록으로 옮긴다). 형식: `선택자 — 덮어씀: 속성들 / 추가: 속성들`. 규칙: **나중 블록의 선언이 이기므로**, 추가 속성을 나중 블록으로 옮기고 앞 블록을 지운다. 한 곳을 고칠 때마다 아래를 실행하고, `차이 없음`이 아니면 그 한 곳만 되돌린 뒤 `/* 중복 유지: 미디어쿼리 순서 때문 */` 주석을 단다.
 
 Run: `python tools/css_snapshot.py . .tmp/css-after.json && python tools/css_snapshot.py --compare .tmp/css-before.json .tmp/css-after.json`
 Expected: `차이 없음`
@@ -1037,7 +1081,7 @@ index.html이 아래 순서로 읽는다(모두 `defer`라 문서 순서대로 �
 
 ```bash
 git add styles.css index.html js/app.js tools/format_css.py tools/css_snapshot.py docs/DEV.md
-git commit -m "v3①: 코드 포맷 정리 (P1-02)" -m "app.js를 js/app.js로 옮겨 풀어 쓰고 styles.css를 풀어 중복 정리. 계산된 스타일 스냅숏과 회귀 테스트로 동작 동일 확인" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
+git commit -m "v3①: 코드 포맷 정리 (P1-02)" -m "app.js를 js/app.js로 옮겨 풀어 쓰고 styles.css를 풀어 중복 정리. 계산된 스타일 스냅숏(1440·800·390px)과 회귀 테스트로 동작 동일 확인" -m "$(cat .tmp/css-dedupe.txt)" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -1104,7 +1148,7 @@ def main():
         same = target.exists() and target.read_text(encoding='utf-8') == text
         print('data.js 일치' if same else 'data.js가 data/*.json과 다릅니다. python tools/build_data.py 로 다시 만드세요')
         sys.exit(0 if same else 1)
-    target.write_text(text, encoding='utf-8')
+    target.write_text(text, encoding='utf-8', newline='\n')
     print('data.js 생성', len(text), 'bytes')
 
 
@@ -1174,7 +1218,7 @@ def common_text(d):
 
 
 def write(name, obj):
-    (DATA / name).write_text(json.dumps(obj, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    (DATA / name).write_text(json.dumps(obj, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
 
 
 def do_write():
@@ -1482,44 +1526,98 @@ git commit -m "v3①: 데이터 검사와 화면 안전 (P1-04)" -m "이스케�
 
 ### Task 5: 공식 사실로 콘텐츠 수정·반납 안내 추가 (P1-05, P1-07 데이터, P1-13)
 
+근거는 RESEARCH 5장(사실별 출처)과 `research/official_facts.md`다. 이 작업은 표·스크립트에 있는 사실만 넣고, 새 사실을 지어내지 않는다.
+
 **Files:**
 - Modify: `data/services.json`, `data/resources.json`, `data/related.json`, `data/meta.json`, `tests/check_data.py`, `tests/test_regression.py`
-- Create: `tests/test_content.py`
+- Create: `tests/test_content.py`, `.tmp/apply_content.py`(일회성, git 제외 폴더)
 
 **Interfaces:**
-- Produces (데이터 필드, ① 보조 필드): 레코드 선택 필드 `facts: [{kind?, text, source, checkedAt}]`(kind: `location`·`auth`·`hours`·`notice-ref` 중 하나 또는 생략), `eligibilityNote: string`, `costNote: string`, `findHint: string`. 새 가이드 id `book-return`.
+- Produces (데이터 필드, ① 보조 필드, PRD P1-05·P1-07·D16):
+  - 레코드 선택 필드 `facts: [{kind?, text, source, checkedAt}]`. `kind`는 `location`(상세의 위치)·`auth`(상세의 인증·로그인 요약)·`hours`(시간) 중 하나이거나 생략(상세의 "확인한 사실")
+  - `eligibilityNote: string`(대상 요약), `costNote: string`(비용 요약). 이 둘이 있는 레코드는 근거 `facts`가 하나 이상 있어야 한다
+  - 새 가이드 id `book-return`(`loan` 바로 뒤)
+- 바꾸지 않는 것: `audience`(학부/대학원 필터용, R10), 레코드 id. `findHint`는 Task 8에서 넣는다.
 
 - [ ] **Step 1: 실패하는 콘텐츠 테스트** — `tests/test_content.py`
 
 ```python
-"""공식 사실 기반 콘텐츠(2026-10-13 확인)가 데이터에 들어 있는지 확인한다."""
+"""공식 사실 기반 콘텐츠(2026-10-13 확인)가 데이터에 들어 있는지 확인한다. 근거: RESEARCH 5장."""
 from harness import check, test
 
 SRC = 'https://lib.jejunu.ac.kr/'
+COMMON_CAUTION = '목록에 등재되어 있다는 사실만으로'
 
 
 def rec(d, rid):
     return next(r for k in ('services', 'resources', 'directory') for r in d[k] if r['id'] == rid)
 
 
+def facts(d, rid, kind=None):
+    return [f for f in rec(d, rid).get('facts', []) if kind is None or f.get('kind') == kind]
+
+
+def texts(d, rid, kind=None):
+    return ' '.join(f['text'] for f in facts(d, rid, kind))
+
+
 @test()
-def t_content_facts(site):
+def t_content_hours_print(site):
     site.open()
     d = site.data()
     hours = rec(d, 'hours')
-    check(any('24시간 개방' in f['text'] for f in hours.get('facts', [])), 'hours: 시험기간 24시간 개방 사실 없음')
+    rule = texts(d, 'hours', 'hours')
+    check('3주간 24시간 개방' in rule and '1~4열람실' in rule, f'hours: 24시간 개방 규칙과 적용 공간 {rule}')
+    check('교대분관' in hours['caution'], 'hours: 교대분관 미확인 표시 없음')
     check(not hours.get('materials'), 'hours: 지난 공지 링크가 카드에 남아 있음(M3)')
-    print_locs = [f['text'] for f in rec(d, 'print').get('facts', []) if f.get('kind') == 'location']
-    check(any('3층 3열람실' in t for t in print_locs) and any('미디어라운지' in t for t in print_locs), f'print 위치 {print_locs}')
+    loc = texts(d, 'print', 'location')
+    check('3층 3열람실' in loc and '미디어라운지' in loc, f'print 위치 {loc}')
+    check('09:00~20:00' in texts(d, 'print', 'hours'), 'print: 미디어라운지 시간 없음')
+
+
+@test()
+def t_content_spaces(site):
+    site.open()
+    d = site.data()
     for rid, note in (('group', '재학생·교직원'), ('maker', '재학생·교직원'), ('carrel', '대학원생·교직원'),
                       ('locker', '재학생'), ('delivery', '장애인')):
         check(note in (rec(d, rid).get('eligibilityNote') or ''), f'{rid}: eligibilityNote')
-    remote = rec(d, 'remote')
-    check('무료' not in remote['keywords'], 'remote 키워드에 무료')
-    check(any(f.get('kind') == 'auth' and 'WSJ' in f['text'] for f in remote.get('facts', [])), 'remote: 인증 예외 없음')
+        check(facts(d, rid), f'{rid}: 대상 근거(facts) 없음')
+    group_loc = texts(d, 'group', 'location')
+    check('201~210호' in group_loc and '층' not in group_loc, f'group 위치는 호실만(층은 미확인): {group_loc}')
+    check(any(f['source'].endswith('#/guide/hoo/floor') for f in facts(d, 'maker', 'location')), 'maker 층의 출처는 층별안내')
+    check('미소장' in texts(d, 'delivery'), '책나래: 대상 자료 범위 차이 없음')
+    check('3월' in texts(d, 'locker') and len(facts(d, 'locker')) >= 3, '사물함: 신청 시기·경로 없음')
+    for rid, page in (('group', 'studyroom'), ('maker', 'makerstudio'), ('carrel', 'carrel'), ('seat', 'readingroom')):
+        check(rec(d, rid)['source'] == SRC + '#/service/facility/' + page, f'{rid}: 공식 링크가 개별 시설 페이지가 아님')
+
+
+@test()
+def t_content_remote_and_resources(site):
+    site.open()
+    d = site.data()
+    check('무료' not in rec(d, 'remote')['keywords'], 'remote 키워드에 무료')
+    check(facts(d, 'remote', 'auth'), 'remote: 인증 예외 요약 없음')
+    check('openlink' in texts(d, 'remote'), 'remote: 공식 이용법(openlink) 없음')
+    for rid, word in (('er-085', '학내 IP'), ('er-057', '초대링크'), ('er-090', '로그인 후'), ('er-093', '학교 이메일'),
+                      ('er-094', '학교 이메일'), ('er-095', '학교 이메일'), ('er-096', '학교 이메일')):
+        check(word in texts(d, rid, 'auth'), f'{rid}: 인증 사실({word}) 없음')
+    for rid in ('er-093', 'er-094', 'er-095', 'er-096'):
+        check(rec(d, rid)['name'].endswith(' Trial'), f'{rid}: 공식 목록 표기(Trial) 아님')
+    for rid in ('er-007', 'er-010', 'er-017', 'er-035'):
+        check(COMMON_CAUTION not in rec(d, rid)['caution'], f'{rid}: 성격에 맞지 않는 공통 주의 문구')
+    for rid in ('editage', 'enago'):
+        check('협약가' in texts(d, rid), f'{rid}: 비용 근거 없음')
+
+
+@test()
+def t_content_sources(site):
+    site.open()
+    d = site.data()
     for r in [r for k in ('services', 'resources') for r in d[k]]:
         for f in r.get('facts', []):
-            check(f['source'].startswith(SRC) and f['checkedAt'] == '2026-10-13', f'{r["id"]}: facts 출처·확인일')
+            check(f['source'].startswith(SRC) and f['checkedAt'] >= '2026-10-13', f'{r["id"]}: facts 출처·확인일')
+            check(f.get('kind') in (None, 'location', 'auth', 'hours'), f'{r["id"]}: facts.kind {f.get("kind")}')
 
 
 @test()
@@ -1529,6 +1627,7 @@ def t_book_return_guide(site):
     g = rec(d, 'book-return')
     check(g['source'] == SRC + '#/service/circulation/return', f'반납 source {g["source"]}')
     check(g['category'] == 'books', '반납 분류')
+    check('제증명' in texts(d, 'book-return'), '연체 시 제증명 발급 제한 없음')
     check('book-return' in d['related'].get('loan', []), 'loan → book-return 관련 안내 없음')
 ```
 
@@ -1542,102 +1641,248 @@ def d05_book_return_found(site):  # Task 5에서 전환
     check('book-return' in site.result_ids()[:3], f'책 반납 상위 3개 {site.result_ids()[:3]}')
 ```
 
-Run: `python tests/smoke.py --stage 1 -k content -k book_return`
-Expected: `FAIL` (facts·book-return 없음)
+Run: `python tests/smoke.py --stage 1 -k test_content` 그리고 `python tests/smoke.py --stage 1 -k d05`
+Expected: `FAIL`(facts·book-return 없음)
 
-※ `-k`는 하나만 받으므로 `python tests/smoke.py --stage 1 -k t_content` 와 `-k book_return`을 각각 실행한다.
+- [ ] **Step 2: 콘텐츠 수정 스크립트** — `.tmp/apply_content.py`(일회성. `.tmp/`는 git 제외)
 
-- [ ] **Step 2: services.json 수정** — 아래 표의 값을 해당 레코드에 그대로 넣는다(표에 없는 필드는 그대로 둔다).
+```python
+"""Task 5 일회성 콘텐츠 수정(RESEARCH 5장의 사실만). 사용: python .tmp/apply_content.py"""
+import json
+import pathlib
 
-| id | 필드 | 새 값 |
-|---|---|---|
-| `hours` | `caution` | `"중앙도서관 1~4열람실·PC zone은 06:00~24:00(연중무휴)이고, 시험기간(중간·기말)에는 3주간 24시간 개방한다고 안내됩니다. 디지털도서관은 학기중 평일 09~20·토 09~13, 방학중 평일 09~18입니다. 제주자료실 시간은 이용시간 페이지와 시험 공지의 표기가 달라 확인이 필요합니다. 실시간 운영 상태는 표시하지 않습니다."` |
-| `hours` | `materials` | 필드 삭제(M3. 공지는 Task 7의 notices로) |
-| `hours` | `facts` | `[{"kind":"hours","text":"중앙도서관 1~4열람실·PC zone 06:00~24:00(연중무휴). 시험기간(중간·기말)은 3주간 24시간 개방","source":"https://lib.jejunu.ac.kr/#/guide/hoo/hoo","checkedAt":"2026-10-13"}]` |
-| `print` | `description` | `"중앙도서관 3층 3열람실과 중앙디지털도서관 1층 미디어라운지에서 인쇄·복사를, 지정석에서 스캔을 할 수 있어요."` |
-| `print` | `steps` | `["인쇄·복사는 중앙도서관 3층 3열람실 또는 중앙디지털도서관 1층 미디어라운지로 이동","스캔은 스캔 지정석에서 직접 이용","인쇄·복사는 신용카드·교통카드로 결제"]` |
-| `print` | `costNote` | `"인쇄 100원 · 복사 50원 · 스캔 무료(공식 안내)"` |
-| `print` | `facts` | `[{"kind":"location","text":"인쇄·복사: 중앙도서관 3층 3열람실, 중앙디지털도서관 1층 미디어라운지","source":"https://lib.jejunu.ac.kr/#/service/print","checkedAt":"2026-10-13"},{"kind":"location","text":"스캔: 중앙도서관 1층 PC존·1층 제주자료실·3층 3열람실, 중앙디지털도서관 1층 미디어라운지","source":"https://lib.jejunu.ac.kr/#/service/print","checkedAt":"2026-10-13"}]` |
-| `group` | `eligibilityNote` | `"재학생·교직원"` |
-| `group` | `facts` | `[{"kind":"location","text":"중앙디지털도서관 2층 201~210호","source":"https://lib.jejunu.ac.kr/#/service/facility/studyroom","checkedAt":"2026-10-13"}]` |
-| `maker` | `eligibilityNote` | `"재학생·교직원"` |
-| `maker` | `facts` | `[{"kind":"location","text":"중앙도서관 2층","source":"https://lib.jejunu.ac.kr/#/service/facility/makerstudio","checkedAt":"2026-10-13"}]` |
-| `carrel` | `eligibilityNote` | `"대학원생·교직원(학부생 이용 불가)"` |
-| `carrel` | `facts` | `[{"kind":"location","text":"중앙디지털도서관 2층","source":"https://lib.jejunu.ac.kr/#/service/facility/carrel","checkedAt":"2026-10-13"}]` |
-| `seat` | `facts` | `[{"kind":"location","text":"중앙도서관 1층 PC zone, 2층 1열람실, 3층 2·3·4열람실, 교대분관 3층 열람실","source":"https://lib.jejunu.ac.kr/#/service/facility/readingroom","checkedAt":"2026-10-13"}]` |
-| `locker` | `eligibilityNote` | `"재학생(휴학생·연체도서가 있는 경우 신청 불가)"` |
-| `locker` | `facts` | `[{"kind":"location","text":"중앙도서관 2층 210개, 3층 309개","source":"https://lib.jejunu.ac.kr/#/service/locker","checkedAt":"2026-10-13"}]` |
-| `delivery` | `eligibilityNote` | `"도서관 방문이 어려운 장애인 이용자(담당자 승인 후)"` |
-| `remote` | `description` | `"교외에서도 도서관 전자정보원을 이용하도록 안내돼요. 일부 자료는 교내 등록이나 별도 계정이 필요해요."` |
-| `remote` | `keywords` | `"집 밖 교외 학교 밖 논문 접근 원격"` |
-| `remote` | `facts` | `[{"kind":"auth","text":"예외: WSJ는 학내 IP 대역에서만 회원가입 등록, CAS는 교내에서 학교 메일로 계정 생성, NICE bizLINE은 회사직원 초대링크 입력, Value-Search는 개인 ID 등록","source":"https://lib.jejunu.ac.kr/#/search/er","checkedAt":"2026-10-13"}]` |
-| `culture` | `caution` | `"WSJ는 회원가입 후 이용하며 학내 IP 대역에서만 등록할 수 있다고 안내됩니다. Naxos는 동시 이용자수 제한이 있습니다."` |
-| `mobile` | `caution` | `"앱 이름은 제주대학교 모바일 도서관입니다. 2026년 9월 iOS 27 기기에서 앱 호환성 오류 공지가 있었으니, 앱이 동작하지 않으면 최신 공지를 확인하세요."` |
-| `mobile` | `facts` | `[{"text":"iOS 27 기기 앱 호환성 오류 공지(2026.09.17). 복구 여부는 확인하지 못함","source":"https://lib.jejunu.ac.kr/#/bbs/notice/6648","checkedAt":"2026-10-13"}]` |
-| `editage` | `costNote` | `"유료 협약가 · 견적 확인"` |
-| `enago` | `costNote` | `"유료 협약가 · VAT 별도"` |
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+DATA = ROOT / 'data'
+SRC = 'https://lib.jejunu.ac.kr/'
+DAY = '2026-10-13'
 
-- [ ] **Step 3: 반납 안내 가이드 추가** — `data/services.json`에서 `loan` 레코드 **바로 뒤**에 아래 객체를 넣는다.
 
-```json
-{
-  "id": "book-return",
-  "name": "책 반납하기",
-  "question": "다 읽은 책을 반납하고 싶어",
-  "category": "books",
-  "description": "자동반납기·대출대·무인반납함에서 반납할 수 있어요. 늦으면 늦은 날수만큼 대출이 정지돼요.",
-  "audience": "all",
-  "channel": "자동반납기 · 대출대 · 무인반납함",
-  "login": "현장 반납",
-  "cost": "공식 안내 확인",
-  "caution": "딸림자료가 있거나 예약된 책은 대출대에 반납해야 합니다. 연체하면 연체일수만큼 대출이 정지되고 각종 증명서 발급이 제한됩니다. 다른 분관 책을 어디서 반납하는지는 공식 안내에서 확인하지 못했습니다.",
-  "steps": [
-    "운영시간에는 자동반납기에서 직접 반납하고 확인증을 받기",
-    "딸림자료·예약된 책은 대출대에 반납하고 처리 상황 확인",
-    "업무시간이 끝나면 중앙도서관 1층 로비 또는 중앙디지털도서관 정문 앞 무인반납함에 넣기"
-  ],
-  "source": "https://lib.jejunu.ac.kr/#/service/circulation/return",
-  "keywords": "반납 책 반납 반납함 무인반납 자동반납기 연체 늦게 돌려주기",
-  "checkedAt": "2026-10-13",
-  "recordKind": "guide",
-  "facts": [
-    {"kind": "location", "text": "무인반납함: 중앙도서관 1층 로비, 중앙디지털도서관 정문 앞", "source": "https://lib.jejunu.ac.kr/#/service/circulation/return", "checkedAt": "2026-10-13"},
-    {"text": "반납기일을 넘긴 자료는 연체일수만큼 대출이 정지됨", "source": "https://lib.jejunu.ac.kr/#/service/circulation/return", "checkedAt": "2026-10-13"}
-  ]
+def fact(text, page, kind=None):
+    f = {'kind': kind} if kind else {}
+    f.update({'text': text, 'source': SRC + page, 'checkedAt': DAY})
+    return f
+
+
+SERVICES = {
+    'hours': {
+        'caution': '중앙도서관 1~4열람실·PC zone은 06:00~24:00(연중무휴)이고, 시험기간(중간·기말)에는 3주간 24시간 개방한다고 안내됩니다. '
+                   '중앙디지털도서관은 학기 중 평일 09~20·토 09~13, 방학 중 평일 09~18이고 일요일·공휴일은 휴관입니다. '
+                   '제주자료실 시간은 이용시간 페이지와 시험 공지의 표기가 달라 확인이 필요합니다. '
+                   '교대분관 열람실이 시험기간 24시간 개방에 포함되는지는 확인하지 못했습니다. 실시간 운영 상태는 표시하지 않습니다.',
+        'materials': None,
+        'facts': [
+            fact('중앙도서관 1~4열람실(2·3층)·PC zone: 06:00~24:00(연중무휴). 시험기간(중간·기말)은 3주간 24시간 개방',
+                 '#/guide/hoo/hoo', 'hours'),
+            fact('중앙디지털도서관 1·2자료실·그룹스터디라운지·미디어라운지 등: 학기 중 평일 09:00~20:00, 토 09:00~13:00'
+                 '(방학 중 평일 09:00~18:00), 일요일·공휴일 휴관', '#/guide/hoo/hoo', 'hours'),
+        ],
+    },
+    'print': {
+        'description': '중앙도서관 3층 3열람실과 중앙디지털도서관 1층 미디어라운지에서 인쇄·복사를, 지정석에서 스캔을 할 수 있어요.',
+        'steps': ['인쇄·복사는 중앙도서관 3층 3열람실 또는 중앙디지털도서관 1층 미디어라운지로 이동',
+                  '스캔은 스캔 지정석에서 직접 이용', '인쇄·복사는 신용카드·교통카드로 결제'],
+        'costNote': '인쇄 100원 · 복사 50원 · 스캔 무료',
+        'facts': [
+            fact('인쇄·복사: 중앙도서관 3층 3열람실, 중앙디지털도서관 1층 미디어라운지', '#/service/print', 'location'),
+            fact('스캔: 중앙도서관 1층 PC존·1층 제주자료실·3층 3열람실, 중앙디지털도서관 1층 미디어라운지', '#/service/print', 'location'),
+            fact('요금: 인쇄 100원, 복사 50원(신용카드·교통카드). 스캔은 무료', '#/service/print'),
+            fact('이용시간은 자료실(열람실) 운영시간과 같음', '#/service/print', 'hours'),
+            fact('중앙디지털도서관 미디어라운지: 학기 중 평일 09:00~20:00, 토 09:00~13:00, 일요일·공휴일 휴관', '#/guide/hoo/hoo', 'hours'),
+        ],
+    },
+    'group': {
+        'eligibilityNote': '재학생·교직원',
+        'source': SRC + '#/service/facility/studyroom',
+        'facts': [
+            fact('중앙디지털도서관 201~210호', '#/service/facility/studyroom', 'location'),
+            fact('이용 대상 재학생·교직원. 1일 3시간, 7일 전부터 당일까지 예약', '#/service/facility/studyroom'),
+        ],
+    },
+    'maker': {
+        'eligibilityNote': '재학생·교직원',
+        'source': SRC + '#/service/facility/makerstudio',
+        'facts': [
+            fact('중앙도서관 2층', '#/guide/hoo/floor', 'location'),
+            fact('평일 09:00~18:00, 1일 3시간', '#/service/facility/makerstudio', 'hours'),
+            fact('이용 대상 재학생·교직원', '#/service/facility/makerstudio'),
+        ],
+    },
+    'carrel': {
+        'eligibilityNote': '대학원생·교직원(학부생 이용 불가)',
+        'source': SRC + '#/service/facility/carrel',
+        'facts': [
+            fact('중앙디지털도서관 2층', '#/service/facility/carrel', 'location'),
+            fact('이용 대상 대학원생·교직원', '#/service/facility/carrel'),
+            fact('학부생 안내: 캐럴 이용 불가', '#/service/user/user01'),
+        ],
+    },
+    'seat': {
+        'source': SRC + '#/service/facility/readingroom',
+        'facts': [
+            fact('중앙도서관 1층 PC zone, 2층 1열람실, 3층 2·3·4열람실, 교대분관 3층 열람실', '#/service/facility/readingroom', 'location'),
+            fact('좌석발급시스템으로 배정받아 이용, 1회 4시간(1회 연장 가능)', '#/service/facility/readingroom'),
+        ],
+    },
+    'locker': {
+        'eligibilityNote': '재학생(휴학생·연체도서가 있는 경우 신청 불가)',
+        'facts': [
+            fact('중앙도서관 2층 210개, 3층 309개', '#/service/locker', 'location'),
+            fact('이용 대상 재학생(신청 불가: 휴학생, 연체도서가 있는 경우). 신청은 매 학기초(3월·9월), 사용 기간 1학기(약 6개월)',
+                 '#/service/locker'),
+            fact('2026-2학기 신청 경로는 "도서관서비스 - 프로그램 신청 - 사물함 신청"으로 공지됨(서비스 페이지의 메뉴 이름과 다름)',
+                 '#/bbs/notice/6547'),
+        ],
+    },
+    'delivery': {
+        'eligibilityNote': '도서관 방문이 어려운 장애인 이용자(담당자 승인 후)',
+        'caution': '모든 학생에게 제공되는 일반 배송 서비스는 아닙니다. 이용자격과 담당자 승인 절차를 확인하세요. '
+                   '대상 자료가 서비스 페이지에는 "도서관 자료", 장애학생 안내에는 "미소장 자료"로 다르게 적혀 있습니다.',
+        'facts': [
+            fact('도서관 방문이 어려운 장애인 이용자에게 도서관 자료를 우체국 택배로 무료 제공. 도서관 담당자 승인 후 이용', '#/service/booknarae'),
+            fact('장애학생 안내에는 책나래가 "제주대학교 도서관 미소장 자료" 대상으로 적혀 있음(소장 자료는 장애학생 One Stop 서비스)',
+                 '#/service/user/user04'),
+        ],
+    },
+    'remote': {
+        'description': '교외에서도 도서관 전자정보원을 이용하도록 안내돼요. 일부 자료는 교내 등록이나 별도 계정이 필요해요.',
+        'keywords': '집 밖 교외 학교 밖 논문 접근 원격',
+        'facts': [
+            fact('일부 자료는 예외(WSJ·CAS·NICE bizLINE·Value-Search)', '#/search/er', 'auth'),
+            fact('공식 이용법: DB 주소 앞에 교외접속(openlink) 주소를 붙여 접속. 별도 프로그램이나 설정은 필요 없음', '#/research/offacess'),
+            fact('예외: WSJ는 학내 IP 대역에서만 회원가입 등록, CAS는 교내에서 학교 이메일로 계정 생성, '
+                 'NICE bizLINE은 회사직원 초대링크 입력, Value-Search는 개인 ID 등록(ID/PW는 도서관 로그인 후 확인)', '#/search/er'),
+        ],
+    },
+    'culture': {
+        'caution': 'WSJ는 회원가입 후 이용하며 학내 IP 대역에서만 등록할 수 있다고 안내됩니다. Naxos는 동시 이용자수 제한이 있습니다.',
+    },
+    'mobile': {
+        'caution': '앱 이름은 제주대학교 모바일 도서관입니다. 2026년 9월 iOS 27 기기에서 앱 호환성 오류 공지가 있었으니, '
+                   '앱이 동작하지 않으면 최신 공지를 확인하세요.',
+        'facts': [fact('iOS 27 기기 앱 호환성 오류 공지(2026.09.17). 복구 여부는 확인하지 못함', '#/bbs/notice/6648')],
+    },
+    'editage': {
+        'costNote': '유료 협약가 · 견적 확인',
+        'facts': [fact('공동웹페이지로 의뢰한 연구자에게 협약가로 교정 제공. 무료는 저자 질문 답변·학술지 서식 설정(일반교정 1회) 같은 일부 부가서비스',
+                       '#/research/correction')],
+    },
+    'enago': {
+        'costNote': '유료 협약가 · VAT 별도',
+        'facts': [fact('공동웹페이지로 의뢰한 연구자에게 협약가 제공(VAT 별도). 제주대 웹메일 외 계정도 사용 가능', '#/research/correction-enago')],
+    },
 }
+
+CAS_AUTH = [fact('계정은 교내에서 학교 이메일(@jejunu.ac.kr)로 생성', '#/search/er', 'auth')]
+RESOURCES = {
+    'er-007': {'caution': '표절 검사 서비스입니다. 도서관 홈페이지 로그인 후 이용하도록 안내됩니다. 검사 결과를 어떻게 제출하는지는 과제 안내를 따르세요.'},
+    'er-010': {'caution': '공무원 시험 동영상 강의 서비스입니다. 도서관 홈페이지 로그인 후 이용하도록 안내됩니다. 들을 수 있는 강의 범위는 공식 안내에서 확인하세요.'},
+    'er-017': {'caution': '도서관이 구독하는 저널을 알파벳순으로 찾는 도구입니다. 저널이 목록에 있어도 구독 연도에 따라 원문을 볼 수 있는 범위가 다를 수 있습니다.'},
+    'er-035': {'caution': '참고문헌 관리 프로그램입니다. 도서관 홈페이지 로그인 후 설치 파일을 받아 개인 PC에 설치하도록 안내되며, '
+                          '설치 순서(파일 저장 → 압축 해제 → 설치)를 지켜야 합니다.'},
+    'er-037': {'keywords': '공개 오픈액세스 의학 저널'},
+    'er-098': {'keywords': '예스24 yes24 크레마클럽 신간 전자책 ebook'},
+    'er-085': {'facts': [fact('회원가입 후 이용, 학내 IP 대역에서만 등록 가능', '#/search/er', 'auth')]},
+    'er-057': {'facts': [fact('개인 ID 등록 시 KIS-LINE 기관계정 대신 회사직원 초대링크 입력. 초대링크 문의 research@jejunu.ac.kr, 064-754-2229~30',
+                              '#/search/er', 'auth')]},
+    'er-090': {'facts': [fact('개인별 ID 등록. 이용을 위한 ID/PW는 도서관 홈페이지 로그인 후 확인', '#/search/er', 'auth')]},
+    'er-093': {'name': 'CAS SciFinder Trial', 'facts': CAS_AUTH},
+    'er-094': {'name': 'CAS Analytical Methods Trial', 'facts': CAS_AUTH},
+    'er-095': {'name': 'CAS Formulus Trial', 'facts': CAS_AUTH},
+    'er-096': {'name': 'CAS BioFinder Trial', 'facts': CAS_AUTH},
+}
+
+BOOK_RETURN = {
+    'id': 'book-return',
+    'name': '책 반납하기',
+    'question': '다 읽은 책을 반납하고 싶어',
+    'category': 'books',
+    'description': '자동반납기·대출대·무인반납함에서 반납할 수 있어요. 늦으면 늦은 날수만큼 대출이 정지돼요.',
+    'audience': 'all',
+    'channel': '자동반납기 · 대출대 · 무인반납함',
+    'login': '현장 반납',
+    'cost': '연체료 안내 없음 · 연체 시 대출 정지',
+    'caution': '딸림자료가 있거나 예약된 책은 대출대에 반납해야 합니다. 연체하면 연체일수만큼 대출이 정지되고 증명서 발급도 제한됩니다. '
+               '다른 분관 책을 어디서 반납하는지는 공식 안내에서 확인하지 못했습니다.',
+    'steps': ['자동반납기에서 직접 반납 처리하고 확인증 받기',
+              '딸림자료·예약된 책은 대출대에 반납하고 처리 상황 확인',
+              '업무시간이 끝나면 중앙도서관 1층 로비 또는 중앙디지털도서관 정문 앞 무인반납함에 넣기'],
+    'source': SRC + '#/service/circulation/return',
+    'keywords': '반납 책 반납 반납함 무인반납 자동반납기 연체 늦게 돌려주기',
+    'checkedAt': DAY,
+    'recordKind': 'guide',
+    'facts': [
+        fact('무인반납함: 중앙도서관 1층 로비, 중앙디지털도서관 정문 앞(업무시간 종료 이후)', '#/service/circulation/return', 'location'),
+        fact('연체하면 연체일수만큼 대출이 정지되고, 도서 대출과 제증명 발급이 제한됨', '#/service/circulation/return'),
+    ],
+}
+
+
+def load(name):
+    return json.loads((DATA / name).read_text(encoding='utf-8'))
+
+
+def save(name, obj):
+    (DATA / name).write_text(json.dumps(obj, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
+
+
+def patch(records, changes):
+    by_id = {r['id']: r for r in records}
+    for rid, fields in changes.items():
+        for key, value in fields.items():
+            if value is None:
+                by_id[rid].pop(key, None)
+            else:
+                by_id[rid][key] = value
+
+
+services = load('services.json')
+patch(services, SERVICES)
+if not any(s['id'] == 'book-return' for s in services):
+    services.insert(next(i for i, s in enumerate(services) if s['id'] == 'loan') + 1, BOOK_RETURN)
+save('services.json', services)
+resources = load('resources.json')
+patch(resources, RESOURCES)
+save('resources.json', resources)
+related = load('related.json')
+related['loan'] = ['book-return', 'night', 'wish']
+related['book-return'] = ['loan', 'my-library']
+save('related.json', related)
+meta = load('meta.json')
+meta['metadata']['guideCount'] = 48
+save('meta.json', meta)
+print('콘텐츠 수정 완료: 가이드', len(services), '· 자료', len(resources))
 ```
 
-- [ ] **Step 4: 관련 안내·자료·메타 수정**
+Run: `python .tmp/apply_content.py`
+Expected: `콘텐츠 수정 완료: 가이드 48 · 자료 98`
 
-- `data/related.json`: `"loan": ["night", "wish"]` → `"loan": ["book-return", "night", "wish"]`, 그리고 `"book-return": ["loan", "lost"]` 추가.
-- `data/resources.json`:
-  - `er-037`의 `keywords`에서 "무료 " 삭제 → `"공개 오픈액세스 의학 저널"`
-  - `er-098`의 `keywords`에서 " 무제한" 삭제
-  - `er-085`(WSJ)에 `"facts": [{"kind":"auth","text":"회원가입 후 이용, 학내 IP 대역에서만 등록 가능","source":"https://lib.jejunu.ac.kr/#/search/er","checkedAt":"2026-10-13"}]`
-  - `er-057`(NICE)에 `"facts": [{"kind":"auth","text":"개인 ID 등록 시 기관계정 대신 회사직원 초대링크 입력(문의 research@jejunu.ac.kr)","source":"https://lib.jejunu.ac.kr/#/search/er","checkedAt":"2026-10-13"}]`
-- `data/meta.json`: `metadata.guideCount` 47 → 48
+이 스크립트는 2026-10-13 계획 단계에서 v2 데이터 사본에 미리 적용해 확인했다: 콘텐츠 테스트·데이터 검사 규칙 통과, 대표 검색 수치(q04) 그대로, Task 6 전에도 "책 반납"의 2위가 book-return.
 
-- [ ] **Step 5: check_data에 facts·주장 단어 검사 추가** — `run_checks`의 `for r in recs:` 반복 안에 추가
+- [ ] **Step 3: check_data에 facts·주장 단어 검사 추가** — `run_checks`의 `for r in recs:` 반복 안에 추가
 
 ```python
         for f in r.get('facts') or []:
             if not f.get('text') or not https(f.get('source')) or not re.match(r'^\d{4}-\d{2}-\d{2}$', f.get('checkedAt', '')):
                 errs.append(f'{rid}: facts 형식(text·https source·YYYY-MM-DD checkedAt)')
+            if f.get('kind') not in (None, 'location', 'auth', 'hours'):
+                errs.append(f'{rid}: facts.kind {f.get("kind")}(location·auth·hours만, D16)')
+        if (r.get('eligibilityNote') or r.get('costNote')) and not r.get('facts'):
+            errs.append(f'{rid}: eligibilityNote·costNote의 근거 facts 없음(P1-05)')
         for field in ('name', 'question', 'description', 'keywords'):
             if re.search('무료|무제한', str(r.get(field) or '')):
                 errs.append(f'{rid}: 주장 필드 {field}에 무료·무제한(PRD K10)')
 ```
 
-- [ ] **Step 6: 생성·검사·테스트**
+- [ ] **Step 4: 생성·검사·테스트**
 
 Run: `python tools/build_data.py && python tests/check_data.py --stage 1 && python tests/smoke.py --stage 1 --browsers chromium,webkit --modes file,http`
 Expected: `문제 0건`, 실패 0(마지막 줄의 두 숫자가 같음)
 
-- [ ] **Step 7: 커밋**
+- [ ] **Step 5: 커밋**
 
 ```bash
 git add data/ data.js tests/
-git commit -m "v3①: 공식 사실로 콘텐츠 수정·반납 안내 추가 (P1-05, P1-13)" -m "시험기간 개방 규칙, 인쇄 위치 두 곳, 대상·위치, 교외접속 예외, 주장 필드의 무료·무제한 제거. 모든 수정 사실에 출처·확인일(2026-10-13)" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
+git commit -m "v3①: 공식 사실로 콘텐츠 수정·반납 안내 추가 (P1-05, P1-13)" -m "시험기간 개방 규칙과 적용 공간, 인쇄 위치 두 곳과 시간, 대상·위치·인증 사실(사실마다 출처), 시설 카드의 공식 링크를 개별 페이지로, 성격이 다른 자료의 주의 문구, 주장 필드의 무료·무제한 제거, CAS 공식 표기, 반납 안내 추가. 확인일 2026-10-13" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -1645,7 +1890,7 @@ git commit -m "v3①: 공식 사실로 콘텐츠 수정·반납 안내 추가 (P
 ### Task 6: 검색 기본 정비 (P1-08)
 
 **Files:**
-- Create: `data/normalize-cases.json`, `tools/normalize.py`, `tests/test_search.py`
+- Create: `data/normalize-cases.json`, `tools/normalize.py`, `tools/perf.py`, `tests/test_search.py`
 - Modify: `js/lib.js`, `js/app.js`, `data/services.json`(overseas 키워드), `tests/check_data.py`, `tests/test_regression.py`, `tools/build_data.py`(normalize-cases는 data.js에 넣지 않음 — 변경 없음 확인)
 
 **Interfaces:**
@@ -1655,6 +1900,7 @@ git commit -m "v3①: 공식 사실로 콘텐츠 수정·반납 안내 추가 (P
   - `LG.buildIndex(records, commonText) -> Map<id, {nameNorm, fields:string[], generated:string[]}>`
   - `LG.matches(entry, tokens) -> boolean`, `LG.rankTier(entry, tokens) -> 0|1|2`, `LG.search(records, index, tokens) -> records`
   - `tools/normalize.normalize(s) -> str`
+  - 성능 표시(PRD 7장, R21): `performance.mark('first-render')`(첫 `render()` 직후), `performance.mark('search-rendered')`(검색어 input 처리 직후). `python tools/perf.py` → 5회 중앙값 출력, 기준(1000ms·50ms)을 넘으면 종료 코드 1
 
 - [ ] **Step 1: 정규화 벡터** — `data/normalize-cases.json`
 
@@ -1735,6 +1981,14 @@ def t_no_cross_field_match(site):
     site.open()
     site.search('앱휴대폰')
     check('mobile' not in site.result_ids(), '필드 경계를 넘어 일치함')
+
+
+@test()
+def t_perf_marks(site):
+    site.open()
+    check(site.page.evaluate("performance.getEntriesByName('first-render').length") == 1, 'first-render 표시 없음')
+    site.search('통계')
+    check(site.page.evaluate("performance.getEntriesByName('search-rendered').length") >= 1, 'search-rendered 표시 없음')
 ```
 
 `tests/test_regression.py`에서 `d01`~`d04` 네 함수를 **삭제**한다(위 테스트로 대체).
@@ -1814,6 +2068,24 @@ Expected: 여러 `FAIL`(LG.normalize 없음 등)
     $('#empty p').innerHTML = invalidQuery ? '글자나 숫자로 된 검색어를 넣어 주세요. 기호만으로는 찾을 수 없어요.' : emptyText;
 ```
 
+4. 성능 표시(PRD 7장). 파일 끝의 첫 `render();`를 아래로 바꾼다.
+
+```js
+  render();
+  performance.mark('first-render');
+```
+
+검색어 input 처리기를 아래로 바꾼다.
+
+```js
+  $('#search-input').addEventListener('input', e => {
+    state.query = e.target.value.trim();
+    state.limit = 12;
+    render();
+    performance.mark('search-rendered');
+  });
+```
+
 - [ ] **Step 5: 붙여 쓰는 말 키워드 보강** — `data/services.json`의 `overseas.keywords` 앞에 `"영어 논문 "`을 붙인다.
 
 - [ ] **Step 6: Python 정규화와 벡터 검사** — `tools/normalize.py`
@@ -1841,16 +2113,56 @@ def normalize(value):
                 errs.append(f'commonText.{field}: 데이터에 없는 문장')
 ```
 
+성능 측정 도구 `tools/perf.py`(기록용. 게이트에는 넣지 않는다, R21):
+
+```python
+"""PRD 7장 성능 측정: 첫 화면(first-render)과 검색(input → search-rendered), 5회 중앙값. data.js 크기도 출력.
+사용: python tools/perf.py   (로컬 file://, Chromium, 1440×900)"""
+import pathlib
+import statistics
+import sys
+
+from playwright.sync_api import sync_playwright
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+URL = (ROOT / 'index.html').as_uri()
+SEARCH = """q => { const input = document.querySelector('#search-input'); input.value = q;
+  const t0 = performance.now(); input.dispatchEvent(new Event('input', { bubbles: true }));
+  const marks = performance.getEntriesByName('search-rendered'); return marks[marks.length - 1].startTime - t0; }"""
+
+
+def main():
+    first, search = [], []
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        for _ in range(5):
+            page = browser.new_page(viewport={'width': 1440, 'height': 900})
+            page.goto(URL)
+            page.wait_for_function("performance.getEntriesByName('first-render').length > 0")
+            first.append(page.evaluate("performance.getEntriesByName('first-render')[0].startTime"))
+            search.append(page.evaluate(SEARCH, '통계'))
+            page.close()
+        browser.close()
+    f, s = statistics.median(first), statistics.median(search)
+    size = (ROOT / 'data.js').stat().st_size
+    print(f'첫 화면 {f:.0f}ms(기준 1000) · 검색 {s:.1f}ms(기준 50) · data.js {size:,}B(예산 313,537)')
+    sys.exit(0 if f <= 1000 and s <= 50 else 1)
+
+
+if __name__ == '__main__':
+    main()
+```
+
 - [ ] **Step 7: 생성·검사·전체 테스트**
 
 Run: `python tools/build_data.py && python tests/check_data.py --stage 1 && python tests/smoke.py --stage 1 --browsers chromium,webkit --modes file,http`
-Expected: `문제 0건`, 실패 0(마지막 줄의 두 숫자가 같음) (q04의 대표 검색 수치 그대로 유지)
+Expected: `문제 0건`, 실패 0(마지막 줄의 두 숫자가 같음) (q04의 대표 검색 수치 그대로 유지). 이어서 `python tools/perf.py`를 한 번 돌려 본다(기준 안이면 종료 코드 0. 넘으면 원인을 Task 14의 QA 기록에 남긴다).
 
 - [ ] **Step 8: 커밋**
 
 ```bash
-git add js/lib.js js/app.js data/ data.js tools/normalize.py tests/
-git commit -m "v3①: 검색 기본 정비 (P1-08)" -m "단어별 정규화·빈 단어 처리, 필드별 비교, 공통 문장 색인 제외, 무료·무제한 규칙, 최소 정렬, JS·Python 정규화 벡터 공유" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
+git add js/lib.js js/app.js data/ data.js tools/normalize.py tools/perf.py tests/
+git commit -m "v3①: 검색 기본 정비 (P1-08)" -m "단어별 정규화·빈 단어 처리, 필드별 비교, 공통 문장 색인 제외, 무료·무제한 규칙, 최소 정렬, JS·Python 정규화 벡터 공유, 성능 표시와 측정 도구" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -1985,7 +2297,7 @@ Expected: `FAIL`(#notices 없음)
 [
   {
     "id": "exam-2026-2-midterm",
-    "text": "중간시험 기간 중앙도서관 열람실 24시간 개방",
+    "text": "중간시험 대비 중앙도서관 열람실 24시간 개방(중앙디지털도서관·제주자료실은 기존 시간)",
     "link": "https://lib.jejunu.ac.kr/#/bbs/notice/6789",
     "source": "https://lib.jejunu.ac.kr/#/bbs/notice/6789",
     "checkedAt": "2026-10-13",
@@ -1995,6 +2307,8 @@ Expected: `FAIL`(#notices 없음)
   }
 ]
 ```
+
+이 공지는 2026-10-26에 끝난다. 데이터 검사는 실제 날짜로 돌기 때문에 10/27부터는 게이트가 실패한다. 그때는 이 항목을 지우거나 다음 공지로 바꾼 뒤 다시 생성·커밋한다. `--today`로 우회하지 않는다(R15). 기능 테스트는 픽스처 공지를 쓰므로 영향이 없다.
 
 - [ ] **Step 5: check_data에 공지 검사** — `run_checks`의 `return errs` 앞에 추가
 
@@ -2036,7 +2350,7 @@ git commit -m "v3①: 최소 공지 기능 (P1-06)" -m "기기 로컬 날짜·�
 
 **Files:**
 - Create: `tests/test_detail.py`
-- Modify: `js/app.js`(`card`, `openDetail`), `styles.css`, `data/services.json`(목록형 가이드 `findHint`), `tests/test_regression.py`
+- Modify: `js/app.js`(`card`, `openDetail`), `styles.css`, `data/services.json`(목록형 가이드 `findHint`), `tests/test_regression.py`, `tests/check_data.py`
 
 **Interfaces:**
 - Consumes: `facts`, `eligibilityNote`, `costNote`, `findHint`, `LG.activeNotices`
@@ -2077,7 +2391,8 @@ def t_detail_above_fold_mobile(site):
 def t_find_hint_for_list_links(site):
     site.open()
     site.open_any('er-044')
-    check("JSTOR Collection" in site.page.inner_text('.find-hint'), '자료 찾는 방법 없음')
+    hint = site.page.inner_text('.find-hint')
+    check('JSTOR Collection' in hint and '검색 칸' in hint, f'자료 찾는 방법: {hint}')
     site.close_detail()
     site.open_any('stats')
     check('Statista' in site.page.inner_text('.find-hint'), '가이드 찾는 방법 없음')
@@ -2117,17 +2432,25 @@ Expected: `FAIL`
 
 | id | findHint |
 |---|---|
-| `stats` | `"전자정보원 목록에서 Statista 또는 KSDC를 이름으로 검색하세요."` |
-| `overseas` | `"전자정보원 목록에서 ScienceDirect, JSTOR, ProQuest 같은 서비스 이름을 검색하세요."` |
-| `domestic` | `"전자정보원 목록에서 RISS, DBpia, KISS 같은 서비스 이름을 검색하세요."` |
-| `business` | `"전자정보원 목록에서 NICE bizLINE 같은 서비스 이름을 검색하세요."` |
-| `discipline` | `"전자정보원 목록에서 전공 분야 서비스 이름을 검색하세요."` |
-| `culture` | `"전자정보원 목록에서 Naxos, WSJ, NYT 같은 서비스 이름을 검색하세요."` |
-| `ebook` | `"전자책 목록에서 원하는 전자책 서비스 이름을 고르세요."` |
-| `oreilly` | `"전자책 목록에서 O’Reilly를 고르세요."` |
+| `stats` | `"전자정보원 목록의 검색 칸에 Statista 또는 KSDC를 입력하세요."` |
+| `overseas` | `"전자정보원 목록의 검색 칸에 ScienceDirect, JSTOR Collection, ProQuest Central Premium 같은 이름을 입력하세요."` |
+| `domestic` | `"전자정보원 목록의 검색 칸에 DBPIA, KISS, 스콜라 같은 이름을 입력하세요."` |
+| `business` | `"전자정보원 목록의 검색 칸에 NICE bizLINE 또는 Value-Search를 입력하세요."` |
+| `discipline` | `"전자정보원 목록의 검색 칸에 IEL(IEEE/IET), CINAHL Complete, Westlaw 같은 전공 서비스 이름을 입력하세요."` |
+| `culture` | `"전자정보원 목록의 검색 칸에 Naxos Music Library, The New York Times in Education 같은 이름을 입력하세요."` |
+| `ebook` | `"전자책 목록에서 제주대학교 전자책(알라딘·교보문고·북레일·북큐브)이나 예스24 크레마클럽을 고르세요."` |
+| `oreilly` | `"전자책 목록의 검색 칸에 O'Reilly for Higher Education을 입력하세요."` |
 
-`domestic`의 예시 이름(RISS·DBpia·KISS)은 `data/resources.json`에 실제로 있는 이름인지 먼저 확인하고, 없는 이름은 있는 서비스 이름으로 바꾼다:
-Run: `python -c "import json;n=[r['name'] for r in json.load(open('data/resources.json',encoding='utf-8'))];print([x for x in n if any(k in x for k in ('RISS','DBpia','KISS','ScienceDirect','ProQuest','NICE','Naxos','NYT','New York'))])"`
+근거: 공식 전자정보원 목록과 전자책 목록 위쪽에 "전자정보원을 검색하세요." 입력칸이 있다(official_facts 7장). 예시 이름은 데이터에 실제로 있는 이름만 쓴다(R12. RISS와 약칭 "NYT"는 데이터에 없다). O'Reilly는 전자책 목록 원본(`docs/ebooks-raw.json`)에 있다. 넣은 뒤 이름이 모두 있는지 확인한다.
+Run: `python -c "import json;n=' '.join(r['name'] for r in json.load(open('data/resources.json',encoding='utf-8')));print([k for k in ('Statista','KSDC','ScienceDirect','JSTOR Collection','ProQuest Central Premium','DBPIA','KISS','스콜라','NICE bizLINE','Value-Search','IEL','CINAHL Complete','Westlaw','Naxos Music Library','The New York Times in Education','크레마클럽') if k not in n])"`
+Expected: `[]`
+
+`tests/check_data.py`의 `for r in recs:` 반복 안에 목록형 가이드 검사를 추가한다(P1-11. ②의 `official.kind=list` 검사를 ① 필드로 미리 한다).
+
+```python
+        if r.get('recordKind') == 'guide' and re.search(r'#/search/er(-ebook)?$', r.get('source', '')) and not r.get('findHint'):
+            errs.append(f'{rid}: 목록형 링크인데 findHint 없음(P1-11)')
+```
 
 - [ ] **Step 3: card() 배지 교체** — `js/app.js`의 `card()`에서 가이드·메뉴 배지 식을 아래로 바꾼다
 
@@ -2145,7 +2468,7 @@ Run: `python -c "import json;n=[r['name'] for r in json.load(open('data/resource
 
   function findHint(s) {
     if (s.findHint) return s.findHint;
-    if (s.recordKind === 'resource' && isListUrl(s.source)) return "공식 목록에서 '" + s.name + "'을(를) 이름으로 검색하세요.";
+    if (s.recordKind === 'resource' && isListUrl(s.source)) return "공식 목록 위쪽의 검색 칸에 '" + s.name + "'을(를) 입력하세요.";
     return '';
   }
 
@@ -2268,7 +2591,7 @@ Expected: `문제 0건`, 실패 0(마지막 줄의 두 숫자가 같음). `t_det
 
 ```bash
 git add js/app.js styles.css data/ data.js tests/
-git commit -m "v3①: 상세의 마지막 한 걸음과 조건 표시 (P1-07, P1-11)" -m "공식 버튼·찾는 방법·대상/비용/인증 요약을 위로, 위치·확인한 사실 표시, 면책 1회, 카드 조건 배지" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
+git commit -m "v3①: 상세의 마지막 한 걸음과 조건 표시 (P1-07, P1-11)" -m "공식 버튼·찾는 방법(공식 목록 검색 칸 기준)·대상/비용/인증 요약을 위로, 위치·확인한 사실 표시, 면책 1회, 카드 조건 배지, 목록형 가이드 findHint 검사" -m "Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -3000,7 +3323,7 @@ window.LG_CONFIG = {
 - [ ] **Step 7: push 게이트** — `tools/gate.py`
 
 ```python
-"""push 전 검사(PRD 2장 9번, K17). 사용: python tools/gate.py"""
+"""push 전 검사(PRD 2장 9번, K17, D16). 사용: python tools/gate.py"""
 import pathlib
 import subprocess
 import sys
@@ -3015,6 +3338,11 @@ STEPS = [
 ]
 
 
+def clean_tree():
+    out = subprocess.run(['git', 'status', '--porcelain'], cwd=ROOT, capture_output=True, check=True).stdout.decode('utf-8')
+    return out.strip() == ''
+
+
 def private_ok():
     tracked = subprocess.run(['git', 'ls-files'], cwd=ROOT, capture_output=True, check=True).stdout.decode('utf-8')
     ignored = subprocess.run(['git', 'check-ignore', '-q', '_비공개/x'], cwd=ROOT).returncode == 0
@@ -3022,6 +3350,10 @@ def private_ok():
 
 
 def main():
+    print('== 작업 트리 확인', flush=True)
+    if not clean_tree():
+        print('게이트 실패: 커밋하지 않은 변경이 있습니다. 커밋한 뒤 다시 실행하세요(테스트한 파일 = push할 커밋, D16).')
+        sys.exit(1)
     for name, cmd in STEPS:
         print(f'== {name}', flush=True)
         if subprocess.run(cmd, cwd=ROOT).returncode != 0:
@@ -3076,7 +3408,7 @@ if __name__ == '__main__':
 
 ```markdown
 ## push와 배포
-1. `python tools/gate.py` — 통과해야 push한다.
+1. 모든 변경을 커밋한 뒤 `python tools/gate.py` — 통과해야 push한다(커밋하지 않은 변경이 있으면 실패).
 2. 처음 한 번(사용자): GitHub 저장소 Settings → Pages → Source를 "Deploy from a branch", Branch를 `main` / `/ (root)`로 저장.
 3. push 뒤: `python tools/deploy_check.py https://lumos0107.github.io/jejunu-library-guide/`
 4. 배포 주소가 정해지면 `js/config.js`의 `siteUrl`을 채운다. 구글 폼을 만들면 `feedbackFormUrl`과 미리 채우기 entry 이름을 채운다.
@@ -3109,16 +3441,31 @@ git commit -m "v3①: 배포 준비와 push 게이트 (P1-14)" -m "noindex·og·
 - Create: `docs/v3/QA-1.md`
 - Modify: (리뷰 지적 반영 파일)
 
-- [ ] **Step 1: 게이트 실행**
+- [ ] **Step 1: 공지 기간 확인과 게이트 실행**
+
+오늘이 2026-10-26보다 뒤면 `data/notices.json`의 `exam-2026-2-midterm`을 지우거나 다음 공지로 바꾸고, 생성·커밋한 뒤 게이트를 돌린다(R15. `--today`로 우회하지 않는다).
 
 Run: `python tools/gate.py`
 Expected: 마지막 줄 `게이트 통과: push해도 됩니다.`
 
-- [ ] **Step 2: 코드 교차 리뷰(사용자 지시)** — GPT 2명·Claude 2명(관점 A: 학생 사용·콘텐츠 정확성, B: 코드 품질·보안·테스트)이 `git diff 7f2b30b..HEAD`와 PRD ①을 평가하고 2라운드 교차 평가한다. 방법은 `docs/v3/REVIEW-2026-10-13.md` 1장과 같다. 합의 지적은 고치고, 각 수정마다 해당 테스트를 먼저 추가한다.
+- [ ] **Step 2: 코드 교차 리뷰(사용자 지시)** — GPT 2명·Claude 2명(관점 A: 학생 사용·콘텐츠 정확성, B: 코드 품질·보안·테스트)이 ① 작업 전체(`git diff $(git log --format=%H --grep='회귀 테스트 기반 추가 (P1-01)' -1)^..HEAD`)와 PRD ①을 평가하고 2라운드 교차 평가한다. 방법은 `docs/v3/REVIEW-2026-10-13.md` 1장과 같다. 합의 지적은 고치고, 각 수정마다 해당 테스트를 먼저 추가한다.
 
 - [ ] **Step 3: 크로스 체크(보조)** — Playwright MCP와 Aside MCP로 로컬 서버(`python -m http.server 8765 --bind 127.0.0.1`)를 열어 S1 대표 과업 A1~A6을 손으로 따라가 보고, 자동 테스트와 다른 결과가 있으면 기록한다.
 
-- [ ] **Step 4: QA 기록** — `docs/v3/QA-1.md`에 남긴다: 실행 환경(브라우저·모드), 게이트 결과, 테스트 수, 교차 리뷰 요약, 크로스 체크 결과, 남은 사용자 작업(Pages 켜기·구글 폼·학생 테스트), 확인하지 못한 것.
+- [ ] **Step 4: QA 기록** — `docs/v3/QA-1.md`에 남긴다: 실행 환경(브라우저·모드), 게이트 결과, 테스트 수, `python tools/perf.py` 결과(첫 화면·검색 시간, data.js 크기와 313KB 예산 대비. 예산을 넘으면 이유, R19·R21), 교차 리뷰 요약, 크로스 체크 결과, 남은 사용자 작업(Pages 켜기·구글 폼·학생 테스트), 확인하지 못한 것.
+
+QA-1.md 끝에 **실제 기기 체크리스트**(R22)를 둔다. 배포 주소가 생기면 사용자가 iOS Safari와 삼성 인터넷에서 확인한다.
+
+| # | 확인 | iOS Safari | 삼성 인터넷 |
+|---|---|---|---|
+| 1 | 첫 화면에서 스크롤 없이 검색창이 보인다 | | |
+| 2 | '통계' 검색 → '통계·설문조사'가 상위 3개 안에 있다 | | |
+| 3 | 그룹스터디룸 상세: 스크롤 전에 공식 버튼과 대상·비용·인증 요약이 보인다 | | |
+| 4 | 공식 버튼이 새 탭에서 공식 페이지를 연다 | | |
+| 5 | 상세를 닫기 버튼으로 닫으면 목록으로 돌아온다 | | |
+| 6 | 스크롤한 뒤 헤더 '검색' 버튼을 누르면 검색창으로 가고 키보드가 뜬다 | | |
+| 7 | 글자 크기를 크게 해도 가로로 넘치지 않는다 | | |
+| 8 | 상세가 열린 상태에서 뒤로가기를 누르면 어떻게 되는지 기록(①은 보장하지 않음, D15) | | |
 
 - [ ] **Step 5: 커밋과 push**
 
@@ -3135,4 +3482,4 @@ Expected: 게이트 통과 뒤 push 성공
 1. GitHub Pages 켜기(DEV.md 절차) → 끝나면 `python tools/deploy_check.py <주소>`
 2. 구글 폼 만들기(로그인 없이 제출·익명·연락처 미수집) → 주소와 entry 이름을 `js/config.js`에
 3. ② 학생 사용성 테스트 참가자 모집(D8·D13)
-```
+4. 배포 주소에서 QA-1.md의 실제 기기 체크리스트 확인(iOS Safari·삼성 인터넷)
