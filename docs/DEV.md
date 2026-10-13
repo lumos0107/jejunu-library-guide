@@ -24,6 +24,7 @@ index.html이 아래 순서로 읽는다(모두 `defer`라 문서 순서대로 �
 3. push 뒤: `python tools/deploy_check.py https://lumos0107.github.io/jejunu-library-guide/`
 4. 배포 주소가 정해지면 `js/config.js`의 `siteUrl`을 채운다. 구글 폼을 만들면 `feedbackFormUrl`과 미리 채우기 entry 이름을 채운다.
 5. ① 동안은 `<meta name="robots" content="noindex">`를 유지하고, ② 커뮤니티 공개 때 뺀다.
+5-1. 본문 글꼴 다시 만들기: `pip install fonttools brotli` 후 `python tools/build_font.py`(원본 주소·해시 고정, fonts/README.md). 화면 글자가 글꼴에 없으면 데이터 검사가 알려 준다. 디자인 규칙(색은 :root 토큰만, 글자 크기 토큰, 굵기 400·600·700, 0.3초 이상 전환·그라데이션 금지)도 데이터 검사가 본다(D21).
 6. 링크 도착 점검: `python tests/check_links.py` → `.tmp/links-report.md`. 공식 사이트에 부담을 주지 않게 하나씩 천천히 연다. 첫 push 전과 월 1회(D14).
    전자정보원 찾는 방법 점검: `python tests/check_er_find.py` → `.tmp/er-find-report.md`. 공식 목록을 한 번씩만 열어 카드마다 버튼·검색어로 그 자료가 찾아지는지 본다. 링크 점검과 같이 월 1회(D18).
 7. 저장소 루트의 `.nojekyll`은 지우지 않는다. 없으면 GitHub Pages가 docs/*.md를 noindex 없는 웹페이지로 만든다(게이트가 확인).

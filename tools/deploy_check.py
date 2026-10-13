@@ -7,7 +7,7 @@ import urllib.error
 import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-FILES = ['index.html', 'styles.css', 'data.js', 'js/config.js', 'js/lib.js', 'js/app.js', 'favicon.svg']
+FILES = ['index.html', 'styles.css', 'data.js', 'js/config.js', 'js/lib.js', 'js/app.js', 'favicon.svg', 'fonts/guide-sans.woff2']
 
 
 def main():

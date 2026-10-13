@@ -48,6 +48,42 @@ def reserved_keys(o, path='data'):
     return found
 
 
+GLYPH_ALLOW = {'∙', '▣'}  # 공식 원문 인용 기호. Pretendard에 없어 시스템 글꼴로 보인다(D21)
+
+
+def strings(o):
+    if isinstance(o, str):
+        yield o
+    elif isinstance(o, dict):
+        for v in o.values():
+            yield from strings(v)
+    elif isinstance(o, list):
+        for v in o:
+            yield from strings(v)
+
+
+def css_errors(css):
+    """사용자 디자인 규칙(D21): 색은 :root 토큰으로만, 그라데이션 금지, 0.3초 이상 전환 금지, 글자 크기는 토큰, 굵기는 400·600·700."""
+    errs = []
+    i = css.find(':root')
+    body = css[css.index('}', i) + 1:] if i >= 0 else css
+    decls = re.findall(r'([\w-]+)\s*:\s*([^;{}]+)', body)
+    for prop, value in decls:
+        if re.search(r'#[0-9a-fA-F]{3,8}\b|\b(rgba?|hsla?)\(|\b(white|black)\b', value) and prop not in ('white-space', 'content'):
+            errs.append(f'CSS: :root 밖의 색 값 {prop}:{value.strip()[:30]} — 토큰(var(--…))으로')
+        if prop == 'font-size' and not re.fullmatch(r'var\(--fs-[\w-]+\)', value.strip()):
+            errs.append(f'CSS: 글자 크기 {value.strip()} — --fs-* 토큰으로')
+        if prop == 'font-weight' and not all(v in ('400', '600', '700', 'inherit') for v in value.split()):  # @font-face의 범위 '400 700' 포함
+            errs.append(f'CSS: 굵기 {value.strip()} — 400·600·700만')
+        if prop in ('transition', 'animation', 'transition-duration', 'animation-duration'):
+            for t in re.findall(r'(\d*\.?\d+)(m?s)\b', value):
+                if float(t[0]) / (1000 if t[1] == 'ms' else 1) >= 0.3:
+                    errs.append(f'CSS: {prop} {value.strip()} — 0.3초 미만으로')
+    if re.search(r'gradient\(', css):
+        errs.append('CSS: 그라데이션 금지')
+    return errs
+
+
 def run_checks(d, stage, today):
     errs = []
     recs = [r for k in KINDS for r in d[k]]
@@ -106,6 +142,18 @@ def run_checks(d, stage, today):
         for t in case.get('ids', []):
             if t not in have:
                 errs.append(f'bookCases.{key}: 없는 id {t}')
+    html = (ROOT / 'index.html').read_text(encoding='utf-8')
+    page_cats = re.findall(r'data-category="([^"]+)">.*?<span class="category-question">([^<]*)</span><span class="category-desc">([^<]*)</span>', html)
+    if page_cats != [(c['id'], c['question'], c['desc']) for c in d.get('categories') or []]:
+        errs.append('상황 카드: index.html과 data/categories.json이 다름(첫 화면 정적 HTML, D21 — 둘 다 고치세요)')
+    glyph_file = ROOT / 'fonts' / 'glyphs.txt'
+    if glyph_file.exists():
+        glyphs = set(glyph_file.read_text(encoding='utf-8').strip())
+        shown = ''.join(strings(d)) + re.sub(r'<[^>]+>', ' ', html)
+        miss = sorted({c for c in shown if c not in glyphs and c not in GLYPH_ALLOW and not c.isspace()})
+        if miss:
+            errs.append(f'글꼴에 없는 글자 {"".join(miss[:20])} — tools/build_font.py의 PUNCT에 넣어 다시 만들거나 다른 글자로(D21)')
+    errs += css_errors((ROOT / 'styles.css').read_text(encoding='utf-8'))
     cases = json.loads((ROOT / 'data' / 'normalize-cases.json').read_text(encoding='utf-8'))
     for given, expected in cases:
         if norm.normalize(given) != expected:

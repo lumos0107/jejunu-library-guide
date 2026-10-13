@@ -12,6 +12,7 @@ class Site:
     def open(self, hash_=''):
         self.page.goto(self.base + 'index.html' + hash_)
         self.page.wait_for_selector('#service-grid .service-card')
+        self.page.evaluate('document.fonts.ready.then(() => true)')
 
     def search(self, q):
         self.page.fill('#search-input', q)

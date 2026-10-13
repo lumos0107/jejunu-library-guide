@@ -53,6 +53,23 @@ def t_search_first_screen_two_notices(site):
 
 
 @test(viewport='mobile')
+def t_notices_collapsed_one_line(site):
+    """공지는 1건부터 한 줄로 접힌다(D21). 요약 44px, 펼치면 링크 44px, 검색해도 펼친 상태 유지."""
+    second = dict(TEST_NOTICE, id='fixture-bus', text='테스트 공지 둘')
+    site.page.add_init_script(notices_fixture([TEST_NOTICE, second]))
+    site.open()
+    summary = site.page.locator('#notices summary')
+    check(site.page.locator('#notices details:not([open])').count() == 1, '공지가 접혀 있지 않음')
+    check('2건' in summary.inner_text() and summary.bounding_box()['height'] >= 44, f'요약 줄: {summary.inner_text()}')
+    summary.click()
+    links = site.page.locator('#notices a')
+    check(links.first.is_visible() and links.first.bounding_box()['height'] >= 44, '펼친 공지의 링크가 안 보이거나 44px 미만')
+    site.page.fill('#search-input', '열람실')
+    site.page.wait_for_timeout(120)
+    check(site.page.locator('#notices details[open]').count() == 1, '검색했더니 펼친 공지가 닫힘')
+
+
+@test(viewport='mobile')
 def t_search_one_action_after_scroll_mobile(site):
     site.open()
     back_to_search(site)

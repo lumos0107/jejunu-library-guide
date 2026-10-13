@@ -47,3 +47,16 @@ def t_feedback_card_prefill(site):
     site.open_any('group')
     href = site.page.get_attribute('#detail-content .feedback-link', 'href')
     check(href and 'entry.2=group' in href, f'상세 제보 링크에 카드 id가 없음: {href}')
+
+
+@test()
+def t_font_single_file(site):
+    """본문 글꼴은 직접 만든 서브셋 한 개(D21): 요청 1개, 320KB 이하, 실제로 GuideSans로 그린다."""
+    import pathlib
+    reqs = []
+    site.page.on('request', lambda r: reqs.append(r.url) if '.woff2' in r.url else None)
+    site.open()
+    check(len(reqs) == 1 and reqs[0].endswith('fonts/guide-sans.woff2'), f'글꼴 요청 {reqs}')
+    size = (pathlib.Path(__file__).resolve().parents[1] / 'fonts' / 'guide-sans.woff2').stat().st_size
+    check(size <= 320 * 1024, f'글꼴 {size}B > 320KB')
+    check(site.page.evaluate("document.fonts.check('16px GuideSans', '도서관')"), 'GuideSans가 불려 오지 않음')

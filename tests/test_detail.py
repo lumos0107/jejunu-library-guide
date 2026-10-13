@@ -6,7 +6,7 @@ VISIBLE = """sel => { const el = document.querySelector(sel); const dlg = docume
   if (!el || !dlg) return false; const r = el.getBoundingClientRect(); const d = dlg.getBoundingClientRect();
   return r.height > 0 && r.top >= Math.max(0, d.top) && r.bottom <= Math.min(window.innerHeight, d.bottom); }"""
 
-ORDER = """() => { const els = ['.detail-top', '.detail-conditions', '.detail-exceptions', '.detail-steps']
+ORDER = """() => { const els = ['.detail-conditions', '.detail-top', '.detail-exceptions', '.detail-steps']
     .map(s => document.querySelector('#detail-content ' + s));
   if (els.some(e => !e)) return 'missing ' + els.map(e => !!e).join(',');
   for (let i = 1; i < els.length; i++) {
@@ -49,7 +49,7 @@ def t_detail_order_exceptions_below_summary(site):
     site.open()
     site.open_any('group')
     order = site.page.evaluate(ORDER)
-    check(order == 'ok', f'상세 순서(공식 버튼 → 조건 → 확인할 점 → 이용 방법)가 아님: {order}')
+    check(order == 'ok', f'상세 순서(조건 → 공식 버튼 → 확인할 점 → 이용 방법, D21)가 아님: {order}')
     check(site.page.locator('#detail-content details').count() == 0, '예외를 접어 두면 안 됨(K21)')
     text = site.page.inner_text('.detail-exceptions')
     check('30분' in text and '자동 취소' in text, f'예약 규칙이 확인할 점에 없음: {text[:80]}')

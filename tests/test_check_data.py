@@ -38,6 +38,16 @@ CASES = {
     'http 링크': lambda d: d['services'][0].__setitem__('source', 'http://lib.jejunu.ac.kr/'),
     '책 상황 키 누락': lambda d: d['bookCases'].pop('loan'),
     '이름에 없는 검색어': lambda d: d['resources'][0].__setitem__('findTerm', '이름에없는말'),
+    '글꼴에 없는 글자': lambda d: d['services'][0].__setitem__('description', '똠양꿍 설명'),
+    '상황 카드와 화면이 다름': lambda d: d['categories'][0].__setitem__('question', '바뀐 질문'),
+}
+
+BAD_CSS = {
+    ':root 밖의 색': 'a { color: #fff }',
+    '글자 크기 직접 값': 'a { font-size: 13px }',
+    '굵기 650': 'a { font-weight: 650 }',
+    '긴 전환': 'a { transition: color .5s }',
+    '그라데이션': 'a { background: linear-gradient(red, blue) }',
 }
 
 
@@ -46,3 +56,6 @@ def t_check_data_catches_bad_data(site):
     check(errors_after(lambda d: None) == [], '현재 데이터가 검사에 걸림')
     missed = [name for name, mutate in CASES.items() if not errors_after(mutate)]
     check(not missed, f'검사기가 놓친 잘못된 데이터: {missed}')
+    missed_css = [name for name, css in BAD_CSS.items() if not check_data.css_errors(':root { --x:#fff; }\n' + css)]
+    check(not missed_css, f'CSS 규칙 검사가 놓친 것: {missed_css}')
+    check(check_data.css_errors((ROOT / 'styles.css').read_text(encoding='utf-8')) == [], 'styles.css가 디자인 규칙 위반')

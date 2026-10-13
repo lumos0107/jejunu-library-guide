@@ -13,7 +13,7 @@
   const kindName = kind => ({ guide: '이용 가이드', resource: '논문·자료 사이트(전자정보원)', menu: '공식 사이트 메뉴' }[kind] || '이용 가이드');
   const SOURCE_TYPE_LABEL = { '국외DB': '해외 자료', '국내DB': '국내 자료' };
   const sourceTypeLabel = v => SOURCE_TYPE_LABEL[v] || v;
-  const ACCESS_BADGE = { '공개자료 안내': ['open', '공개 자료'], '시범서비스': ['trial', '시범 서비스'] };
+  const ACCESS_BADGE = { '공개자료 안내': '공개 자료', '시범서비스': '시범 서비스' };  // 배지는 한 가지 모양, 뜻은 글자로(D21)
   const searchIndex = window.LG.buildIndex(records, window.LIBRARY_GUIDE.commonText);
   const emptyHeading = $('#empty h3').textContent;
   const emptyText = $('#empty p').innerHTML;
@@ -34,11 +34,11 @@
     const resource = s.recordKind === 'resource';
     const menu = s.recordKind === 'menu';
     // 확인된 대상·비용 요약은 종류와 상관없이 배지로 보인다
-    const noteBadges = (s.eligibilityNote ? '<span class="badge target">' + escape(s.eligibilityNote) + '</span>' : '')
+    const noteBadges = (s.eligibilityNote ? '<span class="badge">' + escape(s.eligibilityNote) + '</span>' : '')
       + (s.costNote ? '<span class="badge">' + escape(s.costNote) + '</span>' : '');
     const badges = resource
       ? '<span class="badge">' + escape(s.subject) + '</span>' + (ACCESS_BADGE[s.accessType]
-        ? '<span class="badge ' + ACCESS_BADGE[s.accessType][0] + '">' + ACCESS_BADGE[s.accessType][1] + '</span>' : '') + noteBadges
+        ? '<span class="badge">' + ACCESS_BADGE[s.accessType] + '</span>' : '') + noteBadges
       : (s.channel ? '<span class="badge">' + escape(s.channel) + '</span>' : '') + noteBadges;
     const action = resource ? '설명·매뉴얼 보기' : menu ? '공식 사이트에서 찾는 곳 보기' : '이용 방법 보기';
     return '<article class="service-card"><div class="record-kind"><span>' + kindName(s.recordKind) + '</span><span>'
@@ -180,9 +180,7 @@
   }
 
   // 첫 그리기
-  $('#category-grid').innerHTML = categories.map((c, i) => '<button type="button" class="category-card" data-category="' + escape(c.id)
-    + '"><span class="category-index"><span>0' + (i + 1) + ' / ' + escape(c.name)
-    + '</span><span aria-hidden="true">↗</span></span><span class="category-question">' + escape(c.question) + '</span><p>' + escape(c.desc) + '</p></button>').join('');
+  // 상황 카드 6개는 index.html에 미리 넣어 둔다(데이터를 받은 뒤 끼워 넣으면 첫 화면이 밀린다, D21). 데이터와 같은지는 데이터 검사가 본다
   $('#category-tabs').innerHTML = [{ id: 'all', name: '모든 상황' }, ...categories].map(c => '<button type="button" data-category="'
     + escape(c.id) + '" aria-pressed="' + (c.id === 'all') + '">' + escape(c.name) + '</button>').join('');
   $('#scope-tabs').innerHTML = [['all', '전체 검색', records.length], ['guide', '이용 가이드', services.length],
@@ -207,11 +205,24 @@
     + (safeUrl(n.source) && n.source !== n.link ? ' <a href="' + escape(safeUrl(n.source)) + '" target="_blank" rel="noopener noreferrer">출처</a>' : '')
     + '<span class="notice-source">확인일 ' + escape(n.checkedAt.replaceAll('-', '.')) + '</span></li>';
 
+  // 홈의 공지는 한 줄로 접는다(D21). 확인일은 맨 아래 한 번
+  const noticeItem = n => '<li><strong>' + escape(n.text) + '</strong><span class="notice-meta"><span class="notice-period">'
+    + escape(n.startsOn.replaceAll('-', '.')) + ' ~ ' + escape(n.endsOn.replaceAll('-', '.')) + '</span>'
+    + (safeUrl(n.link) ? ' <a href="' + escape(safeUrl(n.link)) + '" target="_blank" rel="noopener noreferrer">공지 보기 ↗</a>' : '')
+    + (safeUrl(n.source) && n.source !== n.link ? ' <a href="' + escape(safeUrl(n.source)) + '" target="_blank" rel="noopener noreferrer">출처</a>' : '')
+    + '</span></li>';
+
   function renderNotices() {
     const items = window.LG.activeNotices(window.LIBRARY_GUIDE.notices, todayNow());
-    $('#notices').innerHTML = items.length
-      ? '<h2 class="sr-only">지금 이 시기 공지</h2><ul>' + items.map(noticeHtml).join('') + '</ul>' : '';
-    $('#notices').hidden = items.length === 0;
+    const box = $('#notices');
+    const key = items.map(n => n.id).join('|');
+    box.hidden = items.length === 0;
+    if (box.dataset.key === key) return;  // 같은 공지면 다시 그리지 않는다(검색할 때마다 펼친 상태가 닫히지 않게)
+    box.dataset.key = key;
+    const checked = [...new Set(items.map(n => n.checkedAt))].map(d => d.replaceAll('-', '.')).join(' · ');
+    box.innerHTML = items.length ? '<h2 class="sr-only">지금 이 시기 공지</h2><details><summary><span class="notice-label">지금 이 시기 '
+      + items.length + '건</span><span class="notice-first">' + escape(items[0].text) + '</span></summary><ul>'
+      + items.map(noticeItem).join('') + '</ul><p class="notice-checked">확인일 ' + escape(checked) + '</p></details>' : '';
   }
 
   const relatedMap = window.LIBRARY_GUIDE.related || {};
@@ -258,16 +269,16 @@
 
     $('#detail-content').innerHTML = '<h2 id="detail-title">' + escape(s.name) + '</h2>'
       + '<p class="detail-question">' + escape(resource ? s.subject + ' · ' + sourceTypeLabel(s.sourceType) : menu ? s.description : s.question) + '</p>'
+      + '<dl class="detail-conditions">'  // 대상·비용·인증을 먼저 보고 공식 사이트로 간다(D21, 둘 다 첫 화면 안)
+      + '<div><dt>대상</dt><dd>' + escape(s.eligibilityNote || '공식 안내에서 확인') + '</dd></div>'
+      + '<div><dt>비용</dt><dd>' + escape(s.costNote || s.cost) + '</dd></div>'
+      + '<div><dt>인증·로그인</dt><dd>' + escape([s.login, ...auth].filter(Boolean).join(' · ')) + '</dd></div>'
+      + '</dl>'
       + '<div class="detail-top">'
       + (url ? '<a class="primary" data-official href="' + escape(url) + '"' + (hint ? ' aria-describedby="detail-find-hint"' : '')
         + ' target="_blank" rel="noopener noreferrer">' + sourceLabel + ' ↗</a>' : '<p>공식 링크를 확인할 수 없어요.</p>')
       + (hint ? '<p class="find-hint" id="detail-find-hint">' + escape(hint) + '</p>' : '')
       + '</div>'
-      + '<dl class="detail-conditions">'
-      + '<div><dt>대상</dt><dd>' + escape(s.eligibilityNote || '공식 안내에서 확인') + '</dd></div>'
-      + '<div><dt>비용</dt><dd>' + escape(s.costNote || s.cost) + '</dd></div>'
-      + '<div><dt>인증·로그인</dt><dd>' + escape([s.login, ...auth].filter(Boolean).join(' · ')) + '</dd></div>'
-      + '</dl>'
       + (s.channel ? '<p class="detail-channel">이용 경로: ' + escape(s.channel) + '</p>' : '')
       + (notices.length ? '<div class="detail-notices"><h3>지금 이 시기</h3><ul>' + notices.map(noticeHtml).join('') + '</ul></div>' : '')
       + '<div class="detail-exceptions"><h3>이용 전 확인할 점</h3><p class="detail-warning">' + escape(s.caution)
