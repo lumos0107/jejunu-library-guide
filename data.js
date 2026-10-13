@@ -65,6 +65,16 @@ window.LIBRARY_GUIDE = {
           "source": "https://lib.jejunu.ac.kr/#/bbs/notice/6648",
           "checkedAt": "2026-10-13"
         }
+      ],
+      "materials": [
+        {
+          "label": "앱으로 좌석배정·그룹스터디룸 예약",
+          "url": "https://lib.jejunu.ac.kr/#/service/mobile/seat"
+        },
+        {
+          "label": "앱으로 도서대출(NFC)",
+          "url": "https://lib.jejunu.ac.kr/#/service/mobile/charge"
+        }
       ]
     },
     {
@@ -86,7 +96,13 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/service/circulation",
       "keywords": "반납 연체 책 빌리기 예약 연장",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "materials": [
+        {
+          "label": "도서관 이용지침",
+          "url": "https://lib.jejunu.ac.kr/#/guide/rule/use"
+        }
+      ]
     },
     {
       "id": "book-return",
@@ -284,14 +300,14 @@ window.LIBRARY_GUIDE = {
       "channel": "도서관 앱 · 키오스크",
       "login": "필요",
       "cost": "공식 안내 확인",
-      "caution": "최초 4시간 배정, 1일 1회 4시간 연장 가능. 노트북 사용 가능 구역은 따로 안내됩니다.",
+      "caution": "최초 4시간 배정, 1일 1회 4시간 연장 가능. 노트북·전자기기는 공지된 구역에서 쓸 수 있고, 그 구역에서는 키보드·마우스를 써도 된다고 안내됩니다(아래 위치).",
       "steps": [
         "앱 로그인 또는 출입 후 키오스크에 이용증 인식",
         "도서관·열람실·좌석 선택 후 발권",
         "이용이 끝나면 앱 또는 키오스크에서 좌석 반납"
       ],
       "source": "https://lib.jejunu.ac.kr/#/service/facility/readingroom",
-      "keywords": "자리 발권 노트북 열람실 공부",
+      "keywords": "자리 발권 노트북 열람실 공부 타이핑존 전자기기 키보드",
       "checkedAt": "2026-10-12",
       "recordKind": "guide",
       "eligibilityNote": "대상 미확인",
@@ -315,6 +331,18 @@ window.LIBRARY_GUIDE = {
         {
           "text": "열람실 안내 페이지는 \"시험기간 중 일부열람실 24시간 운영함\"으로 적음(이용시간 페이지는 1~4열람실·PC zone 기준). 어느 열람실이 열리는지는 공지와 현장에서 확인",
           "source": "https://lib.jejunu.ac.kr/#/service/facility/readingroom",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "location",
+          "text": "노트북·개인화 기기 사용 가능 구역(키보드 타건·마우스 클릭 가능): 중앙도서관 1층 로비·PC존, 2층 로비·타이핑존, 3층 로비·3·4열람실",
+          "source": "https://lib.jejunu.ac.kr/#/bbs/notice/6675",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "location",
+          "text": "중앙도서관 2층 안쪽 자유열람실을 〈타이핑존〉으로 운영",
+          "source": "https://lib.jejunu.ac.kr/#/bbs/notice/6675",
           "checkedAt": "2026-10-13"
         }
       ]
@@ -768,9 +796,21 @@ window.LIBRARY_GUIDE = {
         {
           "label": "카피킬러 사용 매뉴얼(무하유)",
           "url": "https://manual.muhayu.com/copykiller-campus-v2"
+        },
+        {
+          "label": "iThenticate 이용 안내(제주대 도서관)",
+          "url": "https://lib.jejunu.ac.kr/#/research/prevent/ithenticate"
         }
       ],
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "facts": [
+        {
+          "kind": "auth",
+          "text": "iThenticate: 개별 요청 필요(koreasales@turnitin.com으로 소속·성함·이메일 전달), 회원가입은 우리 대학 이메일 계정으로만",
+          "source": "https://lib.jejunu.ac.kr/#/research/prevent/ithenticate",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "dds",
@@ -791,7 +831,94 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/research/other/dds",
       "keywords": "RISS 상호 대차 원문 복사 미구독 다른 기관 논문",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "materials": [
+        {
+          "label": "상호대차(다른 기관 책 빌리기) 안내",
+          "url": "https://lib.jejunu.ac.kr/#/research/other/ill"
+        }
+      ],
+      "facts": [
+        {
+          "text": "상호대차: RISS에서 신청, 도착까지 평균 5일, 권당 이용비용 5,840원(대출·반납 왕복 택배비)",
+          "source": "https://lib.jejunu.ac.kr/#/research/other/ill",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "지원: 본교 대학생·대학원생 연간 100,000원 이내(원문복사·상호대차 통합, 초과분·연체료는 개인 부담, 예산 조기 종료 시 개별 부담)",
+          "source": "https://lib.jejunu.ac.kr/#/research/other/ill",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "대출기간이 같은 공식 페이지 안에서 \"14일(1회 연장 7일)\"과 \"3주\"로 다르게 안내됨 — 신청 전 도서관에 확인",
+          "source": "https://lib.jejunu.ac.kr/#/research/other/ill",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "location",
+          "text": "상호대차 자료 수령: 중앙디지털도서관 1층 미디어자료실. 도착 후 1주일 안에 찾지 않으면 제공 도서관으로 반송",
+          "source": "https://lib.jejunu.ac.kr/#/research/other/ill",
+          "checkedAt": "2026-10-13"
+        }
+      ]
+    },
+    {
+      "id": "national-fulltext",
+      "name": "국회·국립중앙도서관 원문 보기",
+      "question": "국회도서관·국립중앙도서관 원문을 학교에서 보고 싶어",
+      "category": "assignment",
+      "description": "도서관 지정 PC에서 국회도서관과 국립중앙도서관 원문을 볼 수 있어요. 출력은 실비예요.",
+      "audience": "all",
+      "channel": "현장(지정 PC)",
+      "login": "지정 PC에서 이용",
+      "cost": "원문 이용·출력 비용은 공식 안내 확인",
+      "caution": "지정 PC에서만 이용할 수 있어요. 중앙도서관 1층 PC존과 의학도서관 PC는 열람만 가능하다고 안내됩니다. 원문복사(우편 복사 의뢰)와는 다른 서비스예요.",
+      "steps": [
+        "아래 지정 PC 가운데 가까운 곳으로 가기",
+        "국회도서관: 컴퓨터 바탕화면의 '국회도서관' 아이콘을 눌러 국회전자도서관에서 검색·이용",
+        "국립중앙도서관: 출력 가능한 PC에서 dlibrary.go.kr에 접속해 검색·출력"
+      ],
+      "source": "https://lib.jejunu.ac.kr/#/research/other/assembly",
+      "keywords": "국회도서관 국립중앙도서관 국중도 국가도서관 원문 지정PC 열람 출력 국회전자도서관 dlibrary",
+      "checkedAt": "2026-10-13",
+      "recordKind": "guide",
+      "eligibilityNote": "교내 구성원(공식 안내 문구)",
+      "costNote": "원문 이용은 무료, 출력하면 프린트 실비를 내요(공식 안내)",
+      "facts": [
+        {
+          "text": "\"교내 구성원의 연구/학습을 지원하기 위하여 국회도서관 및 국립중앙도서관 원문을 무료로 이용할 수 있는 서비스\", \"원문 자료 출력시 프린트 실비는 이용자 부담\"",
+          "source": "https://lib.jejunu.ac.kr/#/research/other/assembly",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "location",
+          "text": "지정 PC(출력 가능): 중앙도서관 1층 제주자료실 1대, 3층 3열람실 2대, 중앙디지털도서관 1층 미디어라운지 2대",
+          "source": "https://lib.jejunu.ac.kr/#/research/other/assembly",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "location",
+          "text": "지정 PC(열람만 가능): 중앙도서관 1층 PC존 1대",
+          "source": "https://lib.jejunu.ac.kr/#/research/other/assembly",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "location",
+          "text": "분관: 교육대학도서관·법학전문도서관 자료실 각 1대(출력 가능), 의학도서관 자료실 1대(열람만 가능)",
+          "source": "https://lib.jejunu.ac.kr/#/research/other/assembly",
+          "checkedAt": "2026-10-13"
+        }
+      ],
+      "materials": [
+        {
+          "label": "국립중앙도서관 디지털도서관(dlibrary.go.kr)",
+          "url": "https://www.dlibrary.go.kr/"
+        },
+        {
+          "label": "오시는 길·캠퍼스 내 도서관 위치",
+          "url": "https://lib.jejunu.ac.kr/#/guide/location/map"
+        }
+      ]
     },
     {
       "id": "ebook",
@@ -907,7 +1034,25 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/education/guide",
       "keywords": "신입생 교육 투어 이용방법 강습 인용 교육",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "materials": [
+        {
+          "label": "교육일정(달력)",
+          "url": "https://lib.jejunu.ac.kr/#/education/calendar"
+        },
+        {
+          "label": "교육자료",
+          "url": "https://lib.jejunu.ac.kr/#/bbs/dataroom?bulletinCategoryId=6"
+        },
+        {
+          "label": "온라인 이용교육(도서관 이용 동영상)",
+          "url": "https://lib.jejunu.ac.kr/#/education/online"
+        },
+        {
+          "label": "학술공지(DB 온라인 이용교육 안내 등)",
+          "url": "https://lib.jejunu.ac.kr/#/bbs/notice?bulletinCategoryId=9"
+        }
+      ]
     },
     {
       "id": "delivery",
@@ -983,7 +1128,13 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/bbs/contact",
       "keywords": "문의 FAQ 분실 유실물 제재 오류 휴학생 졸업생 안내",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "materials": [
+        {
+          "label": "영문 홈페이지(English)",
+          "url": "https://lib.jejunu.ac.kr/en/"
+        }
+      ]
     },
     {
       "id": "sdi",
@@ -1173,7 +1324,7 @@ window.LIBRARY_GUIDE = {
       "channel": "앱 · 게이트 · 안내데스크",
       "login": "앱 이용 시 필요",
       "cost": "발급 조건 확인",
-      "caution": "모바일 신분증과 출입바코드는 병행할 수 없다고 안내됩니다. 신입생 온라인 이용교육 조건은 학부생 안내에서 추가 확인하세요.",
+      "caution": "모바일 신분증과 출입바코드는 병행할 수 없다고 안내됩니다. 신입생은 온라인 이용교육을 마친 뒤 도서관을 이용할 수 있다고 안내됩니다.",
       "steps": [
         "제주대학교 모바일 도서관 앱 설치·로그인",
         "우측 상단 이용증 QR을 게이트·리더기에 인식",
@@ -1182,7 +1333,21 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/service/enter/mobileid",
       "keywords": "출입 게이트 이용증 QR 바코드 학생증 신입생",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "facts": [
+        {
+          "kind": "auth",
+          "text": "\"신입생은 온라인 이용교육 이수 후 도서관 이용 가능\"(학부생 이용자별 안내)",
+          "source": "https://lib.jejunu.ac.kr/#/service/user/user01",
+          "checkedAt": "2026-10-13"
+        }
+      ],
+      "materials": [
+        {
+          "label": "온라인 이용교육(신입생은 학번으로 로그인)",
+          "url": "https://lib.jejunu.ac.kr/#/education/online"
+        }
+      ]
     },
     {
       "id": "hours",
@@ -1221,6 +1386,26 @@ window.LIBRARY_GUIDE = {
           "text": "열람실 안내 페이지는 \"시험기간 중 일부열람실 24시간 운영함\"으로 적음(이용시간 페이지는 1~4열람실·PC zone 기준). 어느 열람실이 열리는지는 공지와 현장에서 확인",
           "source": "https://lib.jejunu.ac.kr/#/service/facility/readingroom",
           "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "hours",
+          "text": "분관: 의학분관·법학분관 평일 09:00~18:00, 교대분관 1·2층 자료실 평일 09:00~18:00·3층 열람실 06:00~24:00",
+          "source": "https://lib.jejunu.ac.kr/#/service/enter/hours",
+          "checkedAt": "2026-10-13"
+        }
+      ],
+      "materials": [
+        {
+          "label": "의학도서관 사이트",
+          "url": "https://medlib.jejunu.ac.kr/"
+        },
+        {
+          "label": "법학전문도서관 사이트",
+          "url": "https://lawlib.jejunu.ac.kr/"
+        },
+        {
+          "label": "교육대학도서관 사이트",
+          "url": "https://edu.jejunu.ac.kr/"
         }
       ]
     },
@@ -1243,7 +1428,13 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/guide/hoo/floor",
       "keywords": "지도 층별 위치 건물 어디 중앙 디지털 미디어라운지 소프트웨어",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "materials": [
+        {
+          "label": "오시는 길·캠퍼스 내 도서관 위치",
+          "url": "https://lib.jejunu.ac.kr/#/guide/location/map"
+        }
+      ]
     },
     {
       "id": "classification",
@@ -2744,6 +2935,10 @@ window.LIBRARY_GUIDE = {
         {
           "label": "매뉴얼",
           "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/d27367c9-5a22-4886-b42c-2e571843b13e"
+        },
+        {
+          "label": "iThenticate 이용 안내(제주대 도서관)",
+          "url": "https://lib.jejunu.ac.kr/#/research/prevent/ithenticate"
         }
       ],
       "duplicateCount": 1
@@ -6918,7 +7113,8 @@ window.LIBRARY_GUIDE = {
     ],
     "dds": [
       "wish",
-      "other"
+      "other",
+      "national-fulltext"
     ],
     "mobile": [
       "entry",
@@ -6978,6 +7174,16 @@ window.LIBRARY_GUIDE = {
     ],
     "menu-031": [
       "thesis-submit"
+    ],
+    "national-fulltext": [
+      "dds",
+      "print"
+    ],
+    "menu-093": [
+      "national-fulltext"
+    ],
+    "menu-094": [
+      "national-fulltext"
     ]
   },
   "bookCases": {
@@ -7045,6 +7251,20 @@ window.LIBRARY_GUIDE = {
         "hours",
         "seat",
         "bus"
+      ]
+    },
+    {
+      "id": "reading-week-2026-2",
+      "text": "독서주간 한정: 연체도서를 반납하고 디지털도서관 2층 안내데스크에 요청하면 대출 정지 즉시 해제(7권 대출 챌린지·북로그 응모도 진행, 기념품은 소진 시 종료)",
+      "link": "https://lib.jejunu.ac.kr/#/bbs/notice/6561",
+      "source": "https://lib.jejunu.ac.kr/#/bbs/notice/6561",
+      "checkedAt": "2026-10-13",
+      "startsOn": "2026-09-07",
+      "endsOn": "2026-10-16",
+      "taskIds": [
+        "loan",
+        "book-return",
+        "my-library"
       ]
     }
   ],

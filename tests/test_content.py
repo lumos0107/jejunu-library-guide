@@ -25,7 +25,7 @@ def t_content_hours_print(site):
     rule = texts(d, 'hours', 'hours')
     check('3주간 24시간 개방' in rule and '1~4열람실' in rule, f'hours: 24시간 개방 규칙과 적용 공간 {rule}')
     check('교대분관' in hours['caution'], 'hours: 교대분관 미확인 표시 없음')
-    check(not hours.get('materials'), 'hours: 지난 공지 링크가 카드에 남아 있음(M3)')
+    check(not any('/bbs/notice/' in m['url'] for m in hours.get('materials') or []), "hours: 지난 공지 링크가 카드에 남아 있음(M3, 공지는 '지금 이 시기'로만)")
     loc = texts(d, 'print', 'location')
     check('3층 3열람실' in loc and '미디어라운지' in loc, f'print 위치 {loc}')
     check('09:00~20:00' in texts(d, 'print', 'hours'), 'print: 미디어라운지 시간 없음')
@@ -103,6 +103,28 @@ def t_book_return_guide(site):
     check(g['cost'] == '연체료 유무는 공식 안내에서 확인하지 못함', f'반납 비용 칸: {g["cost"]}')
     check('다음 운영일' in g['caution'] and '자동반납기' in g['caution'], '반납함 처리 시점(2018 FAQ)·자동반납기 위치 미확인 표시 없음')
     check('book-return' in d['related'].get('loan', []), 'loan → book-return 관련 안내 없음')
+
+
+@test()
+def t_site_audit_additions(site):
+    """공식 사이트 전체 점검(2026-10-13)에서 찾은 빠진 정보 반영(D20)."""
+    site.open()
+    d = site.data()
+    check('타이핑존' in texts(d, 'seat', 'location') and any(f['source'].endswith('/bbs/notice/6675') for f in facts(d, 'seat')), '열람실: 노트북 사용 가능 구역')
+    nf = rec(d, 'national-fulltext')
+    check(nf['source'] == SRC + '#/research/other/assembly' and nf.get('costNote') and len(facts(d, 'national-fulltext', 'location')) >= 3, '국가도서관 원문 카드')
+    check('열람만' in texts(d, 'national-fulltext', 'location') and '실비' in texts(d, 'national-fulltext'), '국가도서관 원문: 열람 전용 PC·출력 실비')
+    for k in ('menu-093', 'menu-094', 'dds'):
+        check('national-fulltext' in d['related'].get(k, []), f'{k} → 국가도서관 원문 연결')
+    mats = lambda rid: [m['url'] for m in rec(d, rid).get('materials', [])]
+    check(SRC + '#/research/other/ill' in mats('dds') and '3주' in texts(d, 'dds') and '14일' in texts(d, 'dds'), '원문복사: 상호대차 탭·대출기간 불일치 표시')
+    check(SRC + '#/research/prevent/ithenticate' in mats('similarity') and '이메일' in texts(d, 'similarity', 'auth'), '표절: iThenticate 탭·요청 방법')
+    check({SRC + '#/education/calendar', SRC + '#/education/online'} <= set(mats('training')), '교육: 교육일정·온라인 이용교육')
+    check('온라인 이용교육' in texts(d, 'entry', 'auth'), '출입: 신입생 온라인 이용교육 조건')
+    check(SRC + '#/service/mobile/seat' in mats('mobile'), '모바일: 좌석배정 사용법')
+    check('교대분관' in texts(d, 'hours', 'hours'), '이용시간: 분관 시간')
+    week = next((n for n in d['notices'] if n['id'] == 'reading-week-2026-2'), None)
+    check(week is None or ('독서주간 한정' in week['text'] and {'loan', 'book-return'} <= set(week['taskIds'])), '독서주간 공지: 한정 조건·연결 카드')
 
 
 BANNERS = {'menu-090': ('RISS', 'https://openlink.lib.jejunu.ac.kr/link.n2s?url=https://www.riss.kr/OrganLogin.do'),

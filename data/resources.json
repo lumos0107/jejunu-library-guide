@@ -1412,6 +1412,10 @@
       {
         "label": "매뉴얼",
         "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/d27367c9-5a22-4886-b42c-2e571843b13e"
+      },
+      {
+        "label": "iThenticate 이용 안내(제주대 도서관)",
+        "url": "https://lib.jejunu.ac.kr/#/research/prevent/ithenticate"
       }
     ],
     "duplicateCount": 1

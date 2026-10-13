@@ -76,7 +76,8 @@
   ],
   "dds": [
     "wish",
-    "other"
+    "other",
+    "national-fulltext"
   ],
   "mobile": [
     "entry",
@@ -136,5 +137,15 @@
   ],
   "menu-031": [
     "thesis-submit"
+  ],
+  "national-fulltext": [
+    "dds",
+    "print"
+  ],
+  "menu-093": [
+    "national-fulltext"
+  ],
+  "menu-094": [
+    "national-fulltext"
   ]
 }

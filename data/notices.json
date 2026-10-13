@@ -25,5 +25,19 @@
       "seat",
       "bus"
     ]
+  },
+  {
+    "id": "reading-week-2026-2",
+    "text": "독서주간 한정: 연체도서를 반납하고 디지털도서관 2층 안내데스크에 요청하면 대출 정지 즉시 해제(7권 대출 챌린지·북로그 응모도 진행, 기념품은 소진 시 종료)",
+    "link": "https://lib.jejunu.ac.kr/#/bbs/notice/6561",
+    "source": "https://lib.jejunu.ac.kr/#/bbs/notice/6561",
+    "checkedAt": "2026-10-13",
+    "startsOn": "2026-09-07",
+    "endsOn": "2026-10-16",
+    "taskIds": [
+      "loan",
+      "book-return",
+      "my-library"
+    ]
   }
 ]
