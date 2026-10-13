@@ -34,6 +34,9 @@ def t_content_hours_print(site):
     check(rec(d, 'print')['login'] != '불필요', 'print: 근거 없는 "인증 불필요" 단정')
     exam = next(n for n in d['notices'] if n['id'] == 'exam-2026-2-midterm') if d['notices'] else None
     check(exam is None or {'hours', 'seat'} <= set(exam['taskIds']), '시험기간 공지가 열람실 좌석 카드에 연결되지 않음')
+    bus = next((n for n in d['notices'] if n['id'] == 'nightbus-2026-2-midterm'), None)
+    check(bus is None or ('정문 앞' in bus['text'] and '00:05' not in bus['text'] and {'hours', 'seat'} <= set(bus['taskIds'])),
+          '야간버스 공지: 탑승 장소·연결 카드, 출발 시각은 표 확인으로(이미지 판독, 날짜·자정 경계 불명확)')
 
 
 @test()

@@ -7032,6 +7032,19 @@ window.LIBRARY_GUIDE = {
         "hours",
         "seat"
       ]
+    },
+    {
+      "id": "nightbus-2026-2-midterm",
+      "text": "중간시험 기간 도서관 야간버스 운행(중앙도서관 정문 앞 탑승). 날짜별 출발 시각·노선은 공지의 야간버스 표 확인",
+      "link": "https://lib.jejunu.ac.kr/#/bbs/notice/6789",
+      "source": "https://lib.jejunu.ac.kr/#/bbs/notice/6789",
+      "checkedAt": "2026-10-13",
+      "startsOn": "2026-10-07",
+      "endsOn": "2026-10-26",
+      "taskIds": [
+        "hours",
+        "seat"
+      ]
     }
   ],
   "commonText": {

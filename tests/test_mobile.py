@@ -41,6 +41,17 @@ def t_search_first_screen_with_notice(site):
 
 
 @test(viewport='mobile')
+def t_search_first_screen_two_notices(site):
+    """시험기간처럼 공지가 두 건(24시간 개방·야간버스)이어도 첫 화면에서 검색창이 보인다."""
+    second = dict(TEST_NOTICE, id='fixture-bus', text='테스트 공지: 시험 기간 도서관 야간버스 운행(중앙도서관 정문 앞 탑승). 날짜별 출발 시각·노선은 공지의 표 확인')
+    site.page.add_init_script(notices_fixture([TEST_NOTICE, second]))
+    site.open()
+    check(site.page.locator('#notices li').count() == 2, '전제: 공지 두 건')
+    state = not_covered(site, '#search-input')
+    check(state == 'ok', f'첫 화면 검색창(공지 두 건): {state}')
+
+
+@test(viewport='mobile')
 def t_search_one_action_after_scroll_mobile(site):
     site.open()
     back_to_search(site)
