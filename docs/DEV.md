@@ -11,7 +11,7 @@ index.html이 아래 순서로 읽는다(모두 `defer`라 문서 순서대로 �
 
 ## 명령
 - 테스트: `python tests/smoke.py --stage 1 --browsers chromium,webkit --modes file,http`
-- 데이터 검사: `python tests/check_data.py --stage 1`
+- 데이터 검사: `python tests/check_data.py --stage 1` (검사기 자체는 `tests/test_check_data.py`가 잘못된 데이터로 확인한다)
 
 ## 데이터
 - 편집 원본은 `data/*.json`이다. 고친 뒤 `python tools/build_data.py`로 data.js를 다시 만든다.
@@ -25,3 +25,4 @@ index.html이 아래 순서로 읽는다(모두 `defer`라 문서 순서대로 �
 4. 배포 주소가 정해지면 `js/config.js`의 `siteUrl`을 채운다. 구글 폼을 만들면 `feedbackFormUrl`과 미리 채우기 entry 이름을 채운다.
 5. ① 동안은 `<meta name="robots" content="noindex">`를 유지하고, ② 커뮤니티 공개 때 뺀다.
 6. 링크 도착 점검: `python tests/check_links.py` → `.tmp/links-report.md`. 공식 사이트에 부담을 주지 않게 하나씩 천천히 연다. 첫 push 전과 월 1회(D14).
+7. 저장소 루트의 `.nojekyll`은 지우지 않는다. 없으면 GitHub Pages가 docs/*.md를 noindex 없는 웹페이지로 만든다(게이트가 확인).

@@ -3980,3 +3980,15 @@ Expected: 게이트 통과 뒤 push 성공
 2. 구글 폼 만들기(로그인 없이 제출·익명·연락처 미수집) → 주소와 entry 이름을 `js/config.js`에
 3. ② 학생 사용성 테스트 참가자 모집(D8·D13)
 4. 배포 주소에서 QA-1.md의 실제 기기 체크리스트 확인(iOS Safari·삼성 인터넷)
+
+---
+
+## 부록. 구현 뒤 바뀐 점 (5차 코드 리뷰)
+
+Task 1~13을 구현한 뒤 5차 교차 평가(코드 리뷰)에서 합의한 수정이다. 이유와 출처는 [REVIEW-2026-10-13-5.md](REVIEW-2026-10-13-5.md), 커밋은 9259a08. 위 Task의 코드 블록은 구현 당시 기준으로 두고, 바뀐 점만 여기에 모은다.
+
+- **콘텐츠(일회성 스크립트 `.tmp/apply_review5.py`):** 이용시간·열람실 좌석에 열람실 페이지의 "일부열람실" 표현, 교외접속 요약 "일부 자료는 별도 가입·등록 필요", 반납 비용 "연체료 유무는 공식 안내에서 확인하지 못함"과 2018년 FAQ 반납함 처리 시점, 에디티지 웹메일 신청 필수(인증 사실), 학위논문 대상 요약, 인쇄 "공식 안내에 인증 언급 없음"·3열람실·방학 중 시간, 시험기간 공지의 연결 카드에 `seat`
+- **app.js:** 카드의 대상·비용 배지를 종류 공통으로, 카드 버튼 이름 = 카드 이름 + 보이는 글, 공식 버튼 `aria-describedby="detail-find-hint"`, 필터 칩은 선택 상자에 보이는 글(`selectedLabel`), `clearAllFilters()`(숨은 학부생 필터까지), 칩 해제·0건 복구·검색 제출 뒤 `#services-title`로 포커스, 공지 출처 링크, `Object.hasOwn` 조회
+- **index.html·styles.css:** 탭 제목·푸터 '비공식', '전체 검색'에 `data-scope="all"`, `#active-filters`에 `role="group"`, 선택 상자·공지 링크·제보 링크·푸터 링크 44px(문장 안 '출처' 링크는 WCAG 2.5.8 예외), `.skip` z-index 20
+- **테스트:** `t_condition_summaries_exact`(조건 요약 13개 정확 일치), `t_all_details_open`(235개), `t_card_button_names_include_visible_text`, `t_resource_card_note_badges`, `t_category_card_starts_fresh`(카드는 검색어를 지움, GPT와 합의), `t_filter_chip_labels_use_display_terms`, `t_hidden_audience_recovery_matches`, `t_focus_after_clearing_filters`, `t_nav_all_search_resets_scope`, `t_skip_link_not_covered`, `t_notice_shows_source_when_different`, q10 책 상황 6개, 악성 데이터 확대, `tests/test_check_data.py`(데이터 검사 음성 테스트). 기본값 테스트는 픽스처 레코드로
+- **도구:** check_data(단계 배열, 달력 날짜, recordKind, 예약 키·id, 책 상황 키 대조, 요약에는 위치가 아닌 근거), smoke(실행할 테스트가 없으면 실패), check_links(본문 대기 40초·제목 판정), deploy_check(브라우저와 같은 주소, 배포 전 안내), gate(`.nojekyll` 확인), `.nojekyll` 추가
