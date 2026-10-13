@@ -97,8 +97,8 @@ window.LIBRARY_GUIDE = {
       "audience": "all",
       "channel": "자동반납기 · 대출대 · 무인반납함",
       "login": "현장 반납",
-      "cost": "연체료 금액은 공식 안내에서 확인하지 못함",
-      "caution": "딸림자료가 있거나 예약된 책은 대출대에 반납해야 합니다. 연체하면 연체일수만큼 대출이 정지되고 증명서 발급도 제한됩니다. 무인반납함에 넣은 책이 언제 반납 처리되는지, 자동반납기가 어디 있는지, 다른 분관 책을 어디서 반납하는지는 공식 안내에서 확인하지 못했습니다.",
+      "cost": "연체료 유무는 공식 안내에서 확인하지 못함",
+      "caution": "딸림자료가 있거나 예약된 책은 대출대에 반납해야 합니다. 연체하면 연체일수만큼 대출이 정지되고 증명서 발급도 제한됩니다. 자동반납기가 어디 있는지, 다른 분관 책을 어디서 반납하는지는 공식 안내에서 확인하지 못했습니다. 무인반납함에 넣은 책은 2018년 FAQ에 \"다음 운영일 처리\"로 안내됐지만 지금도 같은지는 확인하지 못했습니다.",
       "steps": [
         "자동반납기에서 직접 반납 처리하고 확인증 받기",
         "딸림자료·예약된 책은 대출대에 반납하고 처리 상황 확인",
@@ -118,6 +118,11 @@ window.LIBRARY_GUIDE = {
         {
           "text": "연체하면 연체일수만큼 대출이 정지되고, 도서 대출과 제증명 발급이 제한됨",
           "source": "https://lib.jejunu.ac.kr/#/service/circulation/return",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "2018년 FAQ: 도서반납함에 넣은 자료는 다음 운영일에 처리(지금도 같은지는 확인하지 못함)",
+          "source": "https://lib.jejunu.ac.kr/#/bbs/faq/665",
           "checkedAt": "2026-10-13"
         }
       ]
@@ -306,6 +311,11 @@ window.LIBRARY_GUIDE = {
           "text": "일반열람실 안내에 이용 대상 문구가 없음(대상 미확인)",
           "source": "https://lib.jejunu.ac.kr/#/service/facility/readingroom",
           "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "열람실 안내 페이지는 \"시험기간 중 일부열람실 24시간 운영함\"으로 적음(이용시간 페이지는 1~4열람실·PC zone 기준). 어느 열람실이 열리는지는 공지와 현장에서 확인",
+          "source": "https://lib.jejunu.ac.kr/#/service/facility/readingroom",
+          "checkedAt": "2026-10-13"
         }
       ]
     },
@@ -449,7 +459,7 @@ window.LIBRARY_GUIDE = {
       "description": "중앙도서관 3층 3열람실과 중앙디지털도서관 1층 미디어라운지에서 인쇄·복사를, 지정석에서 스캔을 할 수 있어요.",
       "audience": "all",
       "channel": "현장",
-      "login": "불필요",
+      "login": "공식 안내에 인증 언급 없음",
       "cost": "스캔 무료 · 인쇄·복사 유료",
       "caution": "안내 요금은 인쇄 100원, 복사 50원이며 신용·교통카드 결제로 표시됩니다. 출력 세부 조건은 현장에서 확인하세요.",
       "steps": [
@@ -488,7 +498,13 @@ window.LIBRARY_GUIDE = {
         },
         {
           "kind": "hours",
-          "text": "중앙디지털도서관 미디어라운지: 학기 중 평일 09:00~20:00, 토 09:00~13:00, 일요일·공휴일 휴관",
+          "text": "중앙도서관 1~4열람실(3층 3열람실 포함): 06:00~24:00(연중무휴)",
+          "source": "https://lib.jejunu.ac.kr/#/guide/hoo/hoo",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "hours",
+          "text": "중앙디지털도서관 미디어라운지: 학기 중 평일 09:00~20:00, 토 09:00~13:00(방학 중 평일 09:00~18:00), 일요일·공휴일 휴관",
           "source": "https://lib.jejunu.ac.kr/#/guide/hoo/hoo",
           "checkedAt": "2026-10-13"
         }
@@ -578,7 +594,7 @@ window.LIBRARY_GUIDE = {
       "facts": [
         {
           "kind": "auth",
-          "text": "일부 자료는 예외(WSJ·CAS·NICE bizLINE·Value-Search)",
+          "text": "일부 자료는 별도 가입·등록 필요(WSJ·CAS·NICE bizLINE·Value-Search)",
           "source": "https://lib.jejunu.ac.kr/#/search/er",
           "checkedAt": "2026-10-13"
         },
@@ -1042,7 +1058,15 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/research/thesis-submission",
       "keywords": "학위논문 제출 석사 박사 인준지 dCollection 원문 제출확인서",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "eligibilityNote": "본교 석·박사 학위취득예정자",
+      "facts": [
+        {
+          "text": "본교 학위취득예정자는 도서관에 석·박사 학위논문을 제출해야 함(학위수여규정 제23조)",
+          "source": "https://lib.jejunu.ac.kr/#/research/thesis-submission",
+          "checkedAt": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "editage",
@@ -1068,6 +1092,12 @@ window.LIBRARY_GUIDE = {
       "facts": [
         {
           "text": "공동웹페이지로 의뢰한 연구자에게 협약가로 교정 제공. 무료는 저자 질문 답변·학술지 서식 설정(일반교정 1회) 같은 일부 부가서비스",
+          "source": "https://lib.jejunu.ac.kr/#/research/correction",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "kind": "auth",
+          "text": "학교 웹메일 계정(@jejunu.ac.kr)으로 공동웹페이지를 통해 신청 필수",
           "source": "https://lib.jejunu.ac.kr/#/research/correction",
           "checkedAt": "2026-10-13"
         }
@@ -1175,6 +1205,11 @@ window.LIBRARY_GUIDE = {
           "kind": "hours",
           "text": "중앙디지털도서관 1·2자료실·그룹스터디라운지·미디어라운지 등: 학기 중 평일 09:00~20:00, 토 09:00~13:00(방학 중 평일 09:00~18:00), 일요일·공휴일 휴관",
           "source": "https://lib.jejunu.ac.kr/#/guide/hoo/hoo",
+          "checkedAt": "2026-10-13"
+        },
+        {
+          "text": "열람실 안내 페이지는 \"시험기간 중 일부열람실 24시간 운영함\"으로 적음(이용시간 페이지는 1~4열람실·PC zone 기준). 어느 열람실이 열리는지는 공지와 현장에서 확인",
+          "source": "https://lib.jejunu.ac.kr/#/service/facility/readingroom",
           "checkedAt": "2026-10-13"
         }
       ]
@@ -6848,7 +6883,8 @@ window.LIBRARY_GUIDE = {
       "startsOn": "2026-10-07",
       "endsOn": "2026-10-26",
       "taskIds": [
-        "hours"
+        "hours",
+        "seat"
       ]
     }
   ],

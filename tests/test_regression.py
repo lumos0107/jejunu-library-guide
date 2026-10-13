@@ -140,6 +140,14 @@ def q10_book_case_not_owned(site):
     ids = site.page.eval_on_selector_all('#book-result [data-open]', 'els => els.map(e => e.dataset.open)')
     check(ids == ['wish', 'dds'], f'책 상황 결과 {ids}')
     check(site.page.get_attribute('[data-book="not-owned"]', 'aria-pressed') == 'true', 'aria-pressed')
+    # 화면의 책 상황 버튼 6개가 모두 데이터와 이어진다(5차 평가)
+    cases = site.data()['bookCases']
+    keys = site.page.eval_on_selector_all('[data-book]', 'els => els.map(e => e.dataset.book)')
+    check(sorted(keys) == sorted(cases), f'화면 키 {keys} != 데이터 키 {sorted(cases)}')
+    for key in keys:
+        site.book_case(key)
+        got = site.page.eval_on_selector_all('#book-result [data-open]', 'els => els.map(e => e.dataset.open)')
+        check(got == cases[key]['ids'], f'{key}: {got} != {cases[key]["ids"]}')
 
 
 @test(viewport='mobile')

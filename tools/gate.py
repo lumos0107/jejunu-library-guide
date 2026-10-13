@@ -35,6 +35,10 @@ def main():
         if subprocess.run(cmd, cwd=ROOT).returncode != 0:
             print(f'게이트 실패: {name}. push하지 마세요.')
             sys.exit(1)
+    print('== .nojekyll 확인')
+    if not subprocess.run(['git', 'ls-files', '--', '.nojekyll'], cwd=ROOT, capture_output=True, check=True).stdout.strip():
+        print('게이트 실패: .nojekyll이 없습니다. 없으면 GitHub Pages가 docs/*.md를 noindex 없는 HTML로 만듭니다.')
+        sys.exit(1)
     print('== _비공개/ 제외 확인')
     if not private_ok():
         print('게이트 실패: _비공개/가 추적되거나 제외되지 않았습니다.')

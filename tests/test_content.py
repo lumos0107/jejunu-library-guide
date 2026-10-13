@@ -29,6 +29,11 @@ def t_content_hours_print(site):
     loc = texts(d, 'print', 'location')
     check('3층 3열람실' in loc and '미디어라운지' in loc, f'print 위치 {loc}')
     check('09:00~20:00' in texts(d, 'print', 'hours'), 'print: 미디어라운지 시간 없음')
+    check('06:00~24:00' in texts(d, 'print', 'hours') and '방학' in texts(d, 'print', 'hours'), 'print: 3열람실·방학 시간 없음')
+    check('일부열람실' in texts(d, 'hours') and '일부열람실' in texts(d, 'seat'), '열람실 페이지의 "일부열람실" 표현 불일치 표시 없음')
+    check(rec(d, 'print')['login'] != '불필요', 'print: 근거 없는 "인증 불필요" 단정')
+    exam = next(n for n in d['notices'] if n['id'] == 'exam-2026-2-midterm') if d['notices'] else None
+    check(exam is None or {'hours', 'seat'} <= set(exam['taskIds']), '시험기간 공지가 열람실 좌석 카드에 연결되지 않음')
 
 
 @test()
@@ -56,7 +61,9 @@ def t_content_remote_and_resources(site):
     site.open()
     d = site.data()
     check('무료' not in rec(d, 'remote')['keywords'], 'remote 키워드에 무료')
-    check(facts(d, 'remote', 'auth'), 'remote: 인증 예외 요약 없음')
+    check('별도 가입·등록 필요' in texts(d, 'remote', 'auth'), 'remote: 인증 요약이 "로그인 예외"로 읽힘')
+    check('신청 필수' in texts(d, 'editage', 'auth'), 'editage: 학교 웹메일 조건의 근거 없음')
+    check('학위취득예정자' in (rec(d, 'thesis-submit').get('eligibilityNote') or '') and facts(d, 'thesis-submit'), 'thesis-submit: 대상 요약·근거 없음')
     check('WSJ' in texts(d, 'culture', 'auth'), 'culture: 고친 WSJ 문구의 근거 없음')
     for rid in ('er-007', 'er-010', 'er-035'):
         check('로그인' in texts(d, rid, 'auth'), f'{rid}: 새 주의 문구의 로그인 근거 없음')
@@ -90,6 +97,6 @@ def t_book_return_guide(site):
     check(g['source'] == SRC + '#/service/circulation/return', f'반납 source {g["source"]}')
     check(g['category'] == 'books', '반납 분류')
     check('제증명' in texts(d, 'book-return'), '연체 시 제증명 발급 제한 없음')
-    check('확인하지 못함' in g['cost'], f'반납 비용 칸이 연체료를 단정함: {g["cost"]}')
-    check('반납 처리' in g['caution'] and '자동반납기' in g['caution'], '반납함 처리 시점·자동반납기 위치 미확인 표시 없음')
+    check(g['cost'] == '연체료 유무는 공식 안내에서 확인하지 못함', f'반납 비용 칸: {g["cost"]}')
+    check('다음 운영일' in g['caution'] and '자동반납기' in g['caution'], '반납함 처리 시점(2018 FAQ)·자동반납기 위치 미확인 표시 없음')
     check('book-return' in d['related'].get('loan', []), 'loan → book-return 관련 안내 없음')

@@ -42,6 +42,10 @@ def main():
     for mod in sorted((ROOT / 'tests').glob('test_*.py')):
         importlib.import_module(mod.stem)
     tests = [t for t in harness.REGISTRY if t['stage'] <= a.stage and a.k in t['name']]
+    browsers = a.browsers.split(',')
+    if not tests or set(browsers) - {'chromium', 'webkit', 'firefox'} or (not a.base and not set(a.modes.split(',')) & {'file', 'http'}):
+        print(f'실행할 테스트·브라우저·모드가 없습니다(테스트 {len(tests)}개, browsers={a.browsers}, modes={a.modes})')
+        sys.exit(1)
 
     bases = []
     if a.base:
@@ -55,7 +59,7 @@ def main():
 
     total = failures = 0
     with sync_playwright() as pw:
-        for bname in a.browsers.split(','):
+        for bname in browsers:
             browser = getattr(pw, bname).launch()
             for mode, base in bases:
                 for t in tests:

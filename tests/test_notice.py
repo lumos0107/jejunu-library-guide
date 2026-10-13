@@ -46,3 +46,13 @@ def t_notice_rechecked_after_midnight(site):
     site.page.clock.set_fixed_time('2026-10-27T00:01:00+09:00')
     site.search('통계')  # 다시 그리기
     check(not site.page.locator('#notices').is_visible(), '자정을 넘긴 뒤 다시 그렸는데 공지가 남음(S14)')
+
+
+@test()
+def t_notice_shows_source_when_different(site):
+    other = dict(TEST_NOTICE, source='https://lib.jejunu.ac.kr/#/guide/hoo/hoo')
+    site.page.clock.set_fixed_time('2026-10-15T10:00:00+09:00')
+    site.page.add_init_script(notices_fixture([other]))
+    site.open()
+    hrefs = site.page.eval_on_selector_all('#notices a', 'els => els.map(e => e.getAttribute("href"))')
+    check(other['source'] in hrefs and other['link'] in hrefs, f'공지 링크·출처 {hrefs}')

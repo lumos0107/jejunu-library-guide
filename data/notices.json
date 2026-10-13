@@ -7,6 +7,9 @@
     "checkedAt": "2026-10-13",
     "startsOn": "2026-10-07",
     "endsOn": "2026-10-26",
-    "taskIds": ["hours"]
+    "taskIds": [
+      "hours",
+      "seat"
+    ]
   }
 ]

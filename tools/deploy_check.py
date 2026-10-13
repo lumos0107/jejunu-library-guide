@@ -3,6 +3,7 @@ import hashlib
 import pathlib
 import subprocess
 import sys
+import urllib.error
 import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -14,8 +15,13 @@ def main():
     stale = []
     for f in FILES:
         local = subprocess.run(['git', 'show', f'HEAD:{f}'], cwd=ROOT, capture_output=True, check=True).stdout
-        with urllib.request.urlopen(base + f + '?nocache=1') as r:
-            remote = r.read()
+        req = urllib.request.Request(base + f, headers={'Cache-Control': 'no-cache', 'Pragma': 'no-cache'})
+        try:  # 브라우저 테스트가 받을 주소 그대로(쿼리 없이) 비교한다
+            with urllib.request.urlopen(req, timeout=30) as r:
+                remote = r.read()
+        except urllib.error.HTTPError as e:
+            print(f'{f}: HTTP {e.code} — 아직 배포되지 않았거나 GitHub Pages가 꺼져 있습니다(Settings → Pages 확인).')
+            sys.exit(1)
         if hashlib.sha256(local).digest() != hashlib.sha256(remote).digest():
             stale.append(f)
     if stale:

@@ -1118,3 +1118,20 @@ dialog li {
 nav a {
   min-height: 44px;
 }
+/* 따로 떨어진 링크와 선택 상자도 누르는 영역 44px(문장 안의 '출처' 링크는 WCAG 2.5.8의 문장 안 링크 예외) */
+.notices a,
+.feedback-link,
+footer a,
+select {
+  min-height: 44px;
+}
+.notices a,
+.feedback-link,
+footer a {
+  display: inline-flex;
+  align-items: center;
+}
+/* 건너뛰기 링크가 붙은 헤더(z-index 10)에 가리지 않게 */
+.skip {
+  z-index: 20;
+}

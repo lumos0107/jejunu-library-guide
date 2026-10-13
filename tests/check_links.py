@@ -52,14 +52,20 @@ def classify_page(requested, final, title, text):
         if fin_path.startswith(req_path + '/'):
             return '정상', '기본 탭으로 이동'  # 예: #/service/facility → #/service/facility/all
         return '경고', '다른 주소로 이동'
+    if ' | ' not in (title or ''):
+        return '경고', '페이지 제목을 확인하지 못함(내용 확인 불가)'  # 공식 페이지 제목은 "이름 | 제주대학교 중앙도서관"
     return '정상', ''
 
 
 def check_page(context, url):
     page = context.new_page()  # 주소마다 새 문서로 연다(같은 문서 안 해시 이동은 제목·상태가 남는다)
     try:
-        page.goto(url, timeout=20000)
-        page.wait_for_timeout(2500)
+        page.goto(url, timeout=40000)
+        try:  # 본문이 채워질 때까지 기다린다(빈 화면을 정상으로 치지 않게)
+            page.wait_for_function('document.body && document.body.innerText.trim().length > 50', timeout=10000)
+        except Exception:  # noqa: BLE001
+            pass
+        page.wait_for_timeout(1500)
         text = page.evaluate('document.body ? document.body.innerText : ""')
         title = page.title()
         state, why = classify_page(url, page.url, title, text)

@@ -33,21 +33,22 @@
   function card(s) {
     const resource = s.recordKind === 'resource';
     const menu = s.recordKind === 'menu';
+    // 확인된 대상·비용 요약은 종류와 상관없이 배지로 보인다
+    const noteBadges = (s.eligibilityNote ? '<span class="badge target">' + escape(s.eligibilityNote) + '</span>' : '')
+      + (s.costNote ? '<span class="badge">' + escape(s.costNote) + '</span>' : '');
     const badges = resource
       ? '<span class="badge">' + escape(s.subject) + '</span>' + (ACCESS_BADGE[s.accessType]
-        ? '<span class="badge ' + ACCESS_BADGE[s.accessType][0] + '">' + ACCESS_BADGE[s.accessType][1] + '</span>' : '')
-      : (s.channel ? '<span class="badge">' + escape(s.channel) + '</span>' : '')
-        + (s.eligibilityNote ? '<span class="badge target">' + escape(s.eligibilityNote) + '</span>' : '')
-        + (s.costNote ? '<span class="badge">' + escape(s.costNote) + '</span>' : '');
+        ? '<span class="badge ' + ACCESS_BADGE[s.accessType][0] + '">' + ACCESS_BADGE[s.accessType][1] + '</span>' : '') + noteBadges
+      : (s.channel ? '<span class="badge">' + escape(s.channel) + '</span>' : '') + noteBadges;
+    const action = resource ? '설명·매뉴얼 보기' : menu ? '공식 사이트에서 찾는 곳 보기' : '이용 방법 보기';
     return '<article class="service-card"><div class="record-kind"><span>' + kindName(s.recordKind) + '</span><span>'
       + escape(resource ? sourceTypeLabel(s.sourceType) : menu ? s.menuGroup : categoryName(s.category)) + '</span></div><h3>'
       + escape(s.name) + '</h3>'
       + (!menu ? '<p class="service-question">' + escape(resource ? s.subject + ' 분야에서 활용하기' : s.question) + '</p>' : '')
       + '<p class="service-description' + (menu ? ' official-path' : '') + '">' + escape(s.description) + '</p>'
       + '<div class="badges">' + badges + '</div><button type="button" data-open="' + escape(s.id) + '" aria-label="'
-      + escape(s.name) + ' ' + kindName(s.recordKind) + ' 보기">'
-      + (resource ? '설명·매뉴얼 보기' : menu ? '공식 사이트에서 찾는 곳 보기' : '이용 방법 보기')
-      + '<span aria-hidden="true">↗</span></button></article>';
+      + escape(s.name) + ' ' + action + '">'  // 이름에 보이는 글을 넣는다(WCAG 2.5.3)
+      + action + '<span aria-hidden="true">↗</span></button></article>';
   }
 
   function matchesFilters(s) {
@@ -69,7 +70,7 @@
     }
     if (state.audience !== 'all' && audienceMatters()) list.push({ key: 'audience', label: FILTER_LABELS.audience[state.audience] || state.audience });
     if (state.scope === 'resource') {
-      for (const key of ['subject', 'sourceType', 'access']) if (state[key] !== 'all') list.push({ key, label: state[key] });
+      for (const key of ['subject', 'sourceType', 'access']) if (state[key] !== 'all') list.push({ key, label: selectedLabel(key) });
     }
     if (state.scope === 'menu' && state.menuGroup !== 'all') list.push({ key: 'menuGroup', label: state.menuGroup });
     return list;
@@ -80,6 +81,18 @@
   function clearFilter(key) {
     state[key] = 'all';
     if (SELECT_OF[key]) $('#' + SELECT_OF[key]).value = 'all';
+  }
+
+  // 칩은 선택 상자에 보이는 글과 같은 말을 쓴다(P1-15)
+  function selectedLabel(key) {
+    const option = $('#' + SELECT_OF[key]).selectedOptions[0];
+    return option ? option.textContent : state[key];
+  }
+
+  // 화면에 칩이 없는 숨은 학부생 필터까지 푼다. 복구 수(recoveryCounts)도 학부생 필터 없이 센다
+  function clearAllFilters() {
+    activeFilters().forEach(f => clearFilter(f.key));
+    if (state.audience !== 'all') clearFilter('audience');
   }
 
   // 0건일 때 복구 안내용 수: 같은 범위에서 필터만 풀었을 때, 범위까지 풀었을 때(S4)
@@ -191,6 +204,7 @@
   const noticeHtml = n => '<li><strong>' + escape(n.text) + '</strong> <span class="notice-period">'
     + escape(n.startsOn.replaceAll('-', '.')) + ' ~ ' + escape(n.endsOn.replaceAll('-', '.')) + '</span>'
     + (safeUrl(n.link) ? ' <a href="' + escape(safeUrl(n.link)) + '" target="_blank" rel="noopener noreferrer">공지 보기 ↗</a>' : '')
+    + (safeUrl(n.source) && n.source !== n.link ? ' <a href="' + escape(safeUrl(n.source)) + '" target="_blank" rel="noopener noreferrer">출처</a>' : '')
     + '<span class="notice-source">확인일 ' + escape(n.checkedAt.replaceAll('-', '.')) + '</span></li>';
 
   function renderNotices() {
@@ -235,14 +249,14 @@
     const exceptions = facts.filter(f => f.kind !== 'location');
     const notices = window.LG.activeNotices(window.LIBRARY_GUIDE.notices, todayNow(), id);
     const materials = (s.materials || []).filter(m => safeUrl(m.url));
-    const related = (relatedMap[id] || []).filter(byId);
+    const related = (Object.hasOwn(relatedMap, id) ? relatedMap[id] : []).filter(byId);
 
     $('#detail-content').innerHTML = '<h2 id="detail-title">' + escape(s.name) + '</h2>'
       + '<p class="detail-question">' + escape(resource ? s.subject + ' · ' + sourceTypeLabel(s.sourceType) : menu ? s.description : s.question) + '</p>'
       + '<div class="detail-top">'
-      + (url ? '<a class="primary" data-official href="' + escape(url) + '" target="_blank" rel="noopener noreferrer">' + sourceLabel + ' ↗</a>'
-        : '<p>공식 링크를 확인할 수 없어요.</p>')
-      + (hint ? '<p class="find-hint">' + escape(hint) + '</p>' : '')
+      + (url ? '<a class="primary" data-official href="' + escape(url) + '"' + (hint ? ' aria-describedby="detail-find-hint"' : '')
+        + ' target="_blank" rel="noopener noreferrer">' + sourceLabel + ' ↗</a>' : '<p>공식 링크를 확인할 수 없어요.</p>')
+      + (hint ? '<p class="find-hint" id="detail-find-hint">' + escape(hint) + '</p>' : '')
       + '</div>'
       + '<dl class="detail-conditions">'
       + '<div><dt>대상</dt><dd>' + escape(s.eligibilityNote || '공식 안내에서 확인') + '</dd></div>'
@@ -284,10 +298,11 @@
   document.addEventListener('click', e => {
     const clear = e.target.closest('[data-clear]');
     if (clear) {
-      if (clear.dataset.clear === 'all') activeFilters().forEach(f => clearFilter(f.key));
+      if (clear.dataset.clear === 'all') clearAllFilters();
       else clearFilter(clear.dataset.clear);
       state.limit = 12;
       render();
+      $('#services-title').focus({ preventScroll: true });  // 누른 칩이 사라지므로 포커스를 결과 제목으로
       return;
     }
     const open = e.target.closest('[data-open]');
@@ -315,7 +330,8 @@
     }
     const book = e.target.closest('[data-book]');
     if (book) {
-      const result = bookCases[book.dataset.book];
+      const result = Object.hasOwn(bookCases, book.dataset.book) ? bookCases[book.dataset.book] : null;
+      if (!result) return;
       document.querySelectorAll('[data-book]').forEach(b => b.setAttribute('aria-pressed', String(b === book)));
       $('#book-result').hidden = false;
       $('#book-result').innerHTML = '<p>' + escape(result.text) + '</p>' + result.ids.filter(byId).map(id => '<button type="button" data-open="'
@@ -335,6 +351,7 @@
     state.limit = 12;
     render();
     $('#services').scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
+    $('#services-title').focus({ preventScroll: true });  // 키보드로 결과부터 이어서 보게 한다
   });
   $('#audience').addEventListener('change', e => { state.audience = e.target.value; state.limit = 12; render(); });
   for (const [id, key] of [['resource-subject', 'subject'], ['resource-type', 'sourceType'], ['resource-access', 'access'], ['menu-group', 'menuGroup']]) {
@@ -351,10 +368,11 @@
   $('#empty-reset').addEventListener('click', () => { reset(); $('#search-input').focus(); });
   $('#empty-clear-filters').addEventListener('click', () => {
     const widen = $('#empty-clear-filters').dataset.widen === 'true';
-    activeFilters().forEach(f => clearFilter(f.key));
+    clearAllFilters();
     state.limit = 12;
     if (widen) changeScope('all');
     else render();
+    $('#services-title').focus({ preventScroll: true });
   });
 
   const scrollBehavior = () => (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');

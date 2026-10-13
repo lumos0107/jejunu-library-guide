@@ -72,6 +72,9 @@ def t_target_sizes_mobile(site):
     small += site.page.evaluate(SMALL, '.active-filters button, #empty-clear-filters')
     site.open_any('group')
     small += site.page.evaluate(SMALL, '#close-dialog, #detail-content a.primary, .related button, .material-list a')
+    site.close_detail()
+    site.scope('resource')  # 자료 필터의 선택 상자가 보이는 상태
+    small += site.page.evaluate(SMALL, 'select, .notices a, footer a')
     check(not small, f'44px 미만: {small[:6]}')
 
 
@@ -83,3 +86,13 @@ def t_reduced_motion(site):
     site.open()
     site.category_card('space')
     check(site.page.evaluate('window.__scrolls').count('smooth') == 0, '동작 줄이기인데 smooth 스크롤')
+
+
+@test()
+def t_skip_link_not_covered(site):
+    site.open()
+    site.page.focus('a.skip')  # WebKit(Safari)은 기본 설정에서 Tab으로 링크에 가지 않으므로 직접 포커스를 준다
+    state = site.page.evaluate("""() => { const el = document.activeElement; if (!el || !el.classList.contains('skip')) return 'not skip: ' + (el && el.className);
+      const r = el.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+      return hit === el || el.contains(hit) ? 'ok' : 'covered by ' + (hit && hit.className); }""")
+    check(state == 'ok', f'첫 Tab의 건너뛰기 링크: {state}')
