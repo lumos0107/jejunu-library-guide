@@ -76,7 +76,7 @@ def q05_resource_and_menu_filters(site):
     check(site.count() == 5, f'통계·기업 {site.count()}')
     site.select('resource-subject', 'all')
     site.scope('menu')
-    check(site.count() == 89, f'메뉴 {site.count()}')
+    check(site.count() == 94, f'메뉴 {site.count()}(공식 메뉴 89 + 홈 하단 배너 5, D19)')
     site.select('menu-group', 'My Library')
     check(site.count() == 17, f'My Library {site.count()}')
 

@@ -102,6 +102,35 @@ def t_book_return_guide(site):
     check('book-return' in d['related'].get('loan', []), 'loan → book-return 관련 안내 없음')
 
 
+BANNERS = {'menu-090': ('RISS', 'https://openlink.lib.jejunu.ac.kr/link.n2s?url=https://www.riss.kr/OrganLogin.do'),
+           'menu-091': ('한국학술지인용색인', 'https://www.kci.go.kr/kciportal/main.kci'),
+           'menu-092': ('ScienceON', 'https://scienceon.kisti.re.kr/main/mainForm.do'),
+           'menu-093': ('국립중앙도서관', 'https://www.nl.go.kr/'),
+           'menu-094': ('국회도서관', 'https://www.nanet.go.kr/main.do')}
+
+
+@test()
+def t_home_banner_sites(site):
+    """공식 홈 맨 아래 기관 로고 배너 6곳: 5곳은 새 카드, dCollection은 기존 메뉴 카드에 배너 경로(D19, 2026-10-13 확인)."""
+    site.open()
+    d = site.data()
+    for rid, (name, url) in BANNERS.items():
+        r = rec(d, rid)
+        check(r['source'] == url and name in r['name'] and r['menuGroup'] == '공식 홈 하단 배너', f'{rid}: {r["name"]} {r["source"]}')
+        check('그 사이트 안내를 확인' in r['caution'], f'{rid}: 외부 사이트 이용 조건 안내 없음')
+    check('확인하지 못했' in rec(d, 'menu-090')['caution'], 'RISS: 학교 밖 화면 미확인 표시 없음')
+    check('openlink' in texts(d, 'menu-090', 'auth'), 'RISS: 교외접속 경유 근거 없음')
+    check(any('배너' in s for s in rec(d, 'menu-031')['steps']), 'dCollection: 홈 배너 경로 없음')
+    site.search('국회도서관')
+    check(site.result_ids()[:1] == ['menu-094'], f'"국회도서관" 1위가 아님 {site.result_ids()[:3]}')
+    site.open_detail('menu-094')
+    check('외부 사이트 열기' in site.page.inner_text('#detail-content a.primary'), '배너 카드 버튼 문구')
+    check(site.official_href() == BANNERS['menu-094'][1], f'버튼 주소 {site.official_href()}')
+    site.close_detail()
+    site.open_any('menu-031')
+    check('공식 메뉴로 이동하기' in site.page.inner_text('#detail-content a.primary'), 'dCollection은 공식 메뉴 카드 그대로')
+
+
 @test()
 def t_copykiller_links(site):
     """'표절' 1위 안내와 카피킬러 자료 카드에서 공식 카피킬러 안내·매뉴얼로 갈 수 있다(2026-10-13 사용자 관찰)."""

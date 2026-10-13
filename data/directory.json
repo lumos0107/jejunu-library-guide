@@ -705,11 +705,12 @@
     "steps": [
       "공식 홈페이지의 Collections 메뉴 확인",
       "디지털 컬렉션 분류 선택",
-      "dCollection 메뉴에서 안내 확인"
+      "dCollection 메뉴에서 안내 확인",
+      "공식 홈 맨 아래 기관 로고 배너의 'dcollection' 로고로도 이동 가능"
     ],
     "source": "https://dcoll.jejunu.ac.kr/",
-    "keywords": "Collections 디지털 컬렉션 dCollection 공식 메뉴",
-    "checkedAt": "2026-10-12"
+    "keywords": "Collections 디지털 컬렉션 dCollection 학위논문 배너 공식 메뉴",
+    "checkedAt": "2026-10-13"
   },
   {
     "id": "menu-032",
@@ -2049,5 +2050,123 @@
     "source": "https://lib.jejunu.ac.kr/#/mylibrary/blocks",
     "keywords": "My Library 나의 정보 제재현황 조회 공식 메뉴",
     "checkedAt": "2026-10-12"
+  },
+  {
+    "id": "menu-090",
+    "recordKind": "menu",
+    "name": "RISS(학술연구정보서비스)",
+    "question": "공식 홈페이지에서는 어디에 있나요?",
+    "category": "assignment",
+    "description": "공식 홈 맨 아래 로고 배너 → RISS",
+    "menuGroup": "공식 홈 하단 배너",
+    "menuSubgroup": "외부 사이트",
+    "audience": "all",
+    "channel": "공식 홈 하단 배너 → 외부 사이트(새 창)",
+    "login": "학교 밖 화면 미확인",
+    "cost": "사이트별 조건 확인",
+    "caution": "외부 기관이 운영하는 사이트예요. 도서관 홈 배너의 연결만 확인했어요. 원문 이용 범위·회원가입·로그인 조건은 그 사이트 안내를 확인하세요. 학교망에서 열면 RISS 첫 화면으로 가는 것을 확인했어요(2026.10.13). 학교 밖에서 열 때 로그인 화면이 나오는지는 확인하지 못했어요.",
+    "steps": [
+      "공식 홈페이지(lib.jejunu.ac.kr) 맨 아래로 내리기",
+      "기관 로고 배너 줄에서 'RISS' 로고 누르기(새 창)"
+    ],
+    "source": "https://openlink.lib.jejunu.ac.kr/link.n2s?url=https://www.riss.kr/OrganLogin.do",
+    "keywords": "RISS 리스 학술연구정보서비스 KERIS 한국교육학술정보원 학술정보 논문 외부 사이트 배너",
+    "checkedAt": "2026-10-13",
+    "facts": [
+      {
+        "kind": "auth",
+        "text": "도서관 홈 배너의 RISS 링크는 교외접속(openlink) 주소를 거쳐 RISS 기관 로그인 주소로 연결",
+        "source": "https://lib.jejunu.ac.kr/#/",
+        "checkedAt": "2026-10-13"
+      }
+    ]
+  },
+  {
+    "id": "menu-091",
+    "recordKind": "menu",
+    "name": "한국학술지인용색인(KCI)",
+    "question": "공식 홈페이지에서는 어디에 있나요?",
+    "category": "assignment",
+    "description": "공식 홈 맨 아래 로고 배너 → 한국학술지인용색인",
+    "menuGroup": "공식 홈 하단 배너",
+    "menuSubgroup": "외부 사이트",
+    "audience": "all",
+    "channel": "공식 홈 하단 배너 → 외부 사이트(새 창)",
+    "login": "사이트별 조건 확인",
+    "cost": "사이트별 조건 확인",
+    "caution": "외부 기관이 운영하는 사이트예요. 도서관 홈 배너의 연결만 확인했어요. 원문 이용 범위·회원가입·로그인 조건은 그 사이트 안내를 확인하세요.",
+    "steps": [
+      "공식 홈페이지(lib.jejunu.ac.kr) 맨 아래로 내리기",
+      "기관 로고 배너 줄에서 '한국학술지인용색인' 로고 누르기(새 창)"
+    ],
+    "source": "https://www.kci.go.kr/kciportal/main.kci",
+    "keywords": "한국학술지인용색인 KCI 케이씨아이 Korea Citation Index 국내 학술지 논문 인용 외부 사이트 배너",
+    "checkedAt": "2026-10-13"
+  },
+  {
+    "id": "menu-092",
+    "recordKind": "menu",
+    "name": "ScienceON(사이언스온)",
+    "question": "공식 홈페이지에서는 어디에 있나요?",
+    "category": "assignment",
+    "description": "공식 홈 맨 아래 로고 배너 → Science on",
+    "menuGroup": "공식 홈 하단 배너",
+    "menuSubgroup": "외부 사이트",
+    "audience": "all",
+    "channel": "공식 홈 하단 배너 → 외부 사이트(새 창)",
+    "login": "사이트별 조건 확인",
+    "cost": "사이트별 조건 확인",
+    "caution": "외부 기관이 운영하는 사이트예요. 도서관 홈 배너의 연결만 확인했어요. 원문 이용 범위·회원가입·로그인 조건은 그 사이트 안내를 확인하세요.",
+    "steps": [
+      "공식 홈페이지(lib.jejunu.ac.kr) 맨 아래로 내리기",
+      "기관 로고 배너 줄에서 'Science on' 로고 누르기(새 창)"
+    ],
+    "source": "https://scienceon.kisti.re.kr/main/mainForm.do",
+    "keywords": "ScienceON Science on 사이언스온 KISTI 한국과학기술정보연구원 과학기술 논문 외부 사이트 배너",
+    "checkedAt": "2026-10-13"
+  },
+  {
+    "id": "menu-093",
+    "recordKind": "menu",
+    "name": "국립중앙도서관",
+    "question": "공식 홈페이지에서는 어디에 있나요?",
+    "category": "books",
+    "description": "공식 홈 맨 아래 로고 배너 → 국립중앙도서관",
+    "menuGroup": "공식 홈 하단 배너",
+    "menuSubgroup": "외부 사이트",
+    "audience": "all",
+    "channel": "공식 홈 하단 배너 → 외부 사이트(새 창)",
+    "login": "사이트별 조건 확인",
+    "cost": "사이트별 조건 확인",
+    "caution": "외부 기관이 운영하는 사이트예요. 도서관 홈 배너의 연결만 확인했어요. 원문 이용 범위·회원가입·로그인 조건은 그 사이트 안내를 확인하세요.",
+    "steps": [
+      "공식 홈페이지(lib.jejunu.ac.kr) 맨 아래로 내리기",
+      "기관 로고 배너 줄에서 '국립중앙도서관' 로고 누르기(새 창)"
+    ],
+    "source": "https://www.nl.go.kr/",
+    "keywords": "국립중앙도서관 국중도 국립도서관 외부 도서관 사이트 배너",
+    "checkedAt": "2026-10-13"
+  },
+  {
+    "id": "menu-094",
+    "recordKind": "menu",
+    "name": "국회도서관",
+    "question": "공식 홈페이지에서는 어디에 있나요?",
+    "category": "books",
+    "description": "공식 홈 맨 아래 로고 배너 → 국회도서관",
+    "menuGroup": "공식 홈 하단 배너",
+    "menuSubgroup": "외부 사이트",
+    "audience": "all",
+    "channel": "공식 홈 하단 배너 → 외부 사이트(새 창)",
+    "login": "사이트별 조건 확인",
+    "cost": "사이트별 조건 확인",
+    "caution": "외부 기관이 운영하는 사이트예요. 도서관 홈 배너의 연결만 확인했어요. 원문 이용 범위·회원가입·로그인 조건은 그 사이트 안내를 확인하세요.",
+    "steps": [
+      "공식 홈페이지(lib.jejunu.ac.kr) 맨 아래로 내리기",
+      "기관 로고 배너 줄에서 '국회도서관' 로고 누르기(새 창)"
+    ],
+    "source": "https://www.nanet.go.kr/main.do",
+    "keywords": "국회도서관 국회 도서관 외부 도서관 사이트 배너",
+    "checkedAt": "2026-10-13"
   }
 ]

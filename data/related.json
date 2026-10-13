@@ -129,5 +129,12 @@
   "book-return": [
     "loan",
     "my-library"
+  ],
+  "menu-090": [
+    "remote",
+    "dds"
+  ],
+  "menu-031": [
+    "thesis-submit"
   ]
 }

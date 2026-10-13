@@ -219,6 +219,7 @@
   const dialog = $('#detail-dialog');
 
   const isListUrl = url => /#\/search\/er(-ebook)?$/.test(url || '');
+  const BANNER_GROUP = '공식 홈 하단 배너';  // 공식 홈 맨 아래 기관 로고 배너. 도착지가 외부 사이트다(D19)
 
   // 공식 목록은 거른 상태를 주소에 담지 않는다(2026-10-13 확인, D18). 가나다·ABC 버튼과 실제로 찾아지는 검색어로 안내한다
   function findHint(s) {
@@ -244,7 +245,7 @@
     $('#detail-category').textContent = kindName(s.recordKind) + ' · ' + (resource ? s.subject : menu ? s.menuGroup : categoryName(s.category));
     const sourceLabel = resource
       ? (s.source.endsWith('er-ebook') ? '공식 전자책 목록 열기' : '공식 전자정보원 목록 열기')
-      : menu ? '공식 메뉴로 이동하기' : '공식 안내 열기';
+      : menu ? (s.menuGroup === BANNER_GROUP ? '외부 사이트 열기' : '공식 메뉴로 이동하기') : '공식 안내 열기';
     const url = safeUrl(s.source);
     const hint = findHint(s);
     const facts = s.facts || [];

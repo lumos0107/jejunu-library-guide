@@ -152,6 +152,22 @@
 
 → 걸러진 목록으로 가는 주소는 만들 수 없다. 찾는 방법을 '버튼 + 실제로 찾아지는 검색어(findTerm)'로 바꾸고, 공식 목록과의 대조는 `tests/check_er_find.py`로 월 1회 한다(DECISIONS D18).
 
+## 12. 공식 홈 하단 기관 로고 배너 (2026-10-13)
+
+사용자가 공식 홈 맨 아래 로고 줄(RISS·한국학술지인용색인·ScienceON·dCollection·국립중앙도서관·국회도서관)을 짚었다. 이 줄은 옆으로 넘어가는 슬라이드(`owl-carousel outside-banners`)이고 제목은 없다. 로고마다 "새 창 열림" 링크다. 목록은 도서관 API 배너 분류 6과 같다(정확히 6개).
+
+| 로고(alt) | 배너 링크 | 우리 카드 링크 | 도착 화면 제목(2026-10-13) |
+|---|---|---|---|
+| RISS | `http://openlink.lib.jejunu.ac.kr/link.n2s?url=https://www.riss.kr/OrganLogin.do` | 같은 주소의 https(학교망에서 같은 곳 도착 확인) | RISS(리스,학술연구정보서비스) - 국내·국외 학술정보를 제공하는 대국민 서비스 |
+| 한국학술지인용색인 | `https://www.kci.go.kr/kciportal/main.kci` | 같음 | 한국학술지인용색인(Korea Citation Index) |
+| Science on | `https://scienceon.kisti.re.kr/main/mainForm.do` | 같음 | 과학기술 지식인프라 ScienceON (사이언스온) |
+| dcollection | `https://dcoll.jejunu.ac.kr/` | 기존 menu-031(Collections 메뉴)에 배너 경로 추가 | dCollection 디지털 학술정보 유통시스템 |
+| 국립중앙도서관 | `https://www.nl.go.kr/` | 같음 | 국립중앙도서관 |
+| 국회도서관 | `https://www.nanet.go.kr/main.do` | 같음 | 대한민국 국회도서관 |
+
+- RISS 배너는 교외접속(openlink)을 거쳐 RISS 기관 로그인 주소로 간다. 확인한 PC가 학교망이라 학교 밖에서 열 때의 화면(로그인 요구 여부)은 확인하지 못했다(카드에 표시).
+- 각 사이트의 소개 문구는 외부 사이트 출처라 카드에 옮기지 않았다(사실의 출처는 도서관 사이트로 제한, D19). 원문 이용 범위·회원가입·무료 여부는 단정하지 않는다.
+
 ## data.js와 다른 점
 
 1. `hours.caution`에는 "중앙 열람실 정규 안내는 06:00~24:00"만 있다. 공식 문구 "※시험기간(중간·기말)은 3주간 24시간 개방"과 현재 공지의 기간(10.7. 00:00~10.26. 24:00, 대상 "중앙도서관 열람실")이 빠져 있다. `materials[0].label` "시험기간 공지 (2026.10.02)"는 게시일과 맞다. caution의 제주자료실 시간 차이 지적은 공식 페이지끼리 실제로 다르므로 맞는 지적이다.
