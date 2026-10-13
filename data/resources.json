@@ -223,6 +223,10 @@
       {
         "label": "메뉴얼",
         "url": "https://manual.muhayu.com/copykiller-campus-v2"
+      },
+      {
+        "label": "카피킬러 이용 안내(제주대 도서관)",
+        "url": "https://lib.jejunu.ac.kr/#/research/prevent-copykiller"
       }
     ],
     "duplicateCount": 1,

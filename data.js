@@ -760,6 +760,16 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/research/prevent/turnitin",
       "keywords": "표절 유사도 카피킬러 Turnitin iThenticate 검사",
       "checkedAt": "2026-10-12",
+      "materials": [
+        {
+          "label": "카피킬러 이용 안내(제주대 도서관)",
+          "url": "https://lib.jejunu.ac.kr/#/research/prevent-copykiller"
+        },
+        {
+          "label": "카피킬러 사용 매뉴얼(무하유)",
+          "url": "https://manual.muhayu.com/copykiller-campus-v2"
+        }
+      ],
       "recordKind": "guide"
     },
     {
@@ -1545,6 +1555,10 @@ window.LIBRARY_GUIDE = {
         {
           "label": "메뉴얼",
           "url": "https://manual.muhayu.com/copykiller-campus-v2"
+        },
+        {
+          "label": "카피킬러 이용 안내(제주대 도서관)",
+          "url": "https://lib.jejunu.ac.kr/#/research/prevent-copykiller"
         }
       ],
       "duplicateCount": 1,

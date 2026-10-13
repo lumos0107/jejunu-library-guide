@@ -100,3 +100,19 @@ def t_book_return_guide(site):
     check(g['cost'] == '연체료 유무는 공식 안내에서 확인하지 못함', f'반납 비용 칸: {g["cost"]}')
     check('다음 운영일' in g['caution'] and '자동반납기' in g['caution'], '반납함 처리 시점(2018 FAQ)·자동반납기 위치 미확인 표시 없음')
     check('book-return' in d['related'].get('loan', []), 'loan → book-return 관련 안내 없음')
+
+
+@test()
+def t_copykiller_links(site):
+    """'표절' 1위 안내와 카피킬러 자료 카드에서 공식 카피킬러 안내·매뉴얼로 갈 수 있다(2026-10-13 사용자 관찰)."""
+    page = SRC + '#/research/prevent-copykiller'
+    manual = 'https://manual.muhayu.com/copykiller-campus-v2'
+    site.open()
+    site.search('표절')
+    check('similarity' in site.result_ids(), f'"표절" 결과에 문서 유사도·표절예방 없음 {site.result_ids()[:5]}')
+    for rid in ('similarity', 'er-007'):
+        site.open_any(rid)
+        links = site.material_links()
+        check(page in links and manual in links, f'{rid}: 카피킬러 이용 안내·매뉴얼 링크 {links}')
+        check(site.official_href() not in links, f'{rid}: 공식 버튼과 같은 링크가 아래에 또 있음')
+        site.close_detail()
