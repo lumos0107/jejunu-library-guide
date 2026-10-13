@@ -7043,7 +7043,8 @@ window.LIBRARY_GUIDE = {
       "endsOn": "2026-10-26",
       "taskIds": [
         "hours",
-        "seat"
+        "seat",
+        "bus"
       ]
     }
   ],
