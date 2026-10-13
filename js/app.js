@@ -220,10 +220,14 @@
 
   const isListUrl = url => /#\/search\/er(-ebook)?$/.test(url || '');
 
+  // 공식 목록은 거른 상태를 주소에 담지 않는다(2026-10-13 확인, D18). 가나다·ABC 버튼과 실제로 찾아지는 검색어로 안내한다
   function findHint(s) {
     if (s.findHint) return s.findHint;
-    if (s.recordKind === 'resource' && isListUrl(s.source)) return "공식 목록 위쪽의 검색 칸에 '" + s.name + "'을(를) 입력하세요.";
-    return '';
+    if (s.recordKind !== 'resource' || !isListUrl(s.source)) return '';
+    const term = s.findTerm || s.name;  // findTerm: 공식 이름과 띄어쓰기·Trial 표기가 달라 이름으로는 검색되지 않는 자료
+    const typing = "목록 위쪽의 검색 칸에 '" + term + "'" + window.LG.objectParticle(term) + ' 입력하세요.';
+    const button = /#\/search\/er$/.test(s.source) ? window.LG.indexButton(s.name) : '';  // 전자책 목록에는 가나다 줄이 없다
+    return button ? "공식 목록의 가나다·ABC 줄에서 '" + button + "' 버튼을 누르세요. 또는 " + typing : '공식 ' + typing;
   }
 
   function factHtml(f) {

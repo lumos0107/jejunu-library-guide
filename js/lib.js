@@ -71,6 +71,23 @@
   LG.activeNotices = (notices, today, taskId) => (notices || [])
     .filter(n => LG.isActiveOn(n, today) && (!taskId || (n.taskIds || []).includes(taskId)));
 
+  // 공식 전자정보원 목록의 가나다·ABC 줄 버튼 이름. 공식 거르기와 같은 규칙(2026-10-13 공식 스크립트 확인):
+  // 한글은 첫 글자의 초성, 영문은 첫 글자, 숫자·기호는 '기타'. 된소리 초성(ㄲ·ㄸ·ㅃ·ㅆ·ㅉ)은 맞는 버튼이 없어 ''.
+  const CHOSEONG = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const INDEX_LABEL = Object.fromEntries([...'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ'].map((c, i) => [c, '가나다라마바사아자차카타파하'[i]]));
+  LG.indexButton = name => {
+    const c = String(name ?? '').charAt(0);
+    const code = c.charCodeAt(0);
+    if (code >= 0xAC00 && code <= 0xD7A3) return INDEX_LABEL[CHOSEONG[Math.floor((code - 0xAC00) / 588)]] || '';
+    if (/[A-Za-z]/.test(c)) return c.toUpperCase();
+    return c ? '기타' : '';
+  };
+  // 목적격 조사: 한글로 끝나면 받침에 따라 '을'·'를'. 영문 등은 읽는 법을 알 수 없어 '을(를)'.
+  LG.objectParticle = word => {
+    const code = String(word ?? '').trim().slice(-1).charCodeAt(0);
+    return code >= 0xAC00 && code <= 0xD7A3 ? ((code - 0xAC00) % 28 ? '을' : '를') : '을(를)';
+  };
+
   // 구글 폼 미리 채우기 주소. 폼이 없으면 '' (링크를 숨긴다).
   LG.feedbackUrl = (config, values = {}) => {
     const base = LG.safeUrl(config && config.feedbackFormUrl);

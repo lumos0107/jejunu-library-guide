@@ -67,6 +67,28 @@ def t_find_hint_for_list_links(site):
 
 
 @test()
+def t_find_hint_index_button(site):
+    """공식 목록은 거른 상태를 주소에 담지 않는다 → 가나다·ABC 버튼과 실제로 찾아지는 검색어로 안내(D18)."""
+    site.open()
+    got = site.page.evaluate("""() => [['카피킬러', '까치', 'JSTOR', 'jstor', '3D 자료', '(사)한국', ''].map(window.LG.indexButton),
+        ['카피킬러', '학술정보원', 'JSTOR', ''].map(window.LG.objectParticle)]""")
+    check(got[0] == ['카', '', 'J', 'J', '기타', '기타', ''], f'가나다·ABC 버튼 {got[0]}')
+    check(got[1] == ['를', '을', '을(를)', '을(를)'], f'조사 {got[1]}')
+    for rid, must, must_not in (('er-007', ["'카' 버튼", "'카피킬러'를"], []),
+                                ('er-087', ["'T' 버튼", '검색 칸'], []),
+                                ('er-093', ["'C' 버튼", "'CAS SciFinder'을(를)"], ['SciFinder Trial']),
+                                ('er-050', ["'K' 버튼", "'KSDC'을(를)"], [])):
+        site.open_any(rid)
+        hint = site.page.inner_text('.find-hint')
+        check(all(m in hint for m in must) and not any(m in hint for m in must_not), f'{rid} 찾는 방법: {hint}')
+        site.close_detail()
+    ebook = next(r['id'] for r in site.data()['resources'] if r['source'].endswith('#/search/er-ebook'))
+    site.open_any(ebook)
+    hint = site.page.inner_text('.find-hint')
+    check('버튼' not in hint and '검색 칸' in hint, f'{ebook}: 전자책 목록에는 가나다 줄이 없음: {hint}')
+
+
+@test()
 def t_location_channel_and_disclaimer_once(site):
     site.open()
     site.open_any('print')

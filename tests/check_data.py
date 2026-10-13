@@ -79,6 +79,8 @@ def run_checks(d, stage, today):
                 errs.append(f'{rid}: facts.kind {f.get("kind")}(location·auth·hours만, D16)')
         if (r.get('eligibilityNote') or r.get('costNote')) and not any(f.get('kind') != 'location' for f in r.get('facts') or []):
             errs.append(f'{rid}: eligibilityNote·costNote의 근거 facts(위치가 아닌 사실) 없음(P1-05)')
+        if 'findTerm' in r and not (isinstance(r['findTerm'], str) and r['findTerm'].strip() and r['findTerm'] in (r.get('name') or '')):
+            errs.append(f'{rid}: findTerm은 이름 안에 있는 말이어야 함(공식 목록 검색어, D18)')
         if r.get('recordKind') == 'guide' and re.search(r'#/search/er(-ebook)?$', r.get('source', '')) and not r.get('findHint'):
             errs.append(f'{rid}: 목록형 링크인데 findHint 없음(P1-11)')
         for field in ('name', 'question', 'description', 'keywords'):

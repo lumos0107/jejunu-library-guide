@@ -37,6 +37,7 @@ CASES = {
     '주장 필드의 무료': lambda d: d['services'][0].__setitem__('description', '무료로 쓸 수 있어요'),
     'http 링크': lambda d: d['services'][0].__setitem__('source', 'http://lib.jejunu.ac.kr/'),
     '책 상황 키 누락': lambda d: d['bookCases'].pop('loan'),
+    '이름에 없는 검색어': lambda d: d['resources'][0].__setitem__('findTerm', '이름에없는말'),
 }
 
 
