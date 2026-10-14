@@ -89,6 +89,22 @@ button {
   letter-spacing:-0.02em;
   line-height:1.25;
 }
+/* 이름이 공식 안내처럼 읽히지 않게 이름 바로 옆에 '비공식'을 붙인다(D23) */
+.brand-badge {
+  display:inline-block;
+  margin-left:8px;
+  padding:1px 8px;
+  border:1px solid var(--green);
+  border-radius:999px;
+  color:var(--green);
+  font-size:var(--fs-xs);
+  font-style:normal;
+  font-weight:600;
+  letter-spacing:0;
+  line-height:1.5;
+  vertical-align:3px;
+  white-space:nowrap;
+}
 .brand span {
   display:block;
   font-size:var(--fs-sm);

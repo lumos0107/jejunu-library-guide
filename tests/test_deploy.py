@@ -11,6 +11,8 @@ def t_head_meta(site):
     site.open()
     check(site.page.get_attribute('meta[name="robots"]', 'content') == 'noindex', 'noindex 없음(M4)')
     check(site.page.get_attribute('meta[property="og:title"]', 'content'), 'og:title 없음')
+    check('비공식' in site.page.title(), f'브라우저 제목에 비공식 없음: {site.page.title()}')
+    check(site.page.is_visible('.brand .brand-badge') and site.page.inner_text('.brand-badge') == '비공식', '머리글 이름 옆 비공식 표시 없음(D23)')
     check(site.page.get_attribute('link[rel="icon"]', 'href') == 'favicon.svg', '파비콘 없음')
     check('비공식' in site.page.inner_text('.site-header'), '헤더에 비공식 표시 없음')
 

@@ -1,4 +1,4 @@
-// 도서관의 쓸모 — 화면 코드
+// 제주대 도서관 사용 가이드(비공식) — 화면 코드
 // 로딩 순서(index.html, 모두 defer): data.js → js/config.js → js/lib.js → js/app.js
 (() => {
   'use strict';

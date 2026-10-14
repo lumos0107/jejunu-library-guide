@@ -1,4 +1,4 @@
-// 도서관의 쓸모 — 순수 함수 모음(window.LG). DOM을 만지지 않는다.
+// 제주대 도서관 사용 가이드(비공식) — 순수 함수 모음(window.LG). DOM을 만지지 않는다.
 (() => {
   'use strict';
   const LG = (window.LG = window.LG || {});
