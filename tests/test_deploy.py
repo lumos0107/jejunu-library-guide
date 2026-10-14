@@ -60,3 +60,5 @@ def t_font_single_file(site):
     size = (pathlib.Path(__file__).resolve().parents[1] / 'fonts' / 'guide-sans.woff2').stat().st_size
     check(size <= 320 * 1024, f'글꼴 {size}B > 320KB')
     check(site.page.evaluate("document.fonts.check('16px GuideSans', '도서관')"), 'GuideSans가 불려 오지 않음')
+    stroke = site.page.evaluate("getComputedStyle(document.body).webkitTextStrokeWidth")
+    check(stroke == '0.25px', f'가는 획 보강이 빠짐: {stroke}(고운돋움 흐림 보정, D21)')

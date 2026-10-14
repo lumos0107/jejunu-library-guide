@@ -1,7 +1,7 @@
 :root {
   /* 색 5개(사용자 규칙: 대표색·본문·보조 글자·바탕·옅은 면). 구분선과 대화상자 뒤판만 본문색 투명도(D21) */
   --ink:#1c3029;
-  --muted:#535e57;
+  --muted:#3d4741;  /* 고운돋움은 획이 가늘어 회색 글씨가 흐려 보여 짙게(2026-10-14 사용자 선택, 대비 9.2) */
   --green:#245b43;
   --paper:#fbfaf6;
   --soft:#eef2ea;
@@ -39,6 +39,7 @@ body {
   color:var(--ink);
   font:var(--fs-md)/1.7 var(--font);
   word-break:keep-all;
+  -webkit-text-stroke:0.25px currentColor;  /* 가는 획을 살짝 보강해 흐릿함을 줄인다(D21) */
 }
 a {
   color:inherit;
