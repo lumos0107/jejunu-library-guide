@@ -106,9 +106,13 @@ def t_search_form_keeps_style(site):
 
 
 @test(viewport='mobile', motion='no-preference')
-def t_default_motion_uses_smooth_scroll(site):
+def t_default_motion_scrolls_instantly(site):
+    """동작 줄이기를 켜지 않아도 즉시 이동한다(부드러운 스크롤은 0.8~1초라 0.3초 규칙에 어긋남, D21 사용자 결정)."""
     site.page.add_init_script("""window.__scrolls = []; const o = Element.prototype.scrollIntoView;
       Element.prototype.scrollIntoView = function (a) { window.__scrolls.push(a && a.behavior); return o.call(this, a); };""")
     site.open()
     site.search('통계')
-    check('smooth' in site.page.evaluate('window.__scrolls'), '기본 설정에서 부드러운 스크롤을 쓰지 않음')
+    site.category_card('space')
+    scrolls = site.page.evaluate('window.__scrolls')
+    check(scrolls and 'smooth' not in scrolls, f'부드러운 스크롤을 씀: {scrolls}')
+    check(site.page.evaluate("getComputedStyle(document.documentElement).scrollBehavior") == 'auto', 'CSS scroll-behavior가 auto가 아님')

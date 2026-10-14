@@ -30,7 +30,6 @@
   box-sizing:border-box;
 }
 html {
-  scroll-behavior:smooth;
   scroll-padding-top:24px;
 }
 body {
@@ -767,9 +766,6 @@ dialog li {
   }
 }
 @media(prefers-reduced-motion:reduce) {
-  html {
-    scroll-behavior:auto;
-  }
   * {
     transition:none!important;
   }

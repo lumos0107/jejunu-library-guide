@@ -81,6 +81,8 @@ def css_errors(css):
                     errs.append(f'CSS: {prop} {value.strip()} — 0.3초 미만으로')
     if re.search(r'gradient\(', css):
         errs.append('CSS: 그라데이션 금지')
+    if re.search(r'scroll-behavior\s*:\s*smooth', css):
+        errs.append('CSS: 부드러운 스크롤 금지(0.3초 넘음, D21)')
     return errs
 
 

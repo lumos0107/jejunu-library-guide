@@ -327,7 +327,7 @@
     if (scope) {
       e.preventDefault();
       changeScope(scope.dataset.scope);
-      if (scope.tagName === 'A') $('#services').scrollIntoView({ behavior: scrollBehavior() });
+      if (scope.tagName === 'A') $('#services').scrollIntoView();
       return;
     }
     const cat = e.target.closest('[data-category]');
@@ -338,7 +338,7 @@
         state.query = '';
         $('#search-input').value = '';
         state.scope = 'guide';
-        $('#services').scrollIntoView({ behavior: scrollBehavior() });
+        $('#services').scrollIntoView();
       }
       render();
       if (cat.classList.contains('category-card')) $('#services-title').focus({ preventScroll: true });
@@ -366,7 +366,7 @@
     state.query = $('#search-input').value;
     state.limit = 12;
     render();
-    $('#services').scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
+    $('#services').scrollIntoView({ block: 'start' });
     $('#services-title').focus({ preventScroll: true });  // 키보드로 결과부터 이어서 보게 한다
   });
   $('#audience').addEventListener('change', e => { state.audience = e.target.value; state.limit = 12; render(); });
@@ -391,8 +391,6 @@
     $('#services-title').focus({ preventScroll: true });
   });
 
-  const scrollBehavior = () => (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
-
   // 헤더가 화면 위에 붙어 있으므로 스크롤이 헤더 아래에서 멈추게 한다(S12)
   const setScrollPadding = () => {
     document.documentElement.style.scrollPaddingTop = Math.ceil($('.site-header').getBoundingClientRect().height + 12) + 'px';
@@ -401,7 +399,7 @@
   window.addEventListener('resize', setScrollPadding);
 
   $('.header-search').addEventListener('click', () => {
-    $('.top-search').scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
+    $('.top-search').scrollIntoView({ block: 'start' });  // 스크롤은 즉시 이동(부드러운 스크롤은 0.8~1초라 0.3초 규칙에 어긋남, D21)
     $('#search-input').focus({ preventScroll: true });
   });
 

@@ -48,6 +48,7 @@ BAD_CSS = {
     '굵기 650': 'a { font-weight: 650 }',
     '긴 전환': 'a { transition: color .5s }',
     '그라데이션': 'a { background: linear-gradient(red, blue) }',
+    '부드러운 스크롤': 'html { scroll-behavior: smooth }',
 }
 
 
