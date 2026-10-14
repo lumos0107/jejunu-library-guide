@@ -157,6 +157,20 @@ def t_home_banner_sites(site):
 
 
 @test()
+def t_dvd_card(site):
+    """2026-10-14 사용자: "dvd 이런거 빌릴 수 있다고 아는데 이런 정보는 없나?" — 미디어라운지 관내대출(추천 DVD 20편 확인)."""
+    site.open()
+    for q in ('DVD', '영화'):
+        site.search(q)
+        check('dvd' in site.result_ids()[:3], f'"{q}" 상위 3위에 영화 DVD 보기 없음 {site.result_ids()[:5]}')
+    site.open_any('dvd')
+    text = site.page.inner_text('#detail-content')
+    check('미디어라운지' in text and '관내대출' in text, '위치·관내대출 안내 없음')
+    check(site.official_href().endswith('#/sc/movie?scId1=288'), f'공식 버튼 {site.official_href()}')
+    site.close_detail()
+
+
+@test()
 def t_copykiller_links(site):
     """'표절' 1위 안내와 카피킬러 자료 카드에서 공식 카피킬러 안내·매뉴얼로 갈 수 있다(2026-10-13 사용자 관찰)."""
     page = SRC + '#/research/prevent-copykiller'

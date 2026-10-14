@@ -976,6 +976,57 @@
     "findHint": "전자정보원 목록의 검색 칸에 Naxos Music Library, The New York Times in Education 같은 이름을 입력하세요."
   },
   {
+    "id": "dvd",
+    "name": "영화 DVD 보기",
+    "question": "도서관에서 영화를 보고 싶어",
+    "category": "reading",
+    "description": "중앙디지털도서관 1층 미디어라운지에서 도서관 DVD를 볼 수 있어요. 확인한 DVD는 모두 도서관 안에서만 빌리는 '관내대출' 자료였어요.",
+    "audience": "all",
+    "channel": "현장",
+    "login": "공식 안내에 인증 언급 없음",
+    "cost": "공식 안내 확인",
+    "caution": "감상 절차와 학생증 같은 준비물은 공식 안내에 없어요. 미디어라운지에서 확인하세요. 같은 DVD라도 2층 비도서자료에 있는 것은 '대출불가'로 표시돼요.",
+    "steps": [
+      "이달의 추천DVD나 비도서 검색에서 볼 DVD 찾기(소장위치 '미디어라운지' 확인)",
+      "중앙디지털도서관 1층 미디어라운지로 가기",
+      "현장에서 이용 절차를 확인하고 감상하기"
+    ],
+    "source": "https://lib.jejunu.ac.kr/#/sc/movie?scId1=288",
+    "keywords": "DVD 디브이디 영화 비디오 CD 비도서 미디어라운지 영상 감상 추천DVD 관내대출",
+    "checkedAt": "2026-10-14",
+    "materials": [
+      {
+        "label": "비도서 검색(제주대 도서관)",
+        "url": "https://lib.jejunu.ac.kr/#/search/nonbook/ex?all=0"
+      }
+    ],
+    "recordKind": "guide",
+    "facts": [
+      {
+        "kind": "location",
+        "text": "중앙디지털도서관 1층 미디어라운지",
+        "source": "https://lib.jejunu.ac.kr/#/guide/hoo/floor-digital",
+        "checkedAt": "2026-10-13"
+      },
+      {
+        "text": "2026년 9~10월 추천 DVD 20편(24점)의 소장 정보: 미디어라운지 21점 '관내대출가능', 2층 비도서자료 3점 '대출불가'",
+        "source": "https://lib.jejunu.ac.kr/#/sc/movie?scId1=288&scId2=466",
+        "checkedAt": "2026-10-14"
+      },
+      {
+        "kind": "hours",
+        "text": "중앙디지털도서관 미디어라운지: 학기 중 평일 09:00~20:00, 토 09:00~13:00(방학 중 평일 09:00~18:00), 일요일·공휴일 휴관",
+        "source": "https://lib.jejunu.ac.kr/#/guide/hoo/hoo",
+        "checkedAt": "2026-10-13"
+      },
+      {
+        "text": "소장 비도서 중 광디스크(DVD·CD 등) 11,856점(2026-03-01 기준)",
+        "source": "https://lib.jejunu.ac.kr/#/guide/state",
+        "checkedAt": "2026-10-13"
+      }
+    ]
+  },
+  {
     "id": "training",
     "name": "학술정보활용교육",
     "question": "자료 찾는 방법을 직접 배우고 싶어",

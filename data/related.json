@@ -86,7 +86,8 @@
   ],
   "culture": [
     "ebook",
-    "programs"
+    "programs",
+    "dvd"
   ],
   "training": [
     "domestic",
@@ -147,5 +148,9 @@
   ],
   "menu-094": [
     "national-fulltext"
+  ],
+  "dvd": [
+    "culture",
+    "programs"
   ]
 }
