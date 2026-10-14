@@ -921,6 +921,30 @@ dialog li {
   margin:0;
   max-width:75%;
 }
+.wider-results {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px 14px;
+  margin:-4px 0 16px;
+  padding:8px 8px 8px 16px;
+  border-radius:10px;
+  background:var(--soft);
+  font-size:var(--fs-sm);
+}
+.wider-results p {
+  margin:0;
+}
+.wider-results button {
+  border:1px solid var(--green);
+  border-radius:999px;
+  background:var(--paper);
+  color:var(--green);
+  padding:0 16px;
+  font-size:var(--fs-xs);
+  font-weight:600;
+}
 @media(max-width:560px) {
   .coverage {
     text-align:left;
@@ -1172,6 +1196,7 @@ dialog li {
 .material-list a,
 .active-filters button,
 #empty-clear-filters,
+.wider-results button,
 .dialog-top button,
 #detail-content a.primary,
 .header-search,

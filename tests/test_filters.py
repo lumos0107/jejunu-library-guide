@@ -58,6 +58,41 @@ def t_zero_result_other_scope(site):
 
 
 @test()
+def t_results_outside_scope_are_announced(site):
+    """2026-10-14 제보: 상황 카드로 '이용 가이드'가 된 뒤 '카피'를 찾으면 1건만 보여 다른 2건이 사라진 줄 앎."""
+    site.open()
+    site.category_card('assignment')  # 범위가 '이용 가이드'로 바뀐다
+    site.search('카피')
+    check(site.count() == 1, f'전제: 가이드 범위에서 1건({site.count()})')
+    counts = site.page.eval_on_selector_all('#scope-tabs [data-scope]', 'els => Object.fromEntries(els.map(e => [e.dataset.scope, +e.querySelector(".scope-count").textContent]))')
+    check(counts == {'all': 3, 'guide': 1, 'resource': 1, 'menu': 1}, f'탭 숫자가 검색 결과 수가 아님: {counts}')
+    check(site.page.is_visible('#wider-results'), '범위 밖 결과 안내가 안 보임')
+    text = site.page.inner_text('#wider-results p')
+    check('1건' in text and '3건' in text, f'안내 문구: {text}')
+    site.page.click('#wider-results-button')
+    site.page.wait_for_timeout(100)
+    check(set(site.result_ids()) == {'similarity', 'er-007', 'menu-019'}, f'전체 범위로 넓힌 뒤: {site.result_ids()}')
+    check(site.page.get_attribute('#scope-tabs [data-scope="all"]', 'aria-pressed') == 'true', '전체 검색 탭으로 안 바뀜')
+    check(not site.page.is_visible('#wider-results'), '넓힌 뒤에도 안내가 남음')
+
+
+@test()
+def t_scope_counts_follow_what_click_shows(site):
+    site.open()
+    site.select('audience', 'undergrad')
+    site.search('논문')
+    counts = site.page.eval_on_selector_all('#scope-tabs [data-scope]', 'els => Object.fromEntries(els.map(e => [e.dataset.scope, +e.querySelector(".scope-count").textContent]))')
+    for s in ('guide', 'resource', 'menu', 'all'):
+        site.scope(s)
+        check(site.count() == counts[s], f'{s} 탭 숫자 {counts[s]}와 누른 뒤 {site.count()}건이 다름')
+    check(site.page.input_value('#audience') == 'undergrad', '탭을 바꾸며 학부생 필터가 풀림')
+    site.page.fill('#search-input', '')
+    site.page.dispatch_event('#search-input', 'input')
+    site.page.wait_for_timeout(80)
+    check(not site.page.is_visible('#wider-results'), '검색어 없이 둘러볼 때 범위 밖 안내가 뜸')
+
+
+@test()
 def t_zero_result_keeps_chosen_scope(site):
     site.open()
     site.scope('resource')

@@ -105,6 +105,15 @@
     };
   }
 
+  // 범위 탭 숫자 = 그 탭을 누르면 나올 수. 탭을 바꾸면 상황·자료 필터는 풀리고 학부생 필터는 남는다(2026-10-14 제보: 가이드 탭에서 검색해 다른 탭의 결과를 못 봄)
+  function scopeCounts(tokens) {
+    const pool = records.filter(r => state.audience !== 'undergrad' || r.audience !== 'grad');
+    const hits = tokens.length ? window.LG.search(pool, searchIndex, tokens) : pool;
+    const n = { all: hits.length, guide: 0, resource: 0, menu: 0 };
+    hits.forEach(r => n[r.recordKind]++);
+    return n;
+  }
+
   // 학부생 필터는 지금 범위·상황에 대학원 대상이 있을 때만 의미가 있다. 입력 중에 깜빡이지 않게 검색어는 보지 않는다
   function audienceMatters() {
     return records.some(r => r.audience === 'grad' && (state.scope === 'all' || r.recordKind === state.scope)
@@ -129,6 +138,16 @@
     $('#result-count').textContent = (state.scope === 'all' ? '전체 검색' : kindName(state.scope)) + ' · '
       + currentMatches.length + '개 결과' + (state.query.trim() ? ' · “' + state.query.trim() + '”' : '')
       + (state.scope === 'all' ? ' (가이드 ' + kinds.guide + ' · 자료 ' + kinds.resource + ' · 메뉴 ' + kinds.menu + ')' : '');
+
+    const perScope = scopeCounts(invalidQuery ? [] : tokens);
+    document.querySelectorAll('#scope-tabs [data-scope]').forEach(b => { b.querySelector('.scope-count').textContent = perScope[b.dataset.scope]; });
+    // 결과가 있어도 지금 범위·필터 밖에 더 있으면 알린다(0건이면 아래 복구 안내가 맡는다). 검색어 없이 둘러볼 때는 띄우지 않는다
+    const wider = tokens.length > 0 && currentMatches.length > 0 && perScope.all > currentMatches.length;
+    $('#wider-results').hidden = !wider;
+    if (wider) {
+      $('#wider-results p').textContent = '지금 조건에서는 ' + currentMatches.length + '건, 전체 범위에서는 ' + perScope.all + '건이에요.'
+        + (state.audience === 'undergrad' ? ' 학부생 필터는 그대로 둬요.' : '');
+    }
 
     $('#scope-note').textContent = notes[state.scope];
     $('#resource-filters').hidden = state.scope !== 'resource';
@@ -382,6 +401,10 @@
   });
   $('#reset').addEventListener('click', reset);
   $('#empty-reset').addEventListener('click', () => { reset(); $('#search-input').focus(); });
+  $('#wider-results-button').addEventListener('click', () => {
+    changeScope('all');  // 상황·자료 필터를 풀고 학부생 필터는 둔다(탭 숫자와 같은 기준)
+    $('#services-title').focus({ preventScroll: true });
+  });
   $('#empty-clear-filters').addEventListener('click', () => {
     const widen = $('#empty-clear-filters').dataset.widen === 'true';
     clearAllFilters();
