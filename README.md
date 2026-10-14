@@ -47,5 +47,5 @@
 
 ## 글꼴·아이콘
 
-- 본문 글꼴: Pretendard 1.3.9(길형진, SIL OFL 1.1)를 줄인 수정본 GuideSans — [fonts/README.md](fonts/README.md), [fonts/OFL.txt](fonts/OFL.txt)
+- 본문 글꼴: 고운돋움 2.000(The Gowun Dodum Project Authors, SIL OFL 1.1)을 줄인 수정본 GuideSans — [fonts/README.md](fonts/README.md), [fonts/OFL.txt](fonts/OFL.txt)
 - 아이콘: Tabler Icons(MIT) — 파비콘, 상황 카드·검색 버튼 아이콘. 라이선스 [docs/licenses/tabler-icons-MIT.txt](docs/licenses/tabler-icons-MIT.txt)

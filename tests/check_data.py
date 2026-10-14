@@ -48,7 +48,7 @@ def reserved_keys(o, path='data'):
     return found
 
 
-GLYPH_ALLOW = {'∙', '▣'}  # 공식 원문 인용 기호. Pretendard에 없어 시스템 글꼴로 보인다(D21)
+GLYPH_ALLOW = {'∙', '▣'}  # 공식 원문 인용 기호. 고운돋움에는 있지만 Pretendard에는 없어서, 글꼴을 되돌릴 때를 위해 예외로 둔다(D21)
 
 
 def strings(o):
