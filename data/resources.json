@@ -2305,7 +2305,7 @@
     "channel": "홈페이지 → 외부 서비스",
     "login": "개별 안내 확인",
     "cost": "구독·무료 여부 확인",
-    "caution": "목록에 등재되어 있다는 사실만으로 모든 자료의 무료·원문 이용을 보장하지 않습니다. 학교 인증, 별도 등록, 구독 연도, 동시접속 조건을 확인하세요.",
+    "caution": "목록에 등재되어 있다는 사실만으로 모든 자료의 무료·원문 이용을 보장하지 않습니다. 학교 인증, 별도 등록, 구독 연도, 동시접속 조건을 확인하세요. 공식 목록의 매뉴얼 링크는 2026-10-14에 열리지 않았습니다.",
     "steps": [
       "공식 전자정보원 목록에서 서비스 이름 검색",
       "설명·매뉴얼에서 학교 인증 및 개별 등록 조건 확인",
@@ -2314,12 +2314,7 @@
     "source": "https://lib.jejunu.ac.kr/#/search/er",
     "keywords": "자연과학 공학 해양 비디오 서적 논문",
     "checkedAt": "2026-10-12",
-    "materials": [
-      {
-        "label": "매뉴얼",
-        "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/a033dd53-2f20-4a8e-b4b6-e5d2f82cb1f9"
-      }
-    ],
+    "materials": [],
     "duplicateCount": 1
   },
   {
@@ -2408,7 +2403,7 @@
   {
     "id": "er-073",
     "recordKind": "resource",
-    "name": "RefWorks(New Version)",
+    "name": "Endnote Fusion(구. RefWorks)",
     "category": "assignment",
     "subject": "연구도구",
     "description": "웹 기반 서지관리·참고문헌 생성",
@@ -2426,8 +2421,8 @@
       "학교 인증이 필요한 자료는 교외접속 안내에 따라 이용"
     ],
     "source": "https://lib.jejunu.ac.kr/#/search/er",
-    "keywords": "레퍼웍스 참고문헌 서지 인용",
-    "checkedAt": "2026-10-12",
+    "keywords": "Endnote Fusion 엔드노트 퓨전 RefWorks 레퍼웍스 참고문헌 서지 인용",
+    "checkedAt": "2026-10-14",
     "materials": [
       {
         "label": "cite 매뉴얼",

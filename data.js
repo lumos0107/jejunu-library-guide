@@ -753,19 +753,19 @@ window.LIBRARY_GUIDE = {
       "name": "참고문헌 관리",
       "question": "인용한 논문과 참고문헌을 정리하고 싶어",
       "category": "assignment",
-      "description": "EndNote와 RefWorks로 연구자료와 참고문헌을 관리할 수 있어요.",
+      "description": "EndNote와 Endnote Fusion(구 RefWorks)으로 연구자료와 참고문헌을 관리할 수 있어요.",
       "audience": "all",
       "channel": "프로그램 · 외부 서비스",
       "login": "필요",
       "cost": "공식 안내 확인",
-      "caution": "EndNote 설치파일 다운로드는 도서관 로그인 필요. RefWorks 계정 조건은 공식 안내를 확인하세요.",
+      "caution": "EndNote 설치파일 다운로드는 도서관 로그인 필요. Endnote Fusion(구 RefWorks) 계정 조건은 공식 안내를 확인하세요.",
       "steps": [
         "참고문헌관리 안내에서 도구 선택",
         "다운로드 또는 계정 생성 절차 확인",
         "매뉴얼을 참고해 자료·참고문헌 관리"
       ],
       "source": "https://lib.jejunu.ac.kr/#/research/reference",
-      "keywords": "EndNote RefWorks 인용 출처 서지 참고 문헌",
+      "keywords": "EndNote RefWorks 인용 출처 서지 참고 문헌 Endnote Fusion 엔드노트 퓨전",
       "checkedAt": "2026-10-12",
       "recordKind": "guide"
     },
@@ -785,17 +785,18 @@ window.LIBRARY_GUIDE = {
         "학교 인증과 필요한 계정 등록 진행",
         "검사 결과를 검토하고 인용·출처 표시를 확인"
       ],
-      "source": "https://lib.jejunu.ac.kr/#/research/prevent/turnitin",
+      "source": "https://lib.jejunu.ac.kr/#/research/prevent-copykiller",
+      "sourceLabel": "카피킬러 안내 열기",
       "keywords": "표절 유사도 카피킬러 Turnitin iThenticate 검사",
       "checkedAt": "2026-10-12",
       "materials": [
         {
-          "label": "카피킬러 이용 안내(제주대 도서관)",
-          "url": "https://lib.jejunu.ac.kr/#/research/prevent-copykiller"
-        },
-        {
           "label": "카피킬러 사용 매뉴얼(무하유)",
           "url": "https://manual.muhayu.com/copykiller-campus-v2"
+        },
+        {
+          "label": "Turnitin 이용 안내(제주대 도서관)",
+          "url": "https://lib.jejunu.ac.kr/#/research/prevent/turnitin"
         },
         {
           "label": "iThenticate 이용 안내(제주대 도서관)",
@@ -1032,6 +1033,7 @@ window.LIBRARY_GUIDE = {
         "발권 방법과 DVD 대출·감상 절차는 현장에서 확인하기"
       ],
       "source": "https://lib.jejunu.ac.kr/#/sc/movie?scId1=288",
+      "sourceLabel": "이달의 추천DVD 열기",
       "keywords": "DVD 디브이디 영화 비디오 CD 비도서 미디어라운지 영상 감상 추천DVD 관내대출 DVD ZONE 디브이디존",
       "checkedAt": "2026-10-14",
       "materials": [
@@ -1155,10 +1157,29 @@ window.LIBRARY_GUIDE = {
         "해당 행사 공지의 기간·대상 확인",
         "공지에 안내된 방법으로 신청·참여"
       ],
-      "source": "https://lib.jejunu.ac.kr/#/libprg/culture-lecture",
+      "source": "https://lib.jejunu.ac.kr/#/sc/recommend",
+      "sourceLabel": "이달의 추천도서 열기",
       "keywords": "독서주간 북로그 추천 DVD 프로그램 행사 챌린지",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "materials": [
+        {
+          "label": "이달의 추천DVD(제주대 도서관)",
+          "url": "https://lib.jejunu.ac.kr/#/sc/movie?scId1=288"
+        },
+        {
+          "label": "책읽는 제주대학교(제주대 도서관)",
+          "url": "https://lib.jejunu.ac.kr/#/bbs/readingbook"
+        },
+        {
+          "label": "JNU 독서주간: 북로그(제주대 도서관)",
+          "url": "https://lib.jejunu.ac.kr/#/bbs/booklog"
+        },
+        {
+          "label": "프로그램 신청 목록(제주대 도서관)",
+          "url": "https://lib.jejunu.ac.kr/#/libprg/culture-lecture"
+        }
+      ]
     },
     {
       "id": "help",
@@ -1539,13 +1560,14 @@ window.LIBRARY_GUIDE = {
       "channel": "공식 홈페이지 My Library",
       "login": "개인 메뉴 인증 확인",
       "cost": "공식 안내 확인",
-      "caution": "개인내역은 이 가이드에서 조회하지 않습니다. 실제 로그인·개인현황 화면은 이번 조사에서 시험하지 않았습니다.",
+      "caution": "버튼을 누르면 공식 로그인 화면이 먼저 나와요. 개인내역은 이 가이드에서 조회하지 않습니다. 실제 로그인·개인현황 화면은 이번 조사에서 시험하지 않았습니다.",
       "steps": [
         "공식 홈페이지의 My Library 열기",
         "대출·신청·내 서재·제재 관련 하위 메뉴 선택",
         "공식 서비스의 인증 절차를 거쳐 확인"
       ],
       "source": "https://lib.jejunu.ac.kr/#/mylibrary/dashboard",
+      "sourceLabel": "My Library 열기(로그인)",
       "keywords": "마이 라이브러리 My Library My Dashboard 내서재 신청 현황 제재 연체 개인정보",
       "checkedAt": "2026-10-12",
       "recordKind": "guide"
@@ -1567,9 +1589,16 @@ window.LIBRARY_GUIDE = {
         "신청기간과 요건에 맞춰 공식 서비스 이용"
       ],
       "source": "https://lib.jejunu.ac.kr/#/libprg/culture-lecture",
+      "sourceLabel": "프로그램 신청 목록 열기",
       "keywords": "프로그램 신청 일정 달력 강좌 교육 행사 모집",
       "checkedAt": "2026-10-12",
-      "recordKind": "guide"
+      "recordKind": "guide",
+      "materials": [
+        {
+          "label": "월별 프로그램 일정 보기(제주대 도서관)",
+          "url": "https://lib.jejunu.ac.kr/#/libprg/calendar"
+        }
+      ]
     }
   ],
   "resources": [
@@ -3879,7 +3908,7 @@ window.LIBRARY_GUIDE = {
       "channel": "홈페이지 → 외부 서비스",
       "login": "개별 안내 확인",
       "cost": "구독·무료 여부 확인",
-      "caution": "목록에 등재되어 있다는 사실만으로 모든 자료의 무료·원문 이용을 보장하지 않습니다. 학교 인증, 별도 등록, 구독 연도, 동시접속 조건을 확인하세요.",
+      "caution": "목록에 등재되어 있다는 사실만으로 모든 자료의 무료·원문 이용을 보장하지 않습니다. 학교 인증, 별도 등록, 구독 연도, 동시접속 조건을 확인하세요. 공식 목록의 매뉴얼 링크는 2026-10-14에 열리지 않았습니다.",
       "steps": [
         "공식 전자정보원 목록에서 서비스 이름 검색",
         "설명·매뉴얼에서 학교 인증 및 개별 등록 조건 확인",
@@ -3888,12 +3917,7 @@ window.LIBRARY_GUIDE = {
       "source": "https://lib.jejunu.ac.kr/#/search/er",
       "keywords": "자연과학 공학 해양 비디오 서적 논문",
       "checkedAt": "2026-10-12",
-      "materials": [
-        {
-          "label": "매뉴얼",
-          "url": "https://lib.jejunu.ac.kr/pyxis-api/attachments/BULLETIN/a033dd53-2f20-4a8e-b4b6-e5d2f82cb1f9"
-        }
-      ],
+      "materials": [],
       "duplicateCount": 1
     },
     {
@@ -3982,7 +4006,7 @@ window.LIBRARY_GUIDE = {
     {
       "id": "er-073",
       "recordKind": "resource",
-      "name": "RefWorks(New Version)",
+      "name": "Endnote Fusion(구. RefWorks)",
       "category": "assignment",
       "subject": "연구도구",
       "description": "웹 기반 서지관리·참고문헌 생성",
@@ -4000,8 +4024,8 @@ window.LIBRARY_GUIDE = {
         "학교 인증이 필요한 자료는 교외접속 안내에 따라 이용"
       ],
       "source": "https://lib.jejunu.ac.kr/#/search/er",
-      "keywords": "레퍼웍스 참고문헌 서지 인용",
-      "checkedAt": "2026-10-12",
+      "keywords": "Endnote Fusion 엔드노트 퓨전 RefWorks 레퍼웍스 참고문헌 서지 인용",
+      "checkedAt": "2026-10-14",
       "materials": [
         {
           "label": "cite 매뉴얼",
@@ -6440,6 +6464,7 @@ window.LIBRARY_GUIDE = {
         "일정 메뉴에서 안내 확인"
       ],
       "source": "https://lib.jejunu.ac.kr/#/schedule/calendar",
+      "sourceLabel": "도서관 홈 열기(일정 링크 오류)",
       "keywords": "도서관안내 열린광장 일정 공식 메뉴",
       "checkedAt": "2026-10-12",
       "materials": [

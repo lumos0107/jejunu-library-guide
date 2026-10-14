@@ -1537,6 +1537,7 @@
       "일정 메뉴에서 안내 확인"
     ],
     "source": "https://lib.jejunu.ac.kr/#/schedule/calendar",
+    "sourceLabel": "도서관 홈 열기(일정 링크 오류)",
     "keywords": "도서관안내 열린광장 일정 공식 메뉴",
     "checkedAt": "2026-10-12",
     "materials": [

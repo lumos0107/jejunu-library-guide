@@ -174,6 +174,28 @@ def t_dvd_card(site):
 
 
 @test()
+def t_official_buttons_match_description(site):
+    """2026-10-14 사용자: "공식 안내 열기들의 주소가 설명과 좀 다른 것들이 있는 듯" — 전체 링크 점검(docs/v3/research/link_audit_2026-10-14.md)에서 고친 곳."""
+    site.open()
+    d = site.data()
+    check(rec(d, 'similarity')['source'] == SRC + '#/research/prevent-copykiller', '표절예방: 설명은 카피킬러가 먼저인데 버튼이 다른 화면')
+    check(SRC + '#/research/prevent/turnitin' in [m['url'] for m in rec(d, 'similarity')['materials']], '표절예방: Turnitin 안내 링크 없음')
+    check(rec(d, 'programs')['source'] == SRC + '#/sc/recommend', '추천자료 카드 버튼이 추천도서가 아님')
+    check(SRC + '#/libprg/calendar' in [m['url'] for m in rec(d, 'program-calendar')['materials']], '프로그램 일정 달력 링크 없음')
+    check('로그인 화면' in rec(d, 'my-library')['caution'], 'My Library 버튼이 로그인 화면으로 간다는 안내 없음')
+    check(rec(d, 'er-073')['name'].startswith('Endnote Fusion'), '공식 목록 이름 변경(구 RefWorks) 미반영')
+    check(not rec(d, 'er-069').get('materials'), 'ProQuest Natural Science: 열리지 않는 매뉴얼 링크가 남음')
+    site.search('RefWorks')
+    check('er-073' in site.result_ids()[:3], f'"RefWorks"로 Endnote Fusion이 안 나옴 {site.result_ids()[:5]}')
+    for rid, label in (('similarity', '카피킬러 안내 열기'), ('domestic', '공식 전자정보원 목록 열기'), ('loan', '공식 안내 열기'),
+                       ('menu-067', '도서관 홈 열기'), ('menu-026', '공식 메뉴로 이동하기')):
+        site.open_any(rid)
+        text = site.page.inner_text('#detail-content a.primary')
+        check(label in text, f'{rid}: 큰 버튼 이름이 가는 곳을 말하지 않음 "{text}"')
+        site.close_detail()
+
+
+@test()
 def t_copykiller_links(site):
     """'표절' 1위 안내와 카피킬러 자료 카드에서 공식 카피킬러 안내·매뉴얼로 갈 수 있다(2026-10-13 사용자 관찰)."""
     page = SRC + '#/research/prevent-copykiller'
@@ -184,6 +206,6 @@ def t_copykiller_links(site):
     for rid in ('similarity', 'er-007'):
         site.open_any(rid)
         links = site.material_links()
-        check(page in links and manual in links, f'{rid}: 카피킬러 이용 안내·매뉴얼 링크 {links}')
+        check((page in links or site.official_href() == page) and manual in links, f'{rid}: 카피킬러 이용 안내·매뉴얼 링크 {links}')
         check(site.official_href() not in links, f'{rid}: 공식 버튼과 같은 링크가 아래에 또 있음')
         site.close_detail()

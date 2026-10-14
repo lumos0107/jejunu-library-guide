@@ -38,6 +38,8 @@ CASES = {
     'http 링크': lambda d: d['services'][0].__setitem__('source', 'http://lib.jejunu.ac.kr/'),
     '책 상황 키 누락': lambda d: d['bookCases'].pop('loan'),
     '이름에 없는 검색어': lambda d: d['resources'][0].__setitem__('findTerm', '이름에없는말'),
+    '자료 카드의 버튼 이름': lambda d: d['resources'][0].__setitem__('sourceLabel', '여기 열기'),
+    '가는 곳을 말하지 않는 버튼 이름': lambda d: d['services'][0].__setitem__('sourceLabel', '바로가기'),
     '글꼴에 없는 글자': lambda d: d['services'][0].__setitem__('description', '똠양꿍 설명'),
     '상황 카드와 화면이 다름': lambda d: d['categories'][0].__setitem__('question', '바뀐 질문'),
 }

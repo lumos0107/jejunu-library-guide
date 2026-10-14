@@ -273,9 +273,10 @@
     const resource = s.recordKind === 'resource';
     const menu = s.recordKind === 'menu';
     $('#detail-category').textContent = kindName(s.recordKind) + ' · ' + (resource ? s.subject : menu ? s.menuGroup : categoryName(s.category));
-    const sourceLabel = resource
+    // 여러 화면을 다루는 카드는 큰 버튼이 어디로 가는지 이름으로 말한다(sourceLabel). 목록 주소면 가이드 카드도 목록이라고 말한다(2026-10-14 링크 점검)
+    const sourceLabel = s.sourceLabel || (isListUrl(s.source)
       ? (s.source.endsWith('er-ebook') ? '공식 전자책 목록 열기' : '공식 전자정보원 목록 열기')
-      : menu ? (s.menuGroup === BANNER_GROUP ? '외부 사이트 열기' : '공식 메뉴로 이동하기') : '공식 안내 열기';
+      : menu ? (s.menuGroup === BANNER_GROUP ? '외부 사이트 열기' : '공식 메뉴로 이동하기') : '공식 안내 열기');
     const url = safeUrl(s.source);
     const hint = findHint(s);
     const facts = s.facts || [];
