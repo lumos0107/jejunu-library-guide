@@ -166,8 +166,11 @@ def t_dvd_card(site):
     site.open_any('dvd')
     text = site.page.inner_text('#detail-content')
     check('미디어라운지' in text and '관내대출' in text, '위치·관내대출 안내 없음')
+    check('DVD ZONE' in text and '일반열람실' in text, '앱 DVD ZONE 잔여 좌석 단계 없음(2026-10-14 앱 확인)')
     check(site.official_href().endswith('#/sc/movie?scId1=288'), f'공식 버튼 {site.official_href()}')
     site.close_detail()
+    site.search('빈자리')
+    check(site.result_ids()[:1] == ['seat'], f'"빈자리" 1위가 일반열람실 좌석이 아님 {site.result_ids()[:3]}')
 
 
 @test()
